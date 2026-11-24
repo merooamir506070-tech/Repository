@@ -1,0 +1,11 @@
+<linearGradient id="rsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#86aac4"/><stop offset=".45" stop-color="#b4c6cf"/><stop offset=".8" stop-color="#dccdb0"/><stop offset="1" stop-color="#e6d2ae"/></linearGradient>
+<linearGradient id="rnight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d2a3e"/><stop offset=".7" stop-color="#3b4a5e"/><stop offset="1" stop-color="#6a6a66"/></linearGradient>
+<radialGradient id="rsun"><stop offset="0" stop-color="#fff8e2" stop-opacity="1"/><stop offset=".18" stop-color="#fff1c8" stop-opacity=".95"/><stop offset=".45" stop-color="#f7e3b4" stop-opacity=".35"/><stop offset="1" stop-color="#f3dcae" stop-opacity="0"/></radialGradient>
+<linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e6cc" stop-opacity=".05"/><stop offset=".55" stop-color="#e9d8b8" stop-opacity=".16"/><stop offset="1" stop-color="#d8c4a0" stop-opacity=".1"/></linearGradient>
+<linearGradient id="rsand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dcb487"/><stop offset="1" stop-color="#c89868"/></linearGradient>
+<linearGradient id="rasph" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#46474a"/><stop offset="1" stop-color="#333436"/></linearGradient>
+<linearGradient id="rconc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a9a59d"/><stop offset=".45" stop-color="#c6c2b9"/><stop offset="1" stop-color="#9b978f"/></linearGradient>
+<linearGradient id="ryel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c443"/><stop offset="1" stop-color="#e2a521"/></linearGradient>
+<linearGradient id="rshade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="rglass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9dbe4"/><stop offset="1" stop-color="#7f9aaa"/></linearGradient>
+<linearGradient id="rgrass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b7a66e"/><stop offset="1" stop-color="#9a8a56"/></linearGradient>

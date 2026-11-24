@@ -1,175 +1,216 @@
-// «رادار السرعة بيعرف سرعتك إزاي؟» — مشهد لكل سطر من script.txt
-// ── أشكال خاصة بالفيديو ده ─────────────────────────────
-var RW = "#3fb6e8";   // لون موجة الرادار
-// عربية كبيرة من الجنب (بوزها ناحية اليمين لو dir=1)، عجلها بيلف
-function bigCar(x, y, col, s, t, dir) {
-  s = s || 1; dir = dir || 1; var a = (t * 520) % 360;
-  var wheel = function (cx) { return '<g transform="translate(' + cx + ' 0)"><circle r="17" fill="#222" stroke="' + INK + '" stroke-width="3"/><circle r="8" fill="#b9bec4" stroke="' + INK + '" stroke-width="2"/><path d="M-8 0 H8 M0 -8 V8" stroke="' + INK + '" stroke-width="2" transform="rotate(' + f(a * dir) + ')"/></g>'; };
-  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + f(s * dir) + ' ' + f(s) + ')">' +
-    '<ellipse cx="0" cy="18" rx="88" ry="7" fill="#000" opacity=".25"/>' +
-    '<path d="M-86 0 L-86 -26 Q-84 -34 -70 -36 L-40 -38 L-18 -62 Q-12 -66 0 -66 L36 -66 Q46 -66 54 -56 L70 -38 L80 -36 Q90 -32 90 -20 L90 0 Z" fill="' + col + '" stroke="' + INK + '" stroke-width="3.4" stroke-linejoin="round"/>' +
-    '<path d="M-30 -38 L-12 -58 L14 -58 L14 -38 Z M22 -38 L22 -58 L42 -58 Q48 -58 52 -52 L62 -38 Z" fill="url(#gGlass)" stroke="' + INK + '" stroke-width="2.4"/>' +
-    '<path d="M-80 -18 H84" stroke="#fff" stroke-width="3" opacity=".35"/>' +
-    '<rect x="80" y="-30" width="10" height="8" rx="2" fill="#fff3b0" stroke="' + INK + '" stroke-width="1.6"/>' +
-    '<rect x="-88" y="-30" width="7" height="8" rx="2" fill="#e8443a" stroke="' + INK + '" stroke-width="1.6"/>' +
-    wheel(-52) + wheel(56) + '</g>';
+// «رادار السرعة» بستايل المرجع: رسم فلات عمودي مالي الشاشة، سما ضبابية، مدينة باهتة، وطريق سريع
+// العالم هنا 360×640 (عمودي). الكلمة بتظهر في النص تقريباً (y من 318 لـ360)، فالحاجات المهمة فوقها أو تحتها.
+var WV = "#e9f7ff";   // لون موجات الرادار
+var CARC = ["#2f4f7a", "#b8382e", "#e9e6df", "#5b6e4a", "#7a7f86", "#c9a24a"];
+
+// ── خلفيات ─────────────────────────────────────────────
+function rSky(night) {
+  return '<rect x="-300" y="-300" width="960" height="1240" fill="url(#' + (night ? "rnight" : "rsky") + ')"/>' +
+    (night ? "" : '<circle cx="290" cy="110" r="150" fill="url(#rsun)"/>');
 }
-// عمود الرادار: صندوق فيه طبق الرادار وعدسة الكاميرا، وبيضرب فلاش لما fl > 0
-function radarPole(x, y, t, fl, s) {
-  s = s || 1; fl = fl || 0; var led = 0.5 + 0.5 * Math.sin(t * 8);
-  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s + ')">' +
-    '<rect x="-7" y="-150" width="14" height="150" fill="url(#gMetal)" stroke="' + INK + '" stroke-width="3"/>' +
-    '<rect x="-46" y="-215" width="92" height="70" rx="8" fill="#e9e4d6" stroke="' + INK + '" stroke-width="3.4"/>' +
-    '<rect x="-46" y="-215" width="92" height="14" rx="6" fill="#f2c230" stroke="' + INK + '" stroke-width="2.4"/>' +
-    '<circle cx="-18" cy="-170" r="16" fill="#3a4048" stroke="' + INK + '" stroke-width="3"/><circle cx="-18" cy="-170" r="7" fill="' + RW + '"/>' +
-    '<rect x="6" y="-184" width="30" height="26" rx="5" fill="#fff" stroke="' + INK + '" stroke-width="2.4"/>' +
-    '<circle cx="36" cy="-206" r="3.5" fill="#e8443a" opacity="' + f(led) + '"/>' +
-    (fl > 0 ? '<circle cx="21" cy="-171" r="' + f(40 + fl * 60) + '" fill="#fff" opacity="' + f(fl * 0.9) + '" filter="url(#glow)"/>' : '') + '</g>';
+function skyline(base, seed, op, col) {   // أبراج باهتة ورا الضباب
+  var s = '<g opacity="' + (op || 0.55) + '" fill="' + (col || "#9fb0bd") + '">', x = -120;
+  for (var i = 0; x < 480; i++) {
+    var w = 18 + hash(i + seed) * 26, h = 40 + hash(i * 3 + seed) * 120;
+    if (i % 7 === 3) s += '<path d="M' + f(x) + ' ' + base + ' V' + f(base - h - 40) + ' Q' + f(x + w / 2 + 6) + ' ' + f(base - h - 95) + ' ' + f(x + w + 12) + ' ' + f(base - h - 40) + ' V' + base + ' Z"/>';   // برج بيضاوي
+    else s += '<rect x="' + f(x) + '" y="' + f(base - h) + '" width="' + f(w) + '" height="' + f(h) + '"/>';
+    x += w + 4 + hash(i + 50) * 10;
+  }
+  return s + '</g>';
 }
-// قوة الفلاش: نبضة سريعة عند الثانية u0
+function lowTown(base, seed) {   // بيوت واطية بيج بشبابيك ونخل
+  var s = "", x = -100;
+  for (var i = 0; x < 460; i++) {
+    var w = 40 + hash(i + seed) * 40, h = 22 + hash(i * 2 + seed) * 22;
+    s += '<rect x="' + f(x) + '" y="' + f(base - h) + '" width="' + f(w) + '" height="' + f(h) + '" fill="#d8c6a6"/><rect x="' + f(x) + '" y="' + f(base - h) + '" width="' + f(w) + '" height="4" fill="#c4b190"/>';
+    for (var k = 0; k < 3; k++) s += '<rect x="' + f(x + 6 + k * (w - 12) / 3) + '" y="' + f(base - h + 9) + '" width="6" height="5" fill="#a99a80"/>';
+    if (hash(i + 9) > 0.6) s += palm(x + w + 6, base, 0.8);
+    x += w + 6;
+  }
+  return s;
+}
+function palm(x, y, s) {
+  s = s || 1; var g = '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s + ')"><path d="M-1.5 0 Q2 -20 0 -40 L3 -40 Q5 -20 1.5 0 Z" fill="#8a7458"/>';
+  for (var a = 0; a < 6; a++) { var r = -2.6 + a * 0.45; g += '<path d="M1 -40 Q' + f(1 + Math.cos(r) * 14) + ' ' + f(-46 + Math.sin(r) * 10) + ' ' + f(1 + Math.cos(r) * 22) + ' ' + f(-38 + Math.sin(r) * 16) + '" stroke="#5f7a4a" stroke-width="3.5" fill="none" stroke-linecap="round"/>'; }
+  return g + '</g>';
+}
+function sand(y, h) { return '<rect x="-300" y="' + y + '" width="960" height="' + (h || 700) + '" fill="url(#rsand)"/>'; }
+function cones(y, t) { var s = ""; for (var x = -200; x < 560; x += 34) s += '<path d="M' + (x - 5) + ' ' + y + ' L' + x + ' ' + (y - 13) + ' L' + (x + 5) + ' ' + y + ' Z" fill="#e8742c"/><rect x="' + (x - 3) + '" y="' + (y - 8) + '" width="6" height="2.4" fill="#f4efe6"/><rect x="' + (x - 7) + '" y="' + y + '" width="14" height="2.5" fill="#55463a"/>'; return s; }
+function highway(y, t, sp) {   // طريق سريع من الجنب بخطوط بتتحرك
+  var s = '<rect x="-300" y="' + y + '" width="960" height="84" fill="url(#rasph)"/><rect x="-300" y="' + (y + 3) + '" width="960" height="2" fill="#e3c35a"/><rect x="-300" y="' + (y + 79) + '" width="960" height="2" fill="#d9d6cf"/>', off = ((t * (sp || 0)) % 44 + 44) % 44;
+  for (var x = -300; x < 680; x += 44) s += '<rect x="' + f(x - off) + '" y="' + (y + 41) + '" width="22" height="2.5" fill="#e6e3dc"/>';
+  return s + '<rect x="-300" y="' + (y + 84) + '" width="960" height="600" fill="#8f8577"/>';
+}
+// ── عربيات وأشكال فلات (من غير خط أسود، تظليل خفيف) ──────
+function fcar(x, y, col, s, dir, t) {
+  s = s || 1; dir = dir || 1; var a = (t * 600) % 360;
+  var wh = function (cx) { return '<circle cx="' + cx + '" cy="0" r="9" fill="#26272a"/><circle cx="' + cx + '" cy="0" r="4" fill="#9a9ea3"/><rect x="' + (cx - 1) + '" y="-4" width="2" height="8" fill="#5a5e63" transform="rotate(' + f(a) + ' ' + cx + ' 0)"/>'; };
+  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + f(s * dir) + ' ' + f(s) + ')"><ellipse cx="0" cy="9" rx="46" ry="3.5" fill="#000" opacity=".22"/>' +
+    '<path d="M-46 -2 V-14 Q-45 -19 -36 -20 L-20 -21 L-8 -33 Q-5 -35 2 -35 L22 -35 Q27 -35 31 -30 L39 -21 L44 -20 Q48 -18 48 -11 V-2 Z" fill="' + col + '"/>' +
+    '<path d="M-46 -2 V-14 Q-45 -19 -36 -20 L-20 -21 L-8 -33 Q-5 -35 2 -35 L22 -35 Q27 -35 31 -30 L39 -21 L44 -20 Q48 -18 48 -11 V-2 Z" fill="url(#rshade)"/>' +
+    '<path d="M-16 -21 L-6 -31 L8 -31 L8 -21 Z M12 -21 V-31 L22 -31 Q25 -31 27 -28 L33 -21 Z" fill="url(#rglass)"/>' +
+    '<rect x="43" y="-16" width="5" height="4" rx="1" fill="#fff4c8"/><rect x="-47" y="-16" width="4" height="4" fill="#d24a3a"/>' + wh(-28) + wh(30) + '</g>';
+}
+function traffic(t, y, sp, dir, seed, s) {   // صف عربيات رايح ناحية واحدة
+  var out = ""; for (var i = 0; i < 4; i++) { var x = ((t * sp * dir + i * 190 + hash(i + seed) * 70) % 760 + 760) % 760 - 200; out += fcar(x, y, CARC[(i + seed) % CARC.length], s || 0.8, dir, t); } return out;
+}
+// عمود الرادار (فلات): صندوق بشريط أصفر، عدسة رادار وعدسة كاميرا، وفلاش لما fl > 0
+function radar(x, y, s, t, fl) {
+  s = s || 1; fl = fl || 0; var led = 0.4 + 0.6 * Math.abs(Math.sin(t * 4));
+  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s + ')"><rect x="-4" y="-150" width="8" height="150" fill="url(#rconc)"/><rect x="-10" y="-4" width="20" height="5" fill="#6e6a62"/>' +
+    '<rect x="-30" y="-200" width="60" height="54" rx="4" fill="#dcd6c9"/><rect x="-30" y="-200" width="60" height="54" rx="4" fill="url(#rshade)"/><rect x="-30" y="-200" width="60" height="9" rx="3" fill="url(#ryel)"/>' +
+    '<circle cx="-12" cy="-168" r="11" fill="#3e444c"/><circle cx="-12" cy="-168" r="5" fill="#9fd8f0"/><rect x="3" y="-178" width="20" height="17" rx="3" fill="#f2efe8"/><circle cx="13" cy="-169.5" r="5" fill="#3e444c"/>' +
+    '<circle cx="24" cy="-194" r="2.3" fill="#e2483a" opacity="' + f(led) + '"/>' +
+    (fl > 0 ? '<circle cx="13" cy="-170" r="' + f(30 + fl * 70) + '" fill="#fffdf2" opacity="' + f(fl * 0.85) + '" filter="url(#soft)"/>' : '') + '</g>';
+}
 function flashK(u, u0) { var k = u - u0; return k < 0 || k > 0.5 ? 0 : 1 - k / 0.5; }
-function whiteOut(k) { return k > 0 ? '<rect x="-400" y="-300" width="1440" height="960" fill="#fff" opacity="' + f(k * 0.75) + '"/>' : ""; }
-// قوس موجة (زي ")" لو dir=1) عند x
+function whiteOut(k) { return k > 0 ? '<rect x="-300" y="-300" width="960" height="1240" fill="#fffdf4" opacity="' + f(k * 0.7) + '"/>' : ""; }
+// قوس موجة فلات
 function arcW(x, y, r, dir, col, op, w) {
-  var x1 = x - dir * r * 0.35, d = 'M' + f(x1) + ' ' + f(y - r) + ' Q' + f(x + dir * r * 0.35) + ' ' + f(y) + ' ' + f(x1) + ' ' + f(y + r);
-  return '<path d="' + d + '" stroke="' + INK + '" stroke-width="' + ((w || 5) + 3) + '" fill="none" stroke-linecap="round" opacity="' + f(op) + '"/><path d="' + d + '" stroke="' + (col || RW) + '" stroke-width="' + (w || 5) + '" fill="none" stroke-linecap="round" opacity="' + f(op) + '"/>';
+  var x1 = x - dir * r * 0.35; return '<path d="M' + f(x1) + ' ' + f(y - r) + ' Q' + f(x + dir * r * 0.35) + ' ' + f(y) + ' ' + f(x1) + ' ' + f(y + r) + '" stroke="' + (col || WV) + '" stroke-width="' + (w || 4) + '" fill="none" stroke-linecap="round" opacity="' + f(op) + '"/>';
 }
-// موجات خارجة من x0 ماشية لحد x1 (بالمسافة gap بين كل موجة)
 function waveTrain(x0, x1, y, t, gap, dir, col, r) {
-  var s = "", len = Math.abs(x1 - x0), off = (t * 90) % gap;
-  for (var p = off; p < len; p += gap) s += arcW(x0 + dir * p, y, (r || 26) + p * 0.05, dir, col, 1 - p / len * 0.7);
+  var s = "", len = Math.abs(x1 - x0), off = (t * 70) % gap;
+  for (var p = off; p < len; p += gap) s += arcW(x0 + dir * p, y, (r || 16) + p * 0.06, dir, col, 0.95 - p / len * 0.6);
   return s;
 }
-// موجة جيبية طول موجتها بيتغير (لتأثير الزنقة والمط)
 function sineW(x, y, len, lam, amp, col, t, w) {
-  var d = "", ph = t * 7;
-  for (var i = 0; i <= len; i += 3) d += (i ? " L" : "M") + f(x + i) + " " + f(y + Math.sin(i / lam * 6.283 - ph) * amp);
-  return '<path d="' + d + '" stroke="' + INK + '" stroke-width="' + ((w || 5) + 3) + '" fill="none" stroke-linecap="round"/><path d="' + d + '" stroke="' + col + '" stroke-width="' + (w || 5) + '" fill="none" stroke-linecap="round"/>';
+  var d = "", ph = t * 7; for (var i = 0; i <= len; i += 2) d += (i ? " L" : "M") + f(x + i) + " " + f(y + Math.sin(i / lam * 6.283 - ph) * amp);
+  return '<path d="' + d + '" stroke="#000" stroke-opacity=".12" stroke-width="' + ((w || 4) + 4) + '" fill="none"/><path d="' + d + '" stroke="' + col + '" stroke-width="' + (w || 4) + '" fill="none" stroke-linecap="round"/>';
 }
-// عداد سرعة بإبرة
-function speedo(x, y, r, v, vmax, t) {
-  var a = -210 + 240 * clamp(v / vmax) + Math.sin(t * 9) * 1.5, s = '<g transform="translate(' + f(x) + ' ' + f(y) + ')"><circle r="' + r + '" fill="#1f2630" stroke="' + INK + '" stroke-width="4"/><circle r="' + f(r - 6) + '" fill="none" stroke="#3a4552" stroke-width="2"/>';
-  for (var i = 0; i <= 12; i++) { var b = (-210 + i * 20) * Math.PI / 180; s += '<path d="M' + f(Math.cos(b) * (r - 10)) + ' ' + f(Math.sin(b) * (r - 10)) + ' L' + f(Math.cos(b) * (r - (i % 2 ? 16 : 22))) + ' ' + f(Math.sin(b) * (r - (i % 2 ? 16 : 22))) + '" stroke="' + (i > 9 ? "#e8443a" : "#e9e4d6") + '" stroke-width="3"/>'; }
-  var c = a * Math.PI / 180;
-  return s + '<path d="M0 0 L' + f(Math.cos(c) * (r - 18)) + ' ' + f(Math.sin(c) * (r - 18)) + '" stroke="#e8443a" stroke-width="5" stroke-linecap="round"/><circle r="8" fill="#e9e4d6" stroke="' + INK + '" stroke-width="2"/></g>';
+function arrowF(x1, y, x2, col, p) { p = clamp(p); if (p <= 0) return ""; var xe = lerp(x1, x2, p), dr = x2 > x1 ? 1 : -1; return '<path d="M' + f(x1) + ' ' + y + ' H' + f(xe - dr * 8) + '" stroke="' + col + '" stroke-width="6" stroke-linecap="round"/><path d="M' + f(xe + dr * 4) + ' ' + y + ' L' + f(xe - dr * 10) + ' ' + (y - 9) + ' L' + f(xe - dr * 10) + ' ' + (y + 9) + ' Z" fill="' + col + '"/>'; }
+// لوحة طريق خضرا فوق الطريق (جسر لافتات) فيها رقم ديجيتال
+function gantry(y, inner) {
+  var ph = 494 - (y - 10);   // العواميد نازلة لحد الأرض جنب الطريق
+  return '<rect x="20" y="' + (y - 10) + '" width="8" height="' + ph + '" fill="url(#rconc)"/><rect x="332" y="' + (y - 10) + '" width="8" height="' + ph + '" fill="url(#rconc)"/><rect x="14" y="' + (y - 16) + '" width="332" height="8" fill="#8f8b84"/>' +
+    '<rect x="40" y="' + y + '" width="280" height="110" rx="6" fill="#2c6a4c"/><rect x="46" y="' + (y + 6) + '" width="268" height="98" rx="4" fill="none" stroke="#e9efe6" stroke-width="2"/>' + (inner || "");
 }
-// عربية إسعاف
-function ambulance(x, y, t, s) {
-  s = s || 1; var on = Math.sin(t * 14) > 0, a = (t * 520) % 360;
-  var wheel = function (cx) { return '<g transform="translate(' + cx + ' 0)"><circle r="15" fill="#222" stroke="' + INK + '" stroke-width="3"/><circle r="6" fill="#b9bec4"/><path d="M-6 0 H6" stroke="' + INK + '" stroke-width="2" transform="rotate(' + f(a) + ')"/></g>'; };
-  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s + ')"><ellipse cy="16" rx="90" ry="7" fill="#000" opacity=".25"/>' +
-    '<path d="M-90 0 V-80 H30 L60 -44 L90 -36 V0 Z" fill="#f7f5ef" stroke="' + INK + '" stroke-width="3.4" stroke-linejoin="round"/>' +
-    '<path d="M36 -72 L58 -46 H36 Z" fill="url(#gGlass)" stroke="' + INK + '" stroke-width="2.4"/>' +
-    '<rect x="-90" y="-36" width="180" height="10" fill="#e8443a"/>' +
-    '<path d="M-38 -66 H-22 V-56 H-12 V-42 H-22 V-32 H-38 V-42 H-48 V-56 H-38 Z" fill="#e8443a" stroke="' + INK + '" stroke-width="2"/>' +
-    '<rect x="-20" y="-92" width="20" height="12" rx="3" fill="' + (on ? "#e8443a" : "#7a2a22") + '" stroke="' + INK + '" stroke-width="2"/><rect x="2" y="-92" width="20" height="12" rx="3" fill="' + (on ? "#2a4a8a" : "#3fa0ff") + '" stroke="' + INK + '" stroke-width="2"/>' +
-    '<circle cx="' + (on ? -10 : 12) + '" cy="-86" r="26" fill="' + (on ? "#ff5a4a" : "#4aa8ff") + '" opacity=".35" filter="url(#soft)"/>' +
-    wheel(-55) + wheel(55) + '</g>';
+function digits(x, y, txt, size, col) { return '<text x="' + f(x) + '" y="' + f(y) + '" text-anchor="middle" style="font:900 ' + size + 'px Noto Sans Arabic;fill:' + (col || "#f4f1e8") + ';letter-spacing:1px" direction="ltr">' + txt + '</text>'; }
+function countTo(u, u0, dur, to) { return Math.round(to * ease((u - u0) / dur)).toLocaleString("en-US"); }
+function speedoF(x, y, r, v, vmax, t) {
+  var s = '<g transform="translate(' + f(x) + ' ' + f(y) + ')"><circle r="' + (r + 8) + '" fill="#26292e"/><circle r="' + r + '" fill="#15171a"/>';
+  for (var i = 0; i <= 12; i++) { var b = (-210 + i * 20) * Math.PI / 180, l = i % 2 ? 7 : 13; s += '<path d="M' + f(Math.cos(b) * (r - 6)) + ' ' + f(Math.sin(b) * (r - 6)) + ' L' + f(Math.cos(b) * (r - 6 - l)) + ' ' + f(Math.sin(b) * (r - 6 - l)) + '" stroke="' + (i > 9 ? "#e2483a" : "#e8e4da") + '" stroke-width="2.5"/>'; }
+  var c = (-210 + 240 * clamp(v / vmax) + Math.sin(t * 9) * 1.2) * Math.PI / 180;
+  return s + '<path d="M0 0 L' + f(Math.cos(c) * (r - 14)) + ' ' + f(Math.sin(c) * (r - 14)) + '" stroke="#f0632e" stroke-width="4" stroke-linecap="round"/><circle r="7" fill="#3a3d42"/>' + digits(0, r * 0.55, Math.round(v), 22, "#f4f1e8") + '</g>';
 }
-// قطر بخار
-function train(x, y, t, s) {
-  s = s || 1; var a = (t * 400) % 360, sm = "";
-  for (var i = 0; i < 4; i++) { var k = (t * 0.7 + i / 4) % 1; sm += '<circle cx="' + f(70 + k * -60) + '" cy="' + f(-110 - k * 70) + '" r="' + f(10 + k * 22) + '" fill="#eef0f2" stroke="' + INK + '" stroke-width="2" opacity="' + f(1 - k) + '"/>'; }
-  var wheel = function (cx) { return '<g transform="translate(' + cx + ' 0)"><circle r="16" fill="#8f2618" stroke="' + INK + '" stroke-width="3"/><path d="M-14 0 H14 M0 -14 V14" stroke="' + INK + '" stroke-width="2" transform="rotate(' + f(a) + ')"/></g>'; };
-  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s + ')">' + sm +
-    '<rect x="-200" y="-62" width="150" height="50" rx="4" fill="#5f8a4f" stroke="' + INK + '" stroke-width="3"/>' +
-    '<rect x="-40" y="-60" width="120" height="48" rx="6" fill="#2f3a44" stroke="' + INK + '" stroke-width="3"/><rect x="-40" y="-100" width="50" height="44" fill="#2f3a44" stroke="' + INK + '" stroke-width="3"/>' +
-    '<rect x="58" y="-96" width="20" height="38" fill="#2f3a44" stroke="' + INK + '" stroke-width="3"/><rect x="-32" y="-92" width="32" height="20" fill="#ffe8a0" stroke="' + INK + '" stroke-width="2"/>' +
-    wheel(-170) + wheel(-80) + wheel(-20) + wheel(50) + '</g>';
+// صورة المخالفة
+function ticket(x, y, u, u0) {
+  var k = pop((u - u0) / 0.8); if (k <= 0) return "";
+  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + f(k) + ') rotate(-4)"><rect x="-120" y="-80" width="240" height="160" fill="#f6f3ec"/><rect x="-110" y="-70" width="220" height="104" fill="#2f3943"/>' +
+    fcar(0, 10, "#2f4f7a", 1.4, 1, 0) + '<rect x="-24" y="2" width="48" height="12" rx="2" fill="#f4f1e8"/>' + digits(0, 12, "427 XYZ", 9, "#222") +
+    digits(-60, 62, "117 km/h", 18, "#c8392e") + digits(70, 62, "23:41", 14, "#3a3a3a") + '</g>';
 }
-// بوق نحاس في إيد العازف
-function trumpet(x, y, t) { var b = Math.sin(t * 6) * 2; return '<g transform="translate(' + f(x) + ' ' + f(y + b) + ')"><path d="M0 0 H34 L50 -10 V12 L34 2 H0 Z" fill="url(#gGold)" stroke="' + INK + '" stroke-width="2.4"/></g>'; }
-// نوتة موسيقية طايرة
-function notes(x, y, t, n) {
-  var s = ""; for (var i = 0; i < (n || 3); i++) { var k = (t * 0.6 + i / 3) % 1; s += '<text x="' + f(x + k * 60) + '" y="' + f(y - k * 60) + '" style="font:900 26px Noto Sans Arabic;fill:#f2c230;stroke:' + INK + ';stroke-width:2;paint-order:stroke" opacity="' + f(1 - k) + '">♪</text>'; }
+// إسعاف فلات
+function ambF(x, y, t, s) {
+  s = s || 1; var on = Math.sin(t * 14) > 0, a = (t * 600) % 360;
+  var wh = function (cx) { return '<circle cx="' + cx + '" r="9" fill="#26272a"/><circle cx="' + cx + '" r="4" fill="#9a9ea3"/>'; };
+  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s + ')"><ellipse cy="9" rx="52" ry="4" fill="#000" opacity=".22"/>' +
+    '<path d="M-52 -2 V-48 H18 L36 -26 L52 -22 V-2 Z" fill="#f3f1ea"/><path d="M-52 -2 V-48 H18 L36 -26 L52 -22 V-2 Z" fill="url(#rshade)"/><path d="M22 -44 L34 -28 H22 Z" fill="url(#rglass)"/>' +
+    '<rect x="-52" y="-22" width="104" height="6" fill="#d23c31"/><path d="M-22 -40 H-14 V-34 H-8 V-26 H-14 V-20 H-22 V-26 H-28 V-34 H-22 Z" fill="#d23c31"/>' +
+    '<rect x="-12" y="-55" width="11" height="7" rx="2" fill="' + (on ? "#ff4a3a" : "#7a2a22") + '"/><rect x="1" y="-55" width="11" height="7" rx="2" fill="' + (on ? "#24407a" : "#4aa8ff") + '"/>' +
+    '<circle cx="' + (on ? -6 : 7) + '" cy="-52" r="16" fill="' + (on ? "#ff5a4a" : "#4aa8ff") + '" opacity=".35" filter="url(#soft)"/>' + wh(-32) + wh(32) + '</g>';
+}
+// قطر بخار قديم + ناس على شكل ظلال (من غير وشوش، زي المرجع)
+function trainF(x, y, t, s) {
+  s = s || 1; var sm = "";
+  for (var i = 0; i < 4; i++) { var k = (t * 0.6 + i / 4) % 1; sm += '<circle cx="' + f(46 - k * 50) + '" cy="' + f(-66 - k * 50) + '" r="' + f(7 + k * 16) + '" fill="#efeae0" opacity="' + f(0.9 - k * 0.9) + '"/>'; }
+  var wh = function (cx) { return '<circle cx="' + cx + '" cy="0" r="10" fill="#6e2a20"/><circle cx="' + cx + '" cy="0" r="3" fill="#2a2a2a"/>'; };
+  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s + ')">' + sm + '<rect x="-150" y="-40" width="100" height="32" fill="#6c7f5a"/><rect x="-150" y="-40" width="100" height="32" fill="url(#rshade)"/>' +
+    '<rect x="-38" y="-38" width="84" height="30" rx="3" fill="#3b4148"/><rect x="-38" y="-66" width="34" height="30" fill="#3b4148"/><rect x="36" y="-64" width="12" height="26" fill="#3b4148"/><rect x="-32" y="-60" width="22" height="13" fill="#f0dea8"/>' +
+    wh(-130) + wh(-70) + wh(-18) + wh(28) + '</g>';
+}
+function figure(x, y, s, col) { s = s || 1; return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + s + ')" fill="' + (col || "#4a4540") + '"><circle cx="0" cy="-34" r="6"/><path d="M-6 -26 H6 L7 -10 H4 L3 0 H-3 L-4 -10 H-7 Z"/></g>'; }
+function horn(x, y, t) { return '<path d="M' + f(x) + ' ' + f(y) + ' h12 l8 -5 v12 l-8 -5 h-12 z" fill="#d6aa48" transform="rotate(' + f(Math.sin(t * 5) * 3) + ' ' + x + ' ' + y + ')"/>'; }
+function notesF(x, y, t) { var s = ""; for (var i = 0; i < 3; i++) { var k = (t * 0.6 + i / 3) % 1; s += '<text x="' + f(x + k * 40) + '" y="' + f(y - k * 50) + '" style="font:900 20px Noto Sans Arabic;fill:#5a4a30" opacity="' + f(1 - k) + '">♪</text>'; } return s; }
+function chipF(x, y, t) {
+  var s = '<g transform="translate(' + f(x) + ' ' + f(y) + ')">';
+  for (var i = -3; i <= 3; i++) s += '<rect x="' + (i * 13 - 2.5) + '" y="-58" width="5" height="116" fill="#c8a24e"/><rect x="-58" y="' + (i * 13 - 2.5) + '" width="116" height="5" fill="#c8a24e"/>';
+  return s + '<rect x="-44" y="-44" width="88" height="88" rx="6" fill="#2b2f34"/><rect x="-44" y="-44" width="88" height="88" rx="6" fill="url(#rshade)"/><rect x="-26" y="-26" width="52" height="52" rx="3" fill="#3c4652" opacity="' + f(0.7 + 0.3 * Math.sin(t * 5)) + '"/></g>';
+}
+// طريق بالمنظور (زي أول لقطة في المرجع): بيقرب من الأفق لتحت
+function perspRoad(hy, t) {
+  var s = '<path d="M168 ' + hy + ' L192 ' + hy + ' L420 640 L-60 640 Z" fill="url(#rasph)"/><path d="M168 ' + hy + ' L-60 640 M192 ' + hy + ' L420 640" stroke="#e8e4da" stroke-width="3"/>';
+  for (var i = 0; i < 10; i++) { var k = ((i / 10 + t * 0.35) % 1), z = k * k, y1 = hy + z * (640 - hy), y2 = hy + Math.min(1, (k + 0.04) * (k + 0.04)) * (640 - hy); s += '<path d="M' + f(180 - 1 - z * 3) + ' ' + f(y1) + ' L' + f(180 + 1 + z * 3) + ' ' + f(y1) + ' L' + f(180 + 1 + z * 3) + ' ' + f(y2) + ' L' + f(180 - 1 - z * 3) + ' ' + f(y2) + ' Z" fill="#e6c85a"/>'; }
   return s;
 }
-// شريحة إلكترونية بتلمع
-function chip(x, y, t) {
-  var s = '<g transform="translate(' + f(x) + ' ' + f(y) + ')">';
-  for (var i = -3; i <= 3; i++) s += '<rect x="' + (i * 14 - 3) + '" y="-62" width="6" height="124" fill="#c9a24a" stroke="' + INK + '" stroke-width="1.4"/><rect x="-62" y="' + (i * 14 - 3) + '" width="124" height="6" fill="#c9a24a" stroke="' + INK + '" stroke-width="1.4"/>';
-  return s + '<rect x="-48" y="-48" width="96" height="96" rx="8" fill="#2b2f34" stroke="' + INK + '" stroke-width="3.4"/><rect x="-30" y="-30" width="60" height="60" rx="4" fill="#3a4552" stroke="' + RW + '" stroke-width="2" opacity="' + f(0.6 + 0.4 * Math.sin(t * 5)) + '"/></g>';
+// عربية بالمنظور من ورا (جاية ناحيتنا أو رايحة): k من 0 (الأفق) لـ1 (تحت)
+function pcar(k, hy, lane, col) {
+  var z = 0.12 + k * k * 1.6, y = hy + k * k * (640 - hy), x = 180 + lane * (6 + k * k * 120), w = 34 * z, h = 22 * z;
+  return '<g transform="translate(' + f(x) + ' ' + f(y) + ')"><ellipse cx="0" cy="' + f(h * 0.05) + '" rx="' + f(w * 0.6) + '" ry="' + f(h * 0.12) + '" fill="#000" opacity=".25"/><path d="M' + f(-w / 2) + ' 0 V' + f(-h * 0.55) + ' L' + f(-w * 0.36) + ' ' + f(-h) + ' H' + f(w * 0.36) + ' L' + f(w / 2) + ' ' + f(-h * 0.55) + ' V0 Z" fill="' + col + '"/>' +
+    '<path d="M' + f(-w * 0.3) + ' ' + f(-h * 0.62) + ' L' + f(-w * 0.24) + ' ' + f(-h * 0.92) + ' H' + f(w * 0.24) + ' L' + f(w * 0.3) + ' ' + f(-h * 0.62) + ' Z" fill="url(#rglass)"/><rect x="' + f(-w * 0.46) + '" y="' + f(-h * 0.42) + '" width="' + f(w * 0.16) + '" height="' + f(h * 0.12) + '" fill="#fff4c8"/><rect x="' + f(w * 0.3) + '" y="' + f(-h * 0.42) + '" width="' + f(w * 0.16) + '" height="' + f(h * 0.12) + '" fill="#fff4c8"/></g>';
 }
-// صورة الكاميرا: العربية واللوحة وبيانات السرعة
-function snapshot(x, y, u, u0) {
-  var k = pop((u - u0) / 0.9); if (k <= 0) return "";
-  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + f(k) + ') rotate(-3)"><rect x="-150" y="-95" width="300" height="190" fill="#fff" stroke="' + INK + '" stroke-width="3"/><rect x="-138" y="-83" width="276" height="120" fill="#2a3440"/>' +
-    bigCar(0, 16, "#2f6f9f", 0.85, 0, 1) +
-    '<rect x="-40" y="-6" width="80" height="22" rx="3" fill="#f4f1e8" stroke="' + INK + '" stroke-width="2" transform="translate(0 0)"/><text x="0" y="11" text-anchor="middle" style="font:900 15px Noto Sans Arabic;fill:' + INK + '">ر ص د ٤٢٧</text>' +
-    '<text x="-128" y="66" style="font:900 22px Noto Sans Arabic;fill:#e8443a">117 km/h</text><text x="128" y="66" text-anchor="end" style="font:800 16px Noto Sans Arabic;fill:' + INK + '">23:41</text></g>';
-}
-// خلفية الطريق بالليل
-function nightRoad(t) { return sky("night") + stars(t) + moon(520, 60) + city(t, 250, 90, "#2a3550", "#ffe8a0", 5, true) + '<rect x="-400" y="250" width="1440" height="400" fill="#2d3a2a"/>' + '<rect x="-400" y="262" width="1440" height="76" fill="url(#road)"/>' + laneMarks(t, 298, 0); }
-function laneMarks(t, y, sp) { var s = "", off = (t * (sp || 0)) % 60; for (var x = -400; x < 1060; x += 60) s += '<rect x="' + f(x - off) + '" y="' + y + '" width="30" height="4" fill="#f2e6c8" opacity=".8"/>'; return s; }
+// مشهد جانبي جاهز: سما، أبراج، بيوت، أقماع، وطريق
+function sideScene(t, sp, seed) { return rSky() + skyline(400, seed || 3, 0.5) + skyline(410, (seed || 3) + 20, 0.35, "#b9bfc2") + lowTown(452, seed || 3) + sand(450, 40) + cones(486, t) + highway(490, t, sp || 0); }
 
 // ── المشاهد ─────────────────────────────────────────────
-// 0 — عربية ماشية بالليل، تعدّي جنب عمود الرادار، وفلاش أبيض
-shot(0, camMove([300, 220, 1.1], [360, 200, 1.0]), function (u, d, t) {
-  var cx = lerp(-60, 420, ease(u / 4.6)), fk = flashK(u, 4.2);
-  return nightRoad(t) + laneMarks(t, 298, 160) + radarPole(500, 268, t, fk) + bigCar(cx, 310, "#2f6f9f", 1.05, t, 1) + tag("فلاش!", 470, 70, u, 4.3, -4, 26, "#fff3b0") + whiteOut(fk);
+// 0 — طريق بالمنظور، عربيات جاية، وعمود رادار على اليمين بيضرب فلاش
+shot(0, camMove([180, 330, 1.12], [180, 320, 1.0]), function (u, d, t) {
+  var hy = 300, fk = flashK(u, 4.2), s = rSky() + skyline(hy, 7, 0.55) + sand(hy, 400) + perspRoad(hy, t);
+  for (var i = 0; i < 4; i++) { var k = ((t * 0.12 + i / 4) % 1); s += pcar(k, hy, i % 2 ? 0.6 : -0.5, CARC[i]); }
+  return s + radar(318, 600, 1.15, t, fk) + whiteOut(fk);
 });
-// 1 — السواق مستغرب وعداد السرعة بيترعش
-shot(1, camPush(320, 190, 1, 1.12), function (u, d, t) {
-  return fill("#1b2230") + '<rect x="-400" y="250" width="1440" height="400" fill="#2a2f38"/>' + speedo(420, 180, 90, 88 + Math.sin(t * 3) * 6, 180, t) + person(180, 330, t, { mood: "curious", pose: "think", look: 1, shirt: "#2f6f9f" }) + qmark(560, 110, t, 80) + tag("عرف سرعتك إزاي؟", 330, 60, u, 0.5, -2, 22);
+// 1 — من جوه العربية: العداد بيترعش، والطريق قدام في الإزاز
+shot(1, camPush(180, 330, 1.0, 1.1), function (u, d, t) {
+  var hy = 200, s = rSky() + skyline(hy, 2, 0.5) + sand(hy, 400) + perspRoad(hy, t * 1.6);
+  return s + '<path d="M-300 330 Q180 300 660 330 V940 H-300 Z" fill="#2a2c30"/><path d="M-300 330 Q180 300 660 330 V350 Q180 322 -300 350 Z" fill="#3a3d42"/>' + speedoF(180, 470, 90, 92 + Math.sin(t * 2.6) * 6, 180, t) + radar(300, 300, 0.45, t);
 });
 // 2 — الرادار بيبعت موجات ناحية العربية
-shot(2, camMove([400, 200, 1.15], [320, 190, 1.0]), function (u, d, t) {
-  return nightRoad(t) + radarPole(540, 268, t) + waveTrain(500, 270, 180, t, 46, -1) + bigCar(190, 310, "#e2b035", 0.95, t, 1) + tag("موجات راديو", 330, 70, u, 0.6, -3, 22, "#bfe0ff") + tag("بسرعة النور", 330, 120, u, 2.6, 2, 18);
+shot(2, camMove([210, 360, 1.15], [180, 330, 1.0]), function (u, d, t) {
+  return sideScene(t, 0, 3) + radar(300, 486, 1.0, t) + waveTrain(270, 90, 330, t, 30, -1) + fcar(80, 522, "#c9a24a", 0.9, 1, t) + traffic(t, 556, 110, -1, 2, 0.75);
 });
-// 3 — الموجة بتخبط في العربية وترجع زي الصدى
-shot(3, camPush(330, 200, 1.05, 1.15), function (u, d, t) {
-  return nightRoad(t) + radarPole(540, 268, t) + waveTrain(500, 230, 160, t, 54, -1) + waveTrain(230, 500, 230, t + 0.3, 54, 1, "#f2c230", 22) + bigCar(170, 310, "#e2b035", 0.95, t, 1) + pulse(240, 250, t, "#f2c230", 36) + tag("بترجع زي الصدى", 360, 70, u, 1.0, -2, 22);
+// 3 — الموجة بتخبط وترجع زي الصدى
+shot(3, camPush(190, 330, 1.02, 1.12), function (u, d, t) {
+  return sideScene(t, 0, 4) + radar(300, 486, 1.0, t) + waveTrain(270, 130, 300, t, 32, -1) + waveTrain(130, 270, 380, t + 0.4, 32, 1, "#f4cf5a", 14) + '<circle cx="128" cy="500" r="' + f(16 + 8 * Math.abs(Math.sin(t * 4))) + '" fill="#fff4c8" opacity=".5" filter="url(#soft)"/>' + fcar(110, 522, "#c9a24a", 0.9, 1, t);
 });
 // 4 — عربية جاية: الموجات بتتزنق وذبذبتها بتعلى
-shot(4, camPan(280, 360, 180, 1.05), function (u, d, t) {
-  var cx = lerp(60, 230, ease(u / d));
-  return fill("#eaf3f8") + '<rect x="-400" y="292" width="1440" height="80" fill="url(#road)"/>' + radarPole(580, 300, t, 0, 0.8) + sineW(cx + 70, 160, 470 - cx, 18, 22, RW, t * 1.6, 5) + bigCar(cx, 330, "#e8443a", 0.95, t, 1) + arrow(cx - 20, 250, cx + 80, 250, "#4f9f5a", 7, ease(u / 1.2)) + tag("بتتزنق ← ذبذبة أعلى", 320, 70, u, 0.8, -2, 21);
+shot(4, camPan(170, 200, 330, 1.02), function (u, d, t) {
+  var cx = lerp(30, 170, ease(u / d));
+  return sideScene(t, 0, 5) + radar(320, 486, 1.0, t) + sineW(cx + 50, 230, 290 - cx, 12, 16, "#5fb7e2", t * 1.8, 4) + arrowF(cx - 10, 420, cx + 70, "#4f9a5a", ease(u / 1.2)) + fcar(cx, 522, "#b8382e", 0.95, 1, t);
 });
 // 5 — عربية بتبعد: الموجات بتتمط وذبذبتها بتقل
-shot(5, camPan(360, 280, 180, 1.05), function (u, d, t) {
-  var cx = lerp(260, 80, ease(u / d));
-  return fill("#f8efe8") + '<rect x="-400" y="292" width="1440" height="80" fill="url(#road)"/>' + radarPole(580, 300, t, 0, 0.8) + sineW(cx + 90, 160, 470 - cx, 90, 26, "#e8443a", t * 0.8, 5) + bigCar(cx, 330, "#4f8f5a", 0.95, t, -1) + arrow(cx + 20, 250, cx - 80, 250, "#e8443a", 7, ease(u / 1.2)) + tag("بتتمط ← ذبذبة أقل", 320, 70, u, 0.6, 2, 21);
+shot(5, camPan(200, 170, 330, 1.02), function (u, d, t) {
+  var cx = lerp(200, 50, ease(u / d));
+  return sideScene(t, 0, 6) + radar(320, 486, 1.0, t) + sineW(cx + 50, 230, 290 - cx, 70, 20, "#d9643a", t * 0.7, 4) + arrowF(cx + 30, 420, cx - 50, "#c8392e", ease(u / 1.2)) + fcar(cx, 522, "#5b6e4a", 0.95, -1, t);
 });
-// 6 — تأثير دوبلر: الإسعاف معدّية وصوتها بيتغير
-shot(6, camPan(240, 400, 190, 1.05), function (u, d, t) {
-  var ax = lerp(-80, 640, u / d);
-  return sky("dusk") + city(t, 260, 100, "#b9a89a", "#fff6d0", 2) + '<rect x="-400" y="260" width="1440" height="80" fill="url(#road)"/>' + laneMarks(t, 298, 0) + '<rect x="-400" y="338" width="1440" height="200" fill="#c9c2b4"/>' +
-    waveTrain(ax + 90, ax + 340, 200, t * 1.6, 22, 1, "#f2c230", 18) + waveTrain(ax - 90, ax - 340, 200, t * 0.7, 60, -1, "#f2c230", 18) + ambulance(ax, 312, t, 0.9) +
-    person(330, 380, t, { mood: "shock", pose: "stand", look: ax > 330 ? 1 : -1, s: 0.8 }) + tag("تأثير دوبلر", 320, 70, u, 0.9, -3, 26);
+// 6 — الإسعاف معدّية: الموجات قدامها متزنقة ووراها ممطوطة (تأثير دوبلر)
+shot(6, camPan(140, 230, 330, 1.0), function (u, d, t) {
+  var ax = lerp(-40, 400, u / d);
+  return sideScene(t, 0, 8) + waveTrain(ax + 60, ax + 260, 250, t * 1.7, 14, 1, "#f4cf5a", 12) + waveTrain(ax - 60, ax - 260, 250, t * 0.6, 40, -1, "#f4cf5a", 12) + ambF(ax, 524, t, 1.0) + traffic(t, 556, 90, -1, 1, 0.75) + figure(220, 486, 1.0);
 });
-// 7 — سنة 1845: عازفين بوق على قطر، والناس بتسمع
-shot(7, camMove([220, 200, 1.1], [380, 190, 1.0]), function (u, d, t) {
-  var tx = lerp(200, 520, u / d);
-  return sky("day") + sun(80, 60, 26) + clouds(t, 18, 30, 5, 0.9) + grass(t, 280) + '<rect x="-400" y="276" width="1440" height="8" fill="#6a5040"/>' +
-    train(tx, 276, t, 0.8) + person(tx - 120, 228, t, { mood: "happy", pose: "stand", s: 0.45, shirt: "#8f2618" }) + trumpet(tx - 112, 192, t) + notes(tx - 70, 180, t) +
-    person(120, 350, t, { mood: "curious", pose: "think", s: 0.7, look: 1 }) + tag("1845", 330, 70, u, 0.5, -3, 30) + tag("عازفين بوق على قطر!", 330, 120, u, 2.4, 2, 19);
+// 7 — سنة 1845: عازفين بوق على قطر، وناس على المحطة بتسمع
+shot(7, camMove([150, 340, 1.12], [210, 330, 1.0]), function (u, d, t) {
+  var tx = lerp(140, 330, u / d);
+  return rSky() + '<rect x="-300" y="440" width="960" height="600" fill="url(#rgrass)"/>' + '<path d="M-300 440 Q0 400 200 430 T660 420 V450 H-300 Z" fill="#a89a64" opacity=".7"/>' +
+    '<rect x="-300" y="518" width="960" height="4" fill="#6b5a46"/><rect x="-300" y="526" width="960" height="3" fill="#6b5a46"/>' +
+    trainF(tx, 518, t, 1.0) + figure(tx - 120, 478, 0.9, "#3a3530") + horn(tx - 114, 450, t) + figure(tx - 85, 478, 0.9, "#3a3530") + horn(tx - 79, 450, t + 1) + notesF(tx - 70, 420, t) +
+    '<rect x="20" y="560" width="120" height="10" fill="#8a7a62"/>' + figure(50, 560, 1.1) + figure(90, 560, 1.1, "#5a5048") + digits(180, 200, "1845", 44, "#5a4a36");
 });
-// 8 — موجة بتتذبذب أربعة وعشرين مليار مرة في الثانية
-shot(8, camPush(320, 180, 1, 1.15), function (u, d, t) {
-  return fill("#101826") + stars(t) + sineW(40, 210, 560, 9, 18, RW, t * 4, 3) + '<circle cx="320" cy="210" r="120" fill="' + RW + '" opacity=".12" filter="url(#soft)"/>' + counter(320, 120, u, 0.4, 3.2, 0, 24000000000, "", 44, "#f2c230") + tag("مرة في الثانية!", 320, 310, u, 3.4, -2, 22, "#bfe0ff");
+// 8 — لوحة الطريق: الموجة بتتذبذب 24 مليار مرة في الثانية
+shot(8, camPush(180, 300, 1.0, 1.08), function (u, d, t) {
+  return sideScene(t, 0, 9) + traffic(t, 524, 120, 1, 3, 0.8) + traffic(t, 556, 100, -1, 5, 0.75) + gantry(130, digits(180, 190, countTo(u, 0.5, 3.2, 24000000000), 26, "#f4f1e8") + digits(180, 226, "Hz", 18, "#cfe6d6")) + sineW(0, 290, 360, 6, 9, "#5fb7e2", t * 4, 2.5);
 });
-// 9 — على مية كيلو: الذبذبة بتتغير 4,400 بس
-shot(9, camPan(260, 380, 190, 1.05), function (u, d, t) {
-  return fill("#1b2230") + speedo(170, 190, 100, lerp(0, 100, ease(u / 1.6)), 180, t) + label("100 km/h", 170, 330, 24, "#fff") +
-    '<rect x="320" y="110" width="250" height="140" rx="14" fill="#0f141c" stroke="' + INK + '" stroke-width="4"/>' + counter(445, 200, u, 1.4, 2.0, 0, 4400, "", 50, "#4fe08a") + label("فرق الذبذبة", 445, 140, 18, "#9fb2c4") + tag("فرق صغير جداً", 445, 300, u, 3.0, -2, 20);
+// 9 — على مية كيلو: الفرق 4,400 بس
+shot(9, camPush(180, 330, 1.0, 1.06), function (u, d, t) {
+  return sideScene(t, 0, 10) + gantry(110, digits(120, 175, countTo(u, 1.4, 2.0, 4400), 34, "#f4cf5a") + digits(250, 175, "Hz", 18, "#cfe6d6")) + speedoF(180, 520, 70, lerp(0, 100, ease(u / 1.6)), 180, t);
 });
-// 10 — الجهاز بيحوّل الفرق لسرعة في أقل من ثانية
-shot(10, camPush(320, 190, 1, 1.12), function (u, d, t) {
-  var s = fill("#16202c") + chip(220, 190, t);
-  for (var i = 0; i < 5; i++) { var k = (t * 1.4 + i / 5) % 1; s += '<circle cx="' + f(300 + k * 160) + '" cy="' + f(190 + Math.sin(i * 2) * 20) + '" r="5" fill="' + RW + '" opacity="' + f(1 - k) + '"/>'; }
-  return s + '<rect x="440" y="140" width="140" height="100" rx="12" fill="#0f141c" stroke="' + INK + '" stroke-width="4"/>' + counter(510, 210, u, 0.6, 0.8, 0, 117, "", 52, "#e8443a") + tag("أقل من ثانية", 320, 70, u, 1.6, -3, 22);
+// 10 — الشريحة بتحوّل الفرق لسرعة في أقل من ثانية
+shot(10, camPush(180, 320, 1.0, 1.1), function (u, d, t) {
+  var s = '<rect x="-300" y="-300" width="960" height="1240" fill="#b9b4aa"/><rect x="-300" y="-300" width="960" height="1240" fill="url(#haze)"/>' + chipF(180, 200, t);
+  for (var i = 0; i < 6; i++) { var k = (t * 1.3 + i / 6) % 1; s += '<circle cx="' + f(180 + Math.sin(i * 2) * 20) + '" cy="' + f(260 + k * 170) + '" r="4" fill="#3a8fbf" opacity="' + f(1 - k) + '"/>'; }
+  return s + '<rect x="90" y="440" width="180" height="90" rx="8" fill="#22262b"/>' + digits(180, 503, countTo(u, 0.5, 0.8, 117), 52, "#e2483a");
 });
-// 11 — عدّيت الحد: فلاش وصورة للوحة والسرعة والوقت
-shot(11, camMove([360, 200, 1.0], [330, 190, 1.1]), function (u, d, t) {
+// 11 — عدّيت الحد: فلاش، وصورة المخالفة
+shot(11, camMove([200, 340, 1.0], [180, 320, 1.08]), function (u, d, t) {
   var fk = flashK(u, 1.4);
-  return nightRoad(t) + laneMarks(t, 298, 200) + radarPole(540, 268, t, fk) + bigCar(lerp(150, 400, ease(u / 2)), 310, "#2f6f9f", 1.05, t, 1) + whiteOut(fk) + snapshot(300, 160, u, 1.9) + tag("الحد المسموح", 470, 60, u, 0.3, 3, 18, "#ff9a8a");
+  return sideScene(t, 0, 11) + radar(300, 486, 1.0, t, fk) + fcar(lerp(20, 260, ease(u / 2)), 522, "#2f4f7a", 0.95, 1, t) + whiteOut(fk) + ticket(180, 190, u, 1.9);
 });
-// 12 — المرة الجاية: نفس الطريق، وموجة صغيرة راجعة من العربية
-shot(12, camMove([320, 210, 1.15], [340, 190, 1.0]), function (u, d, t) {
-  var cx = lerp(80, 300, ease(u / d)), fk = flashK(u, 5.6);
-  return nightRoad(t) + laneMarks(t, 298, 120) + radarPole(500, 268, t, fk) + waveTrain(cx + 80, 470, 200, t, 50, 1, "#f2c230", 20) + bigCar(cx, 310, "#2f6f9f", 1.05, t, 1) + tag("الموجة بتحكي سرعتك", 320, 70, u, 1.2, -2, 21) + whiteOut(fk * 0.6);
+// 12 — المرة الجاية: الطريق تاني، وموجة صغيرة راجعة من العربية
+shot(12, camMove([180, 320, 1.1], [180, 330, 1.0]), function (u, d, t) {
+  var hy = 300, fk = flashK(u, 5.6), s = rSky() + skyline(hy, 7, 0.55) + sand(hy, 400) + perspRoad(hy, t), k = 0.25 + 0.6 * ease(u / d);
+  for (var i = 0; i < 3; i++) s += arcW(lerp(180, 300, ((t * 0.5 + i / 3) % 1)), lerp(hy + k * k * (640 - hy) - 20, 420, ((t * 0.5 + i / 3) % 1)), 12, 1, "#f4cf5a", 0.9, 4);
+  return s + pcar(k, hy, -0.4, "#2f4f7a") + radar(318, 600, 1.15, t, fk) + whiteOut(fk * 0.6);
 });
-// 13 — الختام
-shot(13, camPush(320, 180, 1, 1.12), function (u, d, t) {
-  return sky("dusk") + clouds(t, 20, 30, 4, 0.8) + grass(t, 290) + radarPole(500, 300, t, 0, 0.8) + pulse(500, 140, t, RW, 40) + person(250, 330, t, { mood: "happy", pose: "wave", look: 1 }) + bubble(330, 140, "قولولنا!", u, 0.3, 22) + qmark(440, 120, t, 60);
+// 13 — الختام: المدينة وقت الغروب والرادار بينبض
+shot(13, camPush(180, 320, 1.0, 1.08), function (u, d, t) {
+  return sideScene(t, 0, 12) + traffic(t, 524, 100, 1, 2, 0.8) + traffic(t, 556, 80, -1, 4, 0.75) + radar(180, 486, 1.1, t) + pulse(180, 300, t, "#f4cf5a", 30);
 });
