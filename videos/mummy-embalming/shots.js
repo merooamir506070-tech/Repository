@@ -5,8 +5,8 @@ function G(x, y, s, inner, rot) { return '<g transform="translate(' + f(x) + ' '
 
 // صحرا: كثبان رمل وحبيبات رمل طايرة
 function desert(t, y) {
-  var s = '<path d="M-400 ' + y + ' Q-100 ' + (y - 40) + ' 160 ' + (y - 10) + ' T720 ' + (y - 20) + ' T1100 ' + y + ' V700 H-400 Z" fill="#d9ad6e"/>' +
-    '<path d="M-400 ' + (y + 30) + ' Q0 ' + (y + 5) + ' 320 ' + (y + 30) + ' T1100 ' + (y + 25) + ' V700 H-400 Z" fill="' + SAND + '" stroke="' + INK + '" stroke-width="2"/>';
+  var s = '<path d="M-400 ' + y + ' Q-100 ' + (y - 40) + ' 160 ' + (y - 10) + ' T720 ' + (y - 20) + ' T1100 ' + y + ' V1200 H-400 Z" fill="#d9ad6e"/>' +
+    '<path d="M-400 ' + (y + 30) + ' Q0 ' + (y + 5) + ' 320 ' + (y + 30) + ' T1100 ' + (y + 25) + ' V1200 H-400 Z" fill="' + SAND + '" stroke="' + INK + '" stroke-width="2"/>';
   for (var i = 0; i < 26; i++) { var x = ((t * 70 + i * 47 + hash(i) * 200) % 900) - 130, yy = y - 10 + hash(i + 3) * 60 + Math.sin(t * 3 + i) * 5; s += '<circle cx="' + f(x) + '" cy="' + f(yy) + '" r="' + f(1 + hash(i + 8) * 1.6) + '" fill="#b98a4e" opacity=".7"/>'; }
   return s;
 }
@@ -109,11 +109,11 @@ function tomb(t) {
   var s = fill("#3a2a1e") + '<rect x="-400" y="40" width="1440" height="220" fill="#6a4e34"/>';
   for (var i = 0; i < 18; i++) s += '<rect x="' + (-260 + i * 70) + '" y="' + (40 + (i % 3) * 70) + '" width="68" height="68" fill="none" stroke="#4a3624" stroke-width="2"/>';
   for (var j = 0; j < 12; j++) s += '<text x="' + (40 + j * 50) + '" y="' + (80 + (j % 2) * 26) + '" style="font:700 22px Noto Sans Arabic;fill:#c9a04e;opacity:.55">' + ["𓂀", "𓋹", "𓆣", "𓅓", "𓁹", "𓃭"][j % 6] + '</text>';
-  return s + '<rect x="-400" y="260" width="1440" height="400" fill="#8a6a48" stroke="' + INK + '" stroke-width="2"/>' + torch(40, 200, t) + torch(600, 200, t + 1);
+  return s + '<rect x="-400" y="260" width="1440" height="900" fill="#8a6a48" stroke="' + INK + '" stroke-width="2"/>' + torch(40, 200, t) + torch(600, 200, t + 1);
 }
 function torch(x, y, t) { var fl = Math.sin(t * 13) * 3 + Math.sin(t * 7) * 2; return '<circle cx="' + x + '" cy="' + (y - 34) + '" r="' + f(60 + fl * 3) + '" fill="#f7b24a" opacity=".22" filter="url(#soft)"/><rect x="' + (x - 5) + '" y="' + (y - 20) + '" width="10" height="44" fill="#6a4020" stroke="' + INK + '" stroke-width="2"/><path d="M' + (x - 12) + ' ' + (y - 20) + ' Q' + f(x - 10 + fl) + ' ' + f(y - 50 - fl) + ' ' + f(x + fl) + ' ' + f(y - 62 - fl * 2) + ' Q' + f(x + 12) + ' ' + (y - 40) + ' ' + (x + 12) + ' ' + (y - 20) + ' Z" fill="#f28c28" stroke="' + INK + '" stroke-width="2"/><path d="M' + (x - 5) + ' ' + (y - 22) + ' Q' + f(x + fl * 0.5) + ' ' + (y - 46) + ' ' + (x + 5) + ' ' + (y - 22) + ' Z" fill="#ffe27a"/>'; }
 // ورشة التحنيط
-function workshop(t) { return fill("#e9d6b0") + '<rect x="-400" y="250" width="1440" height="400" fill="#c9a87a" stroke="' + INK + '" stroke-width="2"/>' + '<path d="M80 40 h480" stroke="#c9a04e" stroke-width="6"/>' + torch(70, 200, t) + torch(570, 200, t + 2); }
+function workshop(t) { return fill("#e9d6b0") + '<rect x="-400" y="250" width="1440" height="900" fill="#c9a87a" stroke="' + INK + '" stroke-width="2"/>' + '<path d="M80 40 h480" stroke="#c9a04e" stroke-width="6"/>' + torch(70, 200, t) + torch(570, 200, t + 2); }
 // خطاف نحاس
 function hook(x, y, s) { return G(x, y, s, '<path d="M0 0 H120" stroke="' + INK + '" stroke-width="8" stroke-linecap="round"/><path d="M0 0 H120" stroke="#c87a3a" stroke-width="5" stroke-linecap="round"/><path d="M0 0 q-10 -2 -12 -12" stroke="#c87a3a" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="110" y="-7" width="40" height="14" rx="6" fill="#7a5a3a" stroke="' + INK + '" stroke-width="2.4"/>'); }
 // راس من الجنب (بروفايل) بمقطع فيه المخ
@@ -137,154 +137,163 @@ function calendar(x, y, n) { return G(x, y, 1, '<rect x="-50" y="-56" width="100
 function weight(x, y, s, txt) { return G(x, y, s, '<path d="M-36 0 L-26 -50 H26 L36 0 Z" fill="#4b5056" stroke="' + INK + '" stroke-width="3"/><path d="M-12 -50 Q0 -70 12 -50" stroke="' + INK + '" stroke-width="5" fill="none"/><text x="0" y="-16" text-anchor="middle" style="font:900 14px Noto Sans Arabic;fill:#fff">' + txt + '</text>'); }
 function icon(x, y, u, u0, inner) { var k = pop((u - u0) / 0.8); if (k <= 0) return ""; return G(x, y, k, '<circle r="34" fill="#fff8e8" stroke="' + INK + '" stroke-width="3"/>' + inner); }
 
+// ── خلفيات وترتيب بالطول (مقاس الريلز) ─────────────────
+var FY = 380;   // خط الأرضية
+function workshopV(t) { var s = fill("#e9d6b0") + '<rect x="-400" y="' + FY + '" width="1440" height="900" fill="#c9a87a" stroke="' + INK + '" stroke-width="2"/>';
+  for (var i = 0; i < 9; i++) s += '<rect x="' + (130 + i * 44) + '" y="70" width="30" height="10" fill="' + (i % 2 ? LAPIS : "#c9a04e") + '"/>';
+  return s + torch(150, 300, t) + torch(490, 300, t + 2); }
+function tombV(t) { var s = fill("#3a2a1e") + '<rect x="-400" y="-700" width="1440" height="' + (700 + FY) + '" fill="#6a4e34"/>';
+  for (var r = 0; r < 9; r++) for (var c = 0; c < 9; c++) s += '<rect x="' + (-30 + c * 80 + (r % 2) * 40) + '" y="' + (-160 + r * 60) + '" width="78" height="58" fill="none" stroke="#4a3624" stroke-width="2"/>';
+  for (var j = 0; j < 10; j++) s += '<text x="' + (150 + (j % 5) * 80) + '" y="' + (120 + Math.floor(j / 5) * 40) + '" style="font:700 24px Noto Sans Arabic;fill:#c9a04e;opacity:.5">' + ["𓂀", "𓋹", "𓆣", "𓅓", "𓁹", "𓃭"][j % 6] + '</text>';
+  return s + '<rect x="-400" y="' + FY + '" width="1440" height="900" fill="#8a6a48" stroke="' + INK + '" stroke-width="2"/>' + torch(150, 300, t) + torch(490, 300, t + 1); }
+function roomV(t) { return fill("#e9dcc4") + '<rect x="-400" y="' + FY + '" width="1440" height="900" fill="#b99a76"/><path d="M-400 ' + FY + ' H1040" stroke="' + INK + '" stroke-width="3"/>' +
+  '<rect x="380" y="80" width="120" height="100" rx="6" fill="url(#sky-day)" stroke="' + INK + '" stroke-width="4"/><path d="M440 80 V180 M380 130 H500" stroke="' + INK + '" stroke-width="3"/>'; }
+// السرير والجسم كبار تحت. extra مرسومة بإحداثيات المشهد القديم (السرير عند 320,270)
+function bedBody(t, o, extra, pre) { return G(320, 440, 1.3, '<g transform="translate(-320 -262)">' + (pre || "") + bed(320, 270, 1) + body(320, 254, 1, t, o) + (extra || "") + '</g>'); }
+var CAM = camPush(320, 250, 0.86, 0.92);
+function TG(txt, x, y, u, u0, rot, col) { return tag(txt, x, y, u, u0, rot, 28, col); }
+
 // ── المشاهد ─────────────────────────────────────────────
 // 0: سندوتش بايظ قصاد مومياء في متحف
-shot(0, camPush(320, 190, 1, 1.12), function (u, d, t) {
-  return room(t, "#e9dcc4", "#b99a76") + sandwich(150, 230, 1.3, t, clamp(u / 2)) + vitrine(450, 230, 0.9, t) +
-    tag("يومين", 150, 120, u, 0.8, -4) + counter(450, 120, u, 3.5, 2.5, 0, 3000, " سنة", 30, "#c23a26");
+shot(0, CAM, function (u, d, t) {
+  return roomV(t) + sandwich(270, 230, 1.7, t, clamp(u / 2)) + TG("يومين", 270, 120, u, 0.8, -4) +
+    counter(320, 330, u, 3.5, 2.5, 0, 3000, " سنة", 40, "#c23a26") + vitrine(320, 470, 1.0, t);
 });
 // 1: سر ولا سحر؟
-shot(1, camPush(320, 200, 1.05, 1.15), function (u, d, t) {
-  return fill("#2a3a5a") + stars(t) + pyramids(260, 300, 1) + '<rect x="-400" y="300" width="1440" height="200" fill="#c8964f"/>' + person(180, 300, t, { mood: "curious", pose: "think" }) +
-    qmark(400, 170, t, 100) + sparkle(400, 140, t, "#fff3b0", 8) + tag("سر؟", 300, 70, u, 0.6, -5) + tag("ولا سحر؟", 480, 90, u, 2.2, 4);
+shot(1, CAM, function (u, d, t) {
+  return fill("#2a3a5a") + stars(t) + '<rect x="-400" y="470" width="1440" height="900" fill="#c8964f"/>' + pyramids(300, 470, 1.4) + person(190, 520, t, { mood: "curious", pose: "think", s: 1.4 }) +
+    qmark(420, 330, t, 130) + sparkle(420, 290, t, "#fff3b0", 8) + TG("سر؟", 220, 120, u, 0.6, -5) + TG("ولا سحر؟", 400, 190, u, 2.2, 4);
 });
 // 2: نبني التحنيط خطوة خطوة
-shot(2, camPush(320, 220, 1.1, 1), function (u, d, t) {
-  var s = workshop(t) + bed(320, 240, 1) + person(520, 250, t, { mood: "happy", pose: "wave", shirt: "#f4f1e8" });
-  for (var i = 0; i < 4; i++) s += icon(215 + i * 70, 185, u, 0.6 + i * 0.4, '<text y="10" text-anchor="middle" style="font:900 26px Noto Sans Arabic;fill:#c23a26">' + (i + 1) + '</text>');
-  return s + tag("خطوة خطوة", 320, 95, u, 1.0);
+shot(2, CAM, function (u, d, t) {
+  var s = workshopV(t) + bedBody(t, { clear: true }) ;
+  for (var i = 0; i < 4; i++) s += icon(215 + i * 70, 250, u, 0.6 + i * 0.4, '<text y="10" text-anchor="middle" style="font:900 26px Noto Sans Arabic;fill:#c23a26">' + (i + 1) + '</text>');
+  return s + TG("خطوة خطوة", 320, 150, u, 1.0);
 });
 // 3: رمل الصحرا بينشف الجسم
-shot(3, camPush(320, 220, 1, 1.12), function (u, d, t) {
-  return sky("day") + sun(520, 70, 34, "#f7c84a") + pyramids(100, 220, 0.6) + desert(t, 240) + body(330, 262, 0.9, t, { skin: "#b07a4e" }) +
-    '<path d="M180 266 Q330 252 480 266 Q330 286 180 266" fill="' + SAND + '" opacity=".8"/>' + vapor(330, 240, t, 8) + tag("ينشف لوحده", 330, 120, u, 1.6);
+shot(3, CAM, function (u, d, t) {
+  return sky("day") + sun(450, 110, 40, "#f7c84a") + pyramids(170, 330, 0.8) + desert(t, 340) +
+    G(320, 440, 1.35, '<g transform="translate(-330 -262)">' + body(330, 262, 1, t, { skin: "#b07a4e" }) + '<path d="M180 266 Q330 252 480 266 Q330 286 180 266" fill="' + SAND + '" opacity=".8"/>' + vapor(330, 240, t, 8) + '</g>') +
+    TG("ينشف لوحده", 320, 200, u, 1.6);
 });
 // 4: الملك عايز تابوت، والجسم بيتحلل
-shot(4, camMove([320, 200, 1], [360, 230, 1.15]), function (u, d, t) {
-  return workshop(t) + coffin(470, 160, 0.6, "#8a5a2a") + person(160, 290, t, { mood: "happy", pose: "point", shirt: "#f4f1e8" }) + crown(160, 190, 1) +
-    bed(360, 260, 0.9) + body(360, 246, 0.8, t, {}) + rot(360, 240, t, clamp((u - 2.5) / 1.5)) + cross(360, 170, u, 4.2) + tag("يتحلل!", 360, 110, u, 4.5, 3, 26, "#b9d98a");
+shot(4, CAM, function (u, d, t) {
+  return workshopV(t) + coffin(400, 200, 0.55, "#8a5a2a") + person(200, 360, t, { mood: "happy", pose: "point", shirt: "#f4f1e8", s: 1.2 }) + crown(200, 240, 1.2) +
+    bedBody(t, {}, rot(320, 240, t, clamp((u - 2.5) / 1.5))) + cross(440, 250, u, 4.2) + TG("يتحلل!", 320, 330, u, 4.5, 3, "#b9d98a");
 });
 // 5: الأعضاء + فتحة في الجنب الشمال
-shot(5, camPush(330, 230, 1, 1.25), function (u, d, t) {
+shot(5, camPush(320, 300, 0.9, 1.0), function (u, d, t) {
   var g = 0.6 + 0.4 * Math.sin(t * 5), cut = ease((u - 4.5) / 1.2);
-  return workshop(t) + bed(330, 260, 1) + body(330, 244, 1, t, { clear: true }) +
-    '<g opacity="' + f(g) + '"><ellipse cx="300" cy="240" rx="18" ry="9" fill="#9a3a2a"/><ellipse cx="340" cy="246" rx="16" ry="8" fill="#d98a6a"/><path d="M360 240 q10 -10 20 0 q10 10 20 0" stroke="#e8a08a" stroke-width="7" fill="none"/><ellipse cx="270" cy="236" rx="14" ry="8" fill="#e88a9a"/></g>' +
-    pulse(330, 242, t, "#e8443a", 40) + '<path d="M300 232 L' + f(300 + 60 * cut) + ' 232" stroke="#c23a26" stroke-width="4" stroke-dasharray="6 4"/>' + tag("الأعضاء", 230, 120, u, 1.0) + tag("الجنب الشمال", 430, 140, u, 4.8, 4);
+  var organs = '<g opacity="' + f(g) + '"><ellipse cx="300" cy="240" rx="18" ry="9" fill="#9a3a2a"/><ellipse cx="340" cy="246" rx="16" ry="8" fill="#d98a6a"/><path d="M360 240 q10 -10 20 0 q10 10 20 0" stroke="#e8a08a" stroke-width="7" fill="none"/><ellipse cx="270" cy="236" rx="14" ry="8" fill="#e88a9a"/></g>' +
+    pulse(330, 242, t, "#e8443a", 40) + '<path d="M300 232 L' + f(300 + 60 * cut) + ' 232" stroke="#c23a26" stroke-width="4" stroke-dasharray="6 4"/>';
+  return workshopV(t) + G(320, 440, 1.3, '<g transform="translate(-330 -262)">' + bed(330, 270, 1) + body(330, 254, 1, t, { clear: true }) + organs + '</g>') +
+    TG("الأعضاء", 230, 230, u, 1.0) + TG("الجنب الشمال", 380, 320, u, 4.8, 4);
 });
 // 6: المخ من الأنف بخطاف
-shot(6, camPush(300, 180, 1, 1.15), function (u, d, t) {
+shot(6, CAM, function (u, d, t) {
   var k = ease((u - 1) / 2), wig = Math.sin(t * 8) * 4;
-  return fill("#e9d6b0") + profile(260, 200, 1.4, t, 1 - clamp((u - 3) / 2) * 0.7) + hook(400 - 150 * k + wig, 205, 1) + arrow(520, 150, 420, 196, "#f2c230", 6, ease((u - 0.5) / 1)) + tag("من الأنف", 470, 90, u, 1.2, -3, 26);
+  return fill("#e9d6b0") + '<rect x="-400" y="520" width="1440" height="900" fill="#c9a87a"/>' + profile(215, 350, 2, t, 1 - clamp((u - 3) / 2) * 0.7) +
+    hook(610 - 185 * k + wig, 368, 1.2) + arrow(470, 210, 430, 335, "#f2c230", 7, ease((u - 0.5) / 1)) + TG("من الأنف", 380, 150, u, 1.2, -3);
 });
 // 7: القلب في مكانه + الميزان
-shot(7, camMove([260, 220, 1.2], [400, 190, 1]), function (u, d, t) {
-  return workshop(t) + bed(220, 270, 0.8) + body(220, 257, 0.75, t, { clear: true }) + heart(200, 252, 0.6, t) + pulse(200, 252, t, "#e8443a", 26) +
-    balance(470, 260, 1, t) + tag("مركز العقل", 220, 150, u, 1.8) + tag("هيتوزن", 470, 70, u, 5.0, 4);
+shot(7, CAM, function (u, d, t) {
+  return workshopV(t) + balance(320, 330, 1.3, t) + bedBody(t, { clear: true }, heart(300, 252, 0.6, t) + pulse(300, 252, t, "#e8443a", 26)) +
+    TG("مركز العقل", 220, 130, u, 1.8) + TG("هيتوزن", 430, 180, u, 5.0, 4);
 });
 // 8: أربع أواني كانوبية
-shot(8, camPush(320, 220, 1.05, 1), function (u, d, t) {
-  var s = workshop(t), names = ["الكبد", "الرئة", "المعدة", "الأمعاء"];
-  for (var i = 0; i < 4; i++) { var k = pop((u - 1 - i * 0.8) / 0.8); if (k > 0) s += G(155 + i * 110, 270, k, jar(0, 0, 1, i, t) + label(names[i], 0, 26, 17, INK, 900)); }
-  return s + tag("أربع أواني كانوبية", 320, 110, u, 0.6);
+shot(8, CAM, function (u, d, t) {
+  var s = workshopV(t), names = ["الكبد", "الرئة", "المعدة", "الأمعاء"], P = [[230, 300], [410, 300], [230, 520], [410, 520]];
+  for (var i = 0; i < 4; i++) { var k = pop((u - 1 - i * 0.8) / 0.8); if (k > 0) s += G(P[i][0], P[i][1], k * 1.5, jar(0, 0, 1, i, t) + label(names[i], 0, 26, 17, INK, 900)); }
+  return s + TG("أربع أواني كانوبية", 320, 130, u, 0.6);
 });
 // 9: الجسم مليان مية وبكتيريا
-shot(9, camPush(320, 210, 1, 1.12), function (u, d, t) {
+shot(9, CAM, function (u, d, t) {
   var lvl = 18 * ease(u / 2);
-  return fill("#cfe3ee") + '<g transform="translate(320 220) scale(1.6)"><defs><clipPath id="bw"><circle cx="-96" cy="0" r="18"/><rect x="-80" y="-15" width="178" height="30" rx="14"/></clipPath></defs><g clip-path="url(#bw)">' + waterIn(-120, 20, 230, t, lvl) + '</g></g>' +
-    body(320, 220, 1.6, t, { clear: true }) + microbes(t, 180, 190, 300, 50, 9) + counter(320, 110, u, 2.0, 1.8, 0, 60, "٪ مية", 32, "#4fa6d9") + tag("أكل للبكتيريا", 320, 310, u, 4.5, 2, 22, "#b9d98a");
+  return fill("#cfe3ee") + '<g transform="translate(320 360) scale(1.65)"><defs><clipPath id="bw"><circle cx="-96" cy="0" r="18"/><rect x="-80" y="-15" width="178" height="30" rx="14"/></clipPath></defs><g clip-path="url(#bw)">' + waterIn(-120, 20, 230, t, lvl) + '</g></g>' +
+    body(320, 360, 1.65, t, { clear: true }) + microbes(t, 170, 330, 300, 50, 9) + counter(320, 200, u, 2.0, 1.8, 0, 60, "٪ مية", 44, "#2b86b5") + TG("أكل للبكتيريا", 320, 500, u, 4.5, 2, "#b9d98a");
 });
 // 10: ملح النطرون أربعين يوم
-shot(10, camPush(320, 220, 1, 1.12), function (u, d, t) {
+shot(10, CAM, function (u, d, t) {
   var h = ease(u / 2.5), days = Math.min(40, Math.floor(clamp((u - 3) / 2.6) * 40));
-  return workshop(t) + bed(320, 270, 1) + body(320, 254, 1, t, { skin: "#a8784c" }) + saltPile(320, 270, 280, h, t) + vapor(320, 200, t, 5) +
-    tag("ملح النطرون", 200, 80, u, 0.8) + calendar(500, 110, days || 1);
+  return workshopV(t) + bedBody(t, { skin: "#a8784c" }, saltPile(320, 270, 280, h, t) + vapor(320, 200, t, 5)) + G(420, 170, 1.2, calendar(0, 0, days || 1)) + TG("ملح النطرون", 230, 130, u, 0.8);
 });
 // 11: الجسم انكمش
-shot(11, camPush(320, 230, 1, 1.2), function (u, d, t) {
-  var k = ease(u / 2.5);
-  return workshop(t) + bed(300, 270, 1) + body(300, 254, 1, t, { shrink: k }) + person(530, 270, t, { mood: "shock", pose: "stand", shirt: "#f4f1e8" }) + tag("منكمش ومكرمش", 300, 110, u, 1.4, -3, 24);
+shot(11, CAM, function (u, d, t) {
+  return workshopV(t) + person(440, 360, t, { mood: "shock", pose: "stand", shirt: "#f4f1e8", s: 1.3 }) + bedBody(t, { shrink: ease(u / 2.5) }) + TG("منكمش ومكرمش", 300, 170, u, 1.4, -3);
 });
 // 12: حشو بالكتان والنشارة
-shot(12, camPush(300, 230, 1.1, 1), function (u, d, t) {
-  var k = ease((u - 1.5) / 2.5), s = workshop(t) + bed(300, 270, 1) + body(300, 254, 1, t, { shrink: 1 - k });
-  for (var i = 0; i < 4; i++) { var p = ((u * 0.7 + i * 0.25) % 1); s += linenRoll(lerp(560, 320, p), lerp(130, 240, p) - Math.sin(p * 3.14) * 40, 0.9, p * 360); }
-  return s + tag("يرجعله شكله", 300, 90, u, 3.0);
+shot(12, CAM, function (u, d, t) {
+  var k = ease((u - 1.5) / 2.5), s = workshopV(t) + bedBody(t, { shrink: 1 - k });
+  for (var i = 0; i < 4; i++) { var p = ((u * 0.7 + i * 0.25) % 1); s += linenRoll(lerp(480, 320, p), lerp(160, 420, p), 1.1, p * 360); }
+  return s + TG("يرجعله شكله", 300, 140, u, 3.0);
 });
 // 13: دهان بالزيت والراتنج
-shot(13, camPush(320, 240, 1, 1.25), function (u, d, t) {
+shot(13, camPush(320, 300, 0.9, 1.0), function (u, d, t) {
   var bx = 220 + ((Math.sin(t * 2) + 1) / 2) * 200, shine = clamp((u - 2) / 2);
   var cracks = '<g stroke="#5a3a20" stroke-width="2" fill="none" opacity="' + f(1 - shine) + '"><path d="M250 248 l8 6 l-4 6 M330 252 l10 -4 l4 6 M390 246 l-6 8"/></g>';
-  return workshop(t) + bed(320, 270, 1) + body(320, 254, 1, t, { skin: "#a8784c" }) + cracks +
-    '<rect x="230" y="240" width="' + f(180 * shine) + '" height="10" rx="5" fill="#fff" opacity=".45"/>' + brush(bx, 226, 1, -20) + sparkle(bx, 240, t, "#fff3b0", 4) + tag("زي الورنيش", 320, 100, u, 3.5);
+  return workshopV(t) + bedBody(t, { skin: "#a8784c" }, cracks + '<rect x="230" y="240" width="' + f(180 * shine) + '" height="10" rx="5" fill="#fff" opacity=".45"/>' + brush(bx, 226, 1, -20) + sparkle(bx, 240, t, "#fff3b0", 4)) + TG("زي الورنيش", 320, 220, u, 3.5);
 });
 // 14: لف بالكتان، مئات الأمتار
-shot(14, camPush(320, 230, 1, 1.12), function (u, d, t) {
+shot(14, CAM, function (u, d, t) {
   var w = ease(u / (d * 0.85));
-  return workshop(t) + bed(320, 270, 1) + body(320, 254, 1, t, { wrap: w }) + linenRoll(lerp(440, 210, w), 220 + Math.sin(t * 6) * 10, 0.8, t * 200) +
-    counter(460, 130, u, 1.5, 3.5, 0, 400, " متر", 30, "#c23a26") + tag("مئات الأمتار", 220, 120, u, 4.0);
+  return workshopV(t) + bedBody(t, { wrap: w }, linenRoll(lerp(440, 210, w), 220 + Math.sin(t * 6) * 10, 0.8, t * 200)) +
+    counter(320, 260, u, 1.5, 3.5, 0, 400, " متر", 44, "#c23a26") + TG("مئات الأمتار", 320, 150, u, 4.0);
 });
 // 15: تمايم والجعران
-shot(15, camPush(320, 220, 1, 1.2), function (u, d, t) {
-  return tomb(t) + bed(320, 280, 1) + body(320, 264, 1, t, { wrap: 1 }) + eyeAmulet(250, 250, 0.6 * pop((u - 0.8) / 0.8)) + eyeAmulet(400, 252, 0.6 * pop((u - 1.4) / 0.8)) +
-    scarab(320, lerp(120, 230, ease((u - 2.4) / 1.5)), 0.9, t) + sparkle(320, 230, t, "#9fd0ff", 6) + tag("الجعران", 460, 120, u, 3.0, -3, 26, "#9fc7f0");
+shot(15, CAM, function (u, d, t) {
+  return tombV(t) + bedBody(t, { wrap: 1 }, eyeAmulet(250, 250, 0.6 * pop((u - 0.8) / 0.8)) + eyeAmulet(400, 252, 0.6 * pop((u - 1.4) / 0.8))) +
+    scarab(320, lerp(180, 395, ease((u - 2.4) / 1.5)), 1.2, t) + sparkle(320, 395, t, "#9fd0ff", 6) + TG("الجعران", 320, 520, u, 3.0, -3, "#9fc7f0");
 });
 // 16: الوش اتغطى، الروح هتعرفه إزاي؟
-shot(16, camPush(240, 220, 1.1, 1.25), function (u, d, t) {
+shot(16, CAM, function (u, d, t) {
   var a = t * 1.2;
-  return tomb(t) + bed(320, 280, 1) + body(320, 264, 1, t, { wrap: 1 }) + baBird(200 + Math.cos(a) * 60, 175 + Math.sin(a * 2) * 15, 0.9, t) + qmark(430, 150, t, 80) + tag("الوش اتغطى", 330, 110, u, 0.8, -3);
+  return tombV(t) + bedBody(t, { wrap: 1 }) + baBird(300 + Math.cos(a) * 90, 260 + Math.sin(a * 2) * 25, 1.3, t) + qmark(440, 200, t, 100) + TG("الوش اتغطى", 230, 140, u, 0.8, -3);
 });
 // 17: قناع دهب عشرة كيلو
-shot(17, camPush(320, 190, 1.2, 1), function (u, d, t) {
+shot(17, CAM, function (u, d, t) {
   var k = pop((u - 0.6) / 1);
-  return tomb(t) + G(320, 180, 1.35 * (k || 0.001), maskFace(t)) + sparkle(320, 160, t, "#fff3b0", 9) + (u > 3.2 ? weight(500, 300, 1.2 * pop((u - 3.2) / 0.8), "١٠ كجم") : "") + tag("قناع دهب", 150, 80, u, 2.4);
+  return tombV(t) + G(320, 290, 2.1 * (k || 0.001), maskFace(t)) + sparkle(320, 260, t, "#fff3b0", 10) + (u > 3.2 ? weight(420, 520, 1.5 * pop((u - 3.2) / 0.8), "١٠ كجم") : "") + TG("قناع دهب", 230, 520, u, 2.4);
 });
 // 18: توابيت جوه بعض والحرامية
-shot(18, camMove([300, 200, 1], [340, 210, 1.12]), function (u, d, t) {
-  var s = tomb(t) + thief(90, 300, t);
-  var cols = ["#8a5a2a", "#a06a3a", GOLD];
-  for (var i = 0; i < 3; i++) { var k = ease((u - 1.5 - i * 0.9) / 0.8); if (k > 0) s += coffin(360, 220, (1.25 - i * 0.22) * (0.6 + 0.4 * k), cols[i], i === 2 ? "#e8c46a" : "#c9a04e"); }
-  return s + tag("توابيت جوه بعض", 360, 70, u, 1.4) + (u > 5 ? weight(520, 315, pop((u - 5) / 0.8), "١١٠ كجم") : "");
+shot(18, CAM, function (u, d, t) {
+  var s = tombV(t), cols = ["#8a5a2a", "#a06a3a", GOLD];
+  for (var i = 0; i < 3; i++) { var k = ease((u - 1.5 - i * 0.9) / 0.8); if (k > 0) s += coffin(320, 320, (1.25 - i * 0.22) * (0.6 + 0.4 * k), cols[i], i === 2 ? "#e8c46a" : "#c9a04e"); }
+  return s + thief(180, 560, t) + TG("توابيت جوه بعض", 320, 160, u, 1.4) + (u > 5 ? weight(430, 520, 1.4 * pop((u - 5) / 0.8), "١١٠ كجم") : "");
 });
 // 19: تابوت حجري ومقبرة في الجبل
-shot(19, camMove([320, 230, 1.2], [320, 170, 0.92]), function (u, d, t) {
+shot(19, CAM, function (u, d, t) {
   var lid = ease((u - 0.8) / 1.5);
-  return sky("dusk") + sun(520, 90, 30, "#f7a24a") + '<path d="M-400 300 L-60 60 L120 180 L320 40 L560 190 L760 90 L1100 300 Z" fill="#b8865a" stroke="' + INK + '" stroke-width="3"/>' +
-    '<path d="M300 300 V250 Q320 236 340 250 V300 Z" fill="#2a1a10" stroke="' + INK + '" stroke-width="2.4"/>' + desert(t, 300) +
-    G(320, 210, 0.55, '<rect x="-150" y="-30" width="300" height="80" rx="6" fill="#9a9a92" stroke="' + INK + '" stroke-width="3"/>' + coffin(0, 0, 0.9, GOLD, "#e8c46a") + '<rect x="-160" y="' + f(-130 + lid * 90) + '" width="320" height="26" rx="6" fill="#b8b4ac" stroke="' + INK + '" stroke-width="3"/>') +
-    tag("تابوت حجري", 180, 70, u, 1.0) + tag("مستخبية في الجبل", 470, 120, u, 2.8, 4, 20);
+  return sky("dusk") + sun(440, 120, 34, "#f7a24a") + '<path d="M-400 400 L-20 160 L160 260 L320 130 L520 250 L760 170 L1100 400 Z" fill="#b8865a" stroke="' + INK + '" stroke-width="3"/>' +
+    '<path d="M290 400 V330 Q320 310 350 330 V400 Z" fill="#2a1a10" stroke="' + INK + '" stroke-width="2.4"/>' + desert(t, 400) +
+    G(320, 500, 0.85, '<rect x="-150" y="-30" width="300" height="80" rx="6" fill="#9a9a92" stroke="' + INK + '" stroke-width="3"/>' + coffin(0, 0, 0.9, GOLD, "#e8c46a") + '<rect x="-160" y="' + f(-130 + lid * 90) + '" width="320" height="26" rx="6" fill="#b8b4ac" stroke="' + INK + '" stroke-width="3"/>') +
+    TG("تابوت حجري", 230, 230, u, 1.0) + TG("مستخبية في الجبل", 380, 300, u, 2.8, 4);
 });
 // 20: سبعين يوم مع الكهنة
-shot(20, camPush(320, 220, 1, 1.1), function (u, d, t) {
+shot(20, CAM, function (u, d, t) {
   var days = Math.max(1, Math.min(70, Math.floor(clamp((u - 0.8) / 2.6) * 70)));
-  return workshop(t) + bed(300, 270, 1) + body(300, 254, 1, t, { wrap: 1, mask: 1 }) + priest(130, 280, t, "point") + priest(470, 280, t, "think") + calendar(520, 110, days) + tag("سبعين يوم", 260, 80, u, 1.2);
+  return workshopV(t) + priest(190, 370, t, "point") + priest(450, 370, t, "think") + bedBody(t, { wrap: 1, mask: 1 }) + G(420, 170, 1.2, calendar(0, 0, days)) + TG("سبعين يوم", 230, 140, u, 1.2);
 });
 // 21: أوروبا بتطحن المومياوات كدوا
-shot(21, camPush(320, 220, 1, 1.15), function (u, d, t) {
-  var s = fill("#5a3e2a") + '<rect x="-400" y="270" width="1440" height="400" fill="#8a6a48" stroke="' + INK + '" stroke-width="2"/>';
-  for (var r = 0; r < 2; r++) { s += '<rect x="60" y="' + (120 + r * 80) + '" width="520" height="10" fill="#a06a3a" stroke="' + INK + '" stroke-width="2"/>'; for (var i = 0; i < 7; i++) s += potJar(90 + i * 75, 120 + r * 80, 0.8, ["#3a8fd9", "#4f9f5a", "#c98a2a", "#8a4fc4"][(i + r) % 4]); }
-  s += '<rect x="230" y="250" width="200" height="20" fill="#6a4020" stroke="' + INK + '" stroke-width="2.4"/>' + mortar(330, 248, 0.8, t) + label("MUMMIA", 330, 236, 12, "#3a2a1e", 900);
-  return s + person(520, 300, t, { mood: "shock", pose: "point", shirt: "#7a3a2a" }) + tag("بيطحنوا المومياوات", 300, 100, u, 1.2, -3, 22) + tag("كدوا!", 520, 140, u, 3.8, 6, 28, "#f2a0a0");
+shot(21, CAM, function (u, d, t) {
+  var s = fill("#5a3e2a") + '<rect x="-400" y="' + FY + '" width="1440" height="900" fill="#8a6a48" stroke="' + INK + '" stroke-width="2"/>';
+  for (var r = 0; r < 2; r++) { s += '<rect x="120" y="' + (150 + r * 90) + '" width="400" height="10" fill="#a06a3a" stroke="' + INK + '" stroke-width="2"/>'; for (var i = 0; i < 5; i++) s += potJar(160 + i * 80, 150 + r * 90, 1, ["#3a8fd9", "#4f9f5a", "#c98a2a", "#8a4fc4"][(i + r) % 4]); }
+  s += '<rect x="170" y="470" width="260" height="22" fill="#6a4020" stroke="' + INK + '" stroke-width="2.4"/>' + mortar(300, 468, 1.3, t) + label("MUMMIA", 300, 448, 14, "#3a2a1e", 900);
+  return s + person(450, 560, t, { mood: "shock", pose: "point", shirt: "#7a3a2a", s: 1.1 }) + TG("بيطحنوا المومياوات", 320, 320, u, 1.2, -3) + TG("كدوا!", 440, 390, u, 3.8, 6, "#f2a0a0");
 });
 // 22: المنظومة كاملة
-shot(22, camPush(320, 200, 1.1, 1), function (u, d, t) {
-  var s = fill("#f3e6c8"), xs = [90, 182, 274, 366, 458, 550];
-  var icons = [
-    '<path d="M-24 10 Q0 -14 24 10 Z" fill="' + SAND + '" stroke="' + INK + '" stroke-width="2"/>',
-    jar(0, 20, 0.45, 0, t),
-    '<path d="M-22 14 Q0 -26 22 14 Z" fill="#fff" stroke="' + INK + '" stroke-width="2"/>',
-    linenRoll(-8, 0, 0.9, 0),
-    G(0, 0, 0.36, maskFace(t)),
-    coffin(0, 0, 0.22, GOLD, "#e8c46a")];
+shot(22, CAM, function (u, d, t) {
+  var s = fill("#f3e6c8"), P = [[220, 150], [420, 150], [420, 285], [220, 285], [220, 420], [420, 420]];
+  var icons = ['<path d="M-24 10 Q0 -14 24 10 Z" fill="' + SAND + '" stroke="' + INK + '" stroke-width="2"/>', jar(0, 20, 0.45, 0, t), '<path d="M-22 14 Q0 -26 22 14 Z" fill="#fff" stroke="' + INK + '" stroke-width="2"/>', linenRoll(-8, 0, 0.9, 0), G(0, 0, 0.36, maskFace(t)), coffin(0, 0, 0.22, GOLD, "#e8c46a")];
   var names = ["تنشيف", "الأعضاء", "النطرون", "الكتان", "القناع", "التوابيت"];
-  for (var i = 0; i < 6; i++) { s += icon(xs[i], 170, u, 0.3 + i * 0.45, icons[i]); if (u > 0.5 + i * 0.45) s += label(names[i], xs[i], 226, 15, INK, 900); if (i < 5) s += arrow(xs[i] + 36, 170, xs[i + 1] - 36, 170, "#c23a26", 3, ease((u - 0.6 - i * 0.45) / 0.4)); }
-  return s + pulse(320, 170, t, "#f2c230", 160) + tag("منظومة كاملة", 320, 80, u, 2.0) + check(320, 290, u, 3.5, 1.2);
+  for (var i = 0; i < 6; i++) { s += G(P[i][0], P[i][1], 1.35, icon(0, 0, u, 0.3 + i * 0.45, icons[i])); if (u > 0.5 + i * 0.45) s += label(names[i], P[i][0], P[i][1] + 68, 18, INK, 900);
+    if (i < 5) { var a = P[i], b = P[i + 1], dx = Math.sign(b[0] - a[0]) * 52, dy = Math.sign(b[1] - a[1]) * 52; s += arrow(a[0] + dx, a[1] + dy, b[0] - dx, b[1] - dy, "#c23a26", 4, ease((u - 0.6 - i * 0.45) / 0.4)); } }
+  return s + TG("منظومة كاملة", 320, 545, u, 2.0) + check(320, 218, u, 3.5, 1.3);
 });
 // 23: السندوتش تاني قصاد المومياء
-shot(23, camMove([320, 210, 1.15], [320, 200, 1]), function (u, d, t) {
-  return room(t, "#e9dcc4", "#b99a76") + sandwich(140, 240, 1.2, t, 1) + cross(140, 150, u, 0.8) + vitrine(450, 240, 0.85, t) + check(450, 150, u, 1.4) +
-    tag("ملح + كتان + صبر", 300, 95, u, 3.0, -2, 24);
+shot(23, CAM, function (u, d, t) {
+  return roomV(t) + sandwich(260, 230, 1.6, t, 1) + cross(390, 170, u, 0.8, 1.3) + vitrine(320, 470, 1.0, t) + check(450, 390, u, 1.4, 1.3) + TG("ملح + كتان + صبر", 320, 330, u, 3.0, -2);
 });
 // 24: الختام
-shot(24, camPush(320, 190, 1, 1.12), function (u, d, t) {
-  return fill("#2a3a5a") + stars(t) + pyramids(230, 330, 0.9) + qmark(320, 200, t, 120) + pulse(320, 160, t, "#f2c230", 70) + tag("المرة الجاية؟", 320, 290, u, 0.6, -2, 26);
+shot(24, CAM, function (u, d, t) {
+  return fill("#2a3a5a") + stars(t) + '<rect x="-400" y="500" width="1440" height="900" fill="#c8964f"/>' + pyramids(260, 500, 1.3) + qmark(320, 330, t, 170) + pulse(320, 270, t, "#f2c230", 90) + TG("المرة الجاية؟", 320, 140, u, 0.6, -2);
 });
