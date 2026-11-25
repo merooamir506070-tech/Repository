@@ -3,101 +3,88 @@
 <style>
 @font-face{font-family:Cairo;src:url(cairo.woff2) format('woff2');font-weight:200 1000}
 body{margin:0;background:#888}
-.canvas{position:relative;overflow:hidden;background:#10294a;margin:0 0 20px}
+.canvas{position:relative;overflow:hidden;background:#fbf6ee;margin:0 0 20px}
 #profile{width:1080px;height:1080px}
 #cover{width:1640px;height:624px}
 svg.full{position:absolute;inset:0}
-.t{position:absolute;font-family:Cairo;direction:rtl;line-height:1;white-space:nowrap}
-.cream{color:#fbf6ee}.or{color:#f2841f}
+.t{position:absolute;font-family:Cairo;direction:rtl;line-height:1;white-space:nowrap;font-weight:1000;color:#10294a}
+.or{color:#f2841f}
 </style></head><body>
 
 <div class="canvas" id="profile">
   <svg class="full" viewBox="0 0 1080 1080" width="1080" height="1080">
-    <rect width="1080" height="1080" fill="url(#bgGlow)"/>
-    <g id="pStars"></g>
-    <use href="#mark" transform="translate(540,420) scale(1.05)"/>
+    <circle cx="540" cy="440" r="330" fill="#f6e3cc" opacity=".6"/>
+    <use href="#mascot" transform="translate(540,430)"/>
+    <use href="#bulb" transform="translate(765,205) rotate(15) scale(.9)"/>
   </svg>
-  <div class="t" style="left:0;right:0;text-align:center;top:745px;font-size:128px;font-weight:1000">
-    <span class="cream">كوكب</span> <span class="or">إزاي</span>
-  </div>
+  <div class="t" style="left:0;right:0;text-align:center;top:730px;font-size:135px">كوكب <span class="or">إزاي</span></div>
 </div>
 
 <div class="canvas" id="cover">
   <svg class="full" viewBox="0 0 1640 624" width="1640" height="624">
-    <rect width="1640" height="624" fill="url(#bgGlowC)"/>
-    <g id="cStars"></g>
-    <g transform="translate(500,312)">
-      <g fill="none" stroke="#2f5a8f" stroke-width="3" stroke-dasharray="10 12">
-        <ellipse rx="190" ry="95"/><ellipse rx="275" ry="150"/><ellipse rx="360" ry="215"/>
-      </g>
-      <use href="#mark" transform="scale(.45)"/>
-      <g id="orbiters"></g>
+    <!-- soft blobs -->
+    <path d="M300 120 C420 20 700 30 800 140 C900 250 860 470 720 540 C560 620 330 590 250 470 C170 350 190 210 300 120Z" fill="#f6e3cc" opacity=".7"/>
+    <circle cx="1450" cy="90" r="120" fill="#f6e3cc" opacity=".5"/>
+    <!-- dotted curiosity trails from mascot to stickers -->
+    <g stroke="#f2841f" stroke-width="5" stroke-dasharray="2 14" stroke-linecap="round" fill="none">
+      <path d="M410 210 Q360 170 345 165"/><path d="M600 205 Q640 160 655 150"/>
+      <path d="M400 430 Q365 460 355 475"/><path d="M610 435 Q645 465 660 480"/>
     </g>
+    <use href="#mascot" transform="translate(500,315) scale(.66)"/>
+    <use href="#bulb" transform="translate(500,90) scale(.58)"/>
+    <g id="stickers"></g>
+    <!-- sparkles -->
+    <use href="#spark" transform="translate(860,90) scale(.9)"/>
+    <use href="#spark" transform="translate(1390,470) scale(.7)"/>
+    <use href="#spark" transform="translate(240,300) scale(.6)"/>
+    <g fill="#10294a" opacity=".25"><circle cx="980" cy="520" r="6"/><circle cx="1500" cy="300" r="5"/><circle cx="1300" cy="80" r="5"/></g>
+    <!-- underline -->
+    <path d="M1345 395 Q1170 375 1000 400" stroke="#f2841f" stroke-width="10" fill="none" stroke-linecap="round"/>
   </svg>
-  <div class="t" style="right:290px;top:165px;font-size:110px;font-weight:1000">
-    <span class="cream">كوكب</span> <span class="or">إزاي</span>
-  </div>
-  <div class="t cream" style="right:292px;top:320px;font-size:36px;font-weight:700;opacity:.92">رحلة لاكتشاف إزاي الحاجات بتشتغل</div>
-  <svg class="full" viewBox="0 0 1640 624" width="1640" height="624">
-    <path d="M1350 385 h-300" stroke="#f9b233" stroke-width="8" stroke-linecap="round"/>
-    <circle cx="1025" cy="385" r="8" fill="#f2841f"/>
-  </svg>
+  <div class="t" style="right:295px;top:165px;font-size:108px">كوكب <span class="or">إزاي</span></div>
+  <div class="t" style="right:297px;top:320px;font-size:38px;font-weight:700">رحلة لاكتشاف إزاي الحاجات بتشتغل</div>
 </div>
 
 <svg width="0" height="0" style="position:absolute">
   <defs>
-    <radialGradient id="bgGlow" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#1d3f6e"/><stop offset="1" stop-color="#0c2140"/></radialGradient>
-    <radialGradient id="bgGlowC" cx=".34" cy=".5" r=".6"><stop offset="0" stop-color="#1d3f6e"/><stop offset="1" stop-color="#0c2140"/></radialGradient>
-    <linearGradient id="pGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9b233"/><stop offset="1" stop-color="#ef6f12"/></linearGradient>
-    <clipPath id="rBack"><rect x="-400" y="-300" width="800" height="300"/></clipPath>
-    <clipPath id="rFront"><rect x="-400" y="0" width="800" height="300"/></clipPath>
-    <clipPath id="planetClip"><circle r="150"/></clipPath>
-    <g id="spark"><path d="M0 -24 Q4 -4 24 0 Q4 4 0 24 Q-4 4 -24 0 Q-4 -4 0 -24Z" fill="#f9b233"/></g>
-    <!-- mark centered at 0,0 : gear-edged planet with ring -->
-    <g id="mark">
-      <g transform="rotate(-20)"><ellipse rx="330" ry="78" fill="none" stroke="#fbf6ee" stroke-width="20" clip-path="url(#rBack)"/></g>
-      <path id="gearPath" fill="#f2841f"/>
-      <circle r="150" fill="url(#pGrad)"/>
-      <g clip-path="url(#planetClip)">
-        <path d="M-160 -60 Q0 -95 160 -70" stroke="#fff" stroke-width="16" opacity=".3" fill="none"/>
-        <path d="M-160 20 Q0 -10 160 10" stroke="#c4560a" stroke-width="24" opacity=".35" fill="none"/>
-        <path d="M-160 90 Q0 70 160 85" stroke="#c4560a" stroke-width="12" opacity=".3" fill="none"/>
-        <circle cx="-60" cy="-85" r="18" fill="#fff" opacity=".35"/>
-        <circle cx="70" cy="45" r="12" fill="#fff" opacity=".25"/>
-      </g>
-      <circle r="150" fill="none" stroke="#10294a" stroke-width="8"/>
-      <g transform="rotate(-20)"><ellipse rx="330" ry="78" fill="none" stroke="#fbf6ee" stroke-width="20" clip-path="url(#rFront)"/>
-        <circle cx="330" cy="0" r="22" fill="#f9b233" stroke="#10294a" stroke-width="6"/></g>
-      <circle cx="-215" cy="-170" r="34" fill="#9bb8dd"/><circle cx="-224" cy="-178" r="10" fill="#c8daf0"/>
-      <use href="#spark" transform="translate(230,-200) scale(1.3)"/>
-      <use href="#spark" transform="translate(-260,150) scale(.8)"/>
+    <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9b233"/><stop offset="1" stop-color="#ef6f12"/></linearGradient>
+    <clipPath id="rb"><rect x="-500" y="-400" width="1000" height="490"/></clipPath>
+    <clipPath id="rf"><rect x="-500" y="90" width="1000" height="400"/></clipPath>
+    <g id="spark"><path d="M0 -24 Q4 -4 24 0 Q4 4 0 24 Q-4 4 -24 0 Q-4 -4 0 -24Z" fill="#f9b233" stroke="#10294a" stroke-width="4"/></g>
+    <!-- mascot centered at 0,0 -->
+    <g id="mascot">
+      <g transform="rotate(-14)"><ellipse cy="90" rx="320" ry="78" fill="none" stroke="#10294a" stroke-width="36" clip-path="url(#rb)"/><ellipse cy="90" rx="320" ry="78" fill="none" stroke="#9bb8dd" stroke-width="20" clip-path="url(#rb)"/></g>
+      <circle r="200" fill="url(#g3)" stroke="#10294a" stroke-width="14"/>
+      <path d="M-140 -90 q30 -20 60 -5" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round" opacity=".5"/>
+      <ellipse cx="-70" cy="-10" rx="42" ry="50" fill="#fff" stroke="#10294a" stroke-width="10"/><ellipse cx="70" cy="-10" rx="42" ry="50" fill="#fff" stroke="#10294a" stroke-width="10"/>
+      <circle cx="-55" cy="-25" r="20" fill="#10294a"/><circle cx="85" cy="-25" r="20" fill="#10294a"/>
+      <circle cx="-49" cy="-32" r="7" fill="#fff"/><circle cx="91" cy="-32" r="7" fill="#fff"/>
+      <path d="M-110 -78 q35 -22 70 -6" stroke="#10294a" stroke-width="11" fill="none" stroke-linecap="round"/><path d="M45 -90 q35 -16 68 4" stroke="#10294a" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <path d="M-25 65 q25 18 50 0" stroke="#10294a" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <circle cx="-115" cy="45" r="18" fill="#e8453c" opacity=".35"/><circle cx="115" cy="45" r="18" fill="#e8453c" opacity=".35"/>
+      <g transform="rotate(-14)"><ellipse cy="90" rx="320" ry="78" fill="none" stroke="#10294a" stroke-width="36" clip-path="url(#rf)"/><ellipse cy="90" rx="320" ry="78" fill="none" stroke="#9bb8dd" stroke-width="20" clip-path="url(#rf)"/></g>
+    </g>
+    <g id="bulb">
+      <path d="M-34 10 a42 42 0 1 1 68 0 q-10 12 -12 30 h-44 q-2 -18 -12 -30z" fill="#f9b233" stroke="#10294a" stroke-width="9"/>
+      <rect x="-22" y="44" width="44" height="22" rx="6" fill="#10294a"/>
+      <g stroke="#f2841f" stroke-width="9" stroke-linecap="round"><path d="M0 -75 v-22 M-55 -50 l-15 -15 M55 -50 l15 -15"/></g>
     </g>
   </defs>
 </svg>
 
 <script>
-function gear(R,r,teeth,inset){let d='';for(let i=0;i<teeth*2;i++){const a0=i*Math.PI/teeth,a1=(i+1)*Math.PI/teeth,rr=i%2?r:R;
-  d+=(i?'L':'M')+[rr*Math.cos(a0+inset),rr*Math.sin(a0+inset)]+' L'+[rr*Math.cos(a1-inset),rr*Math.sin(a1-inset)]+' ';}return d+'Z';}
-document.getElementById('gearPath').setAttribute('d',gear(198,168,14,.06));
-function stars(id,w,h,n,seed){let s=seed;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;let o='';
-  for(let i=0;i<n;i++)o+=`<circle cx="${rnd()*w}" cy="${rnd()*h}" r="${1+rnd()*2.5}" fill="#fbf6ee" opacity="${.3+rnd()*.6}"/>`;
-  document.getElementById(id).innerHTML=o;}
-stars('pStars',1080,1080,90,7);stars('cStars',1640,624,140,11);
-
 const N='#10294a',O='#f2841f',Y='#f9b233';
 const icons={
- pyramid:`<polygon points="-70,0 0,-95 70,0" fill="#e9b04f"/><polygon points="0,-95 70,0 15,0" fill="#c98a2f"/>`,
- tunnel:`<rect x="-75" y="-105" width="150" height="105" rx="18" fill="#7fb2e0"/><path d="M-60 0 v-35 a60 45 0 0 1 120 0 v35z" fill="#9aa6b4"/><path d="M-44 0 v-30 a44 32 0 0 1 88 0 v30z" fill="#2a3a52"/><circle cx="-14" cy="-14" r="7" fill="${Y}"/><circle cx="14" cy="-14" r="7" fill="${Y}"/>`,
- radar:`<rect x="-7" y="-70" width="14" height="70" fill="#7a8594"/><rect x="-45" y="-125" width="90" height="62" rx="10" fill="#fff" stroke="${N}" stroke-width="7"/><circle cx="-10" cy="-94" r="18" fill="${N}"/><circle cx="-10" cy="-94" r="8" fill="#5f8fd0"/><rect x="16" y="-112" width="16" height="11" rx="3" fill="#e8453c"/>`,
- ac:`<rect x="-80" y="-110" width="160" height="66" rx="14" fill="#fff" stroke="${N}" stroke-width="7"/><path d="M-60 -60 h120" stroke="${N}" stroke-width="6"/><circle cx="55" cy="-90" r="6" fill="#3cb371"/><path d="M-40 -32 q12 14 0 28 M0 -32 q12 14 0 28 M40 -32 q12 14 0 28" stroke="#6fb6e8" stroke-width="7" fill="none" stroke-linecap="round"/>`,
- heater:`<rect x="-42" y="-140" width="84" height="125" rx="30" fill="#fff" stroke="${N}" stroke-width="7"/><circle cy="-88" r="22" fill="#fff" stroke="${N}" stroke-width="6"/><path d="M0 -88 l12 -12" stroke="${O}" stroke-width="6" stroke-linecap="round"/><circle cx="-15" cy="-40" r="8" fill="#e8453c"/><circle cx="15" cy="-40" r="8" fill="#3a7fd5"/>`,
- bulb:`<path d="M-32 -95 a40 40 0 1 1 64 0 q-10 12 -12 32 h-40 q-2 -20 -12 -32z" fill="${Y}"/><rect x="-20" y="-60" width="40" height="11" rx="3" fill="#7a8594"/><rect x="-16" y="-46" width="32" height="11" rx="3" fill="#7a8594"/>`,
+ pyramid:[140,95,`<polygon points="-70,0 0,-95 70,0" fill="#e9b04f" stroke="${N}" stroke-width="8" stroke-linejoin="round"/><polygon points="0,-95 70,0 15,0" fill="#c98a2f"/>`],
+ tunnel:[150,105,`<rect x="-75" y="-105" width="150" height="105" rx="18" fill="#7fb2e0" stroke="${N}" stroke-width="8"/><path d="M-60 0 v-35 a60 45 0 0 1 120 0 v35z" fill="#9aa6b4"/><path d="M-44 0 v-30 a44 32 0 0 1 88 0 v30z" fill="#2a3a52"/><circle cx="-14" cy="-14" r="7" fill="${Y}"/><circle cx="14" cy="-14" r="7" fill="${Y}"/>`],
+ radar:[90,125,`<rect x="-7" y="-70" width="14" height="70" fill="#7a8594"/><rect x="-45" y="-125" width="90" height="62" rx="10" fill="#fff" stroke="${N}" stroke-width="8"/><circle cx="-10" cy="-94" r="18" fill="${N}"/><circle cx="-10" cy="-94" r="8" fill="#5f8fd0"/><rect x="16" y="-112" width="16" height="11" rx="3" fill="#e8453c"/>`],
+ ac:[160,110,`<rect x="-80" y="-110" width="160" height="66" rx="14" fill="#fff" stroke="${N}" stroke-width="8"/><path d="M-60 -60 h120" stroke="${N}" stroke-width="6"/><circle cx="55" cy="-90" r="6" fill="#3cb371"/><path d="M-40 -32 q12 14 0 28 M0 -32 q12 14 0 28 M40 -32 q12 14 0 28" stroke="#6fb6e8" stroke-width="8" fill="none" stroke-linecap="round"/>`],
+ heater:[84,140,`<rect x="-42" y="-140" width="84" height="125" rx="30" fill="#fff" stroke="${N}" stroke-width="8"/><circle cy="-88" r="22" fill="#fff" stroke="${N}" stroke-width="6"/><path d="M0 -88 l12 -12" stroke="${O}" stroke-width="6" stroke-linecap="round"/><circle cx="-15" cy="-40" r="8" fill="#e8453c"/><circle cx="15" cy="-40" r="8" fill="#3a7fd5"/>`],
 };
-// [orbit rx, ry, angle deg, icon, scale, lift]
-const dims={pyramid:[140,95],tunnel:[150,105],radar:[90,125],ac:[160,110],heater:[84,140],bulb:[80,135]};
-const orb=[[190,95,200,'bulb'],[275,150,300,'radar'],[275,150,115,'ac'],[360,215,235,'pyramid'],[360,215,165,'heater'],[190,95,55,'tunnel']];
-const g=document.getElementById('orbiters');
-orb.forEach(([rx,ry,a,k])=>{const [w,h]=dims[k],sc=Math.min(56/w,56/h),lift=h/2*sc;const t=a*Math.PI/180,x=rx*Math.cos(t),y=ry*Math.sin(t);
-  g.insertAdjacentHTML('beforeend',`<g transform="translate(${x},${y})"><circle r="44" fill="#fbf6ee" stroke="${O}" stroke-width="6"/><g transform="translate(0,${lift}) scale(${sc})">${icons[k]}</g></g>`);});
+// sticker: white circle, thick navy outline, slight tilt
+const spots=[[305,140,'pyramid',-8],[315,505,'tunnel',6],[695,120,'radar',8],[700,515,'ac',-6],[900,520,'heater',5]];
+const g=document.getElementById('stickers');
+spots.forEach(([x,y,k,rot])=>{const [w,h,s]=icons[k],sc=Math.min(66/w,66/h);
+  g.insertAdjacentHTML('beforeend',`<g transform="translate(${x},${y}) rotate(${rot})"><circle r="56" fill="#fff" stroke="${N}" stroke-width="7"/><g transform="translate(0,${h/2*sc}) scale(${sc})">${s}</g></g>`);});
 </script>
 </body></html>
