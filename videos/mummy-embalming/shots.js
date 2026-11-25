@@ -187,6 +187,10 @@ function tutMask(t) {
   s += '<g clip-path="url(#tmClip)"><path d="M' + f(-180 + sh * 360) + ' -170 l-60 340 l30 0 l60 -340 Z" fill="#fff" opacity=".22"/></g>';
   return s;
 }
+// وقت الكلمة w جوه السطر i (بالثواني من أول المشهد)، عشان الحركة تيجي مع الكلام
+function wt(i, w) { var l = LN[i], ws = l.text.split(" "), tot = ws.join("").length, acc = 0;
+  for (var k = 0; k < ws.length; k++) { if (ws[k] === w || ws[k].replace(/[،,.؟?!:]+$/, "") === w) return (l.end - l.start) * acc / tot; acc += ws[k].length; }
+  return 0; }
 // ── خلفيات وترتيب بالطول (مقاس الريلز) ─────────────────
 var FY = 380;   // خط الأرضية
 function workshopV(t) { var s = fill("#e9d6b0") + '<rect x="-400" y="' + FY + '" width="1440" height="900" fill="#c9a87a" stroke="' + INK + '" stroke-width="2"/>';
@@ -206,98 +210,98 @@ function TG(txt, x, y, u, u0, rot, col) { return tag(txt, x, y, u, u0, rot, 28, 
 // ── المشاهد ─────────────────────────────────────────────
 // 0: سندوتش بايظ قصاد مومياء في متحف
 shot(0, CAM, function (u, d, t) {
-  return roomV(t) + sandwich(270, 230, 1.7, t, clamp(u / 2)) + TG("يومين", 270, 120, u, 0.8, -4) +
-    counter(320, 330, u, 3.5, 2.5, 0, 3000, " سنة", 40, "#c23a26") + vitrine(320, 470, 1.0, t);
+  return roomV(t) + sandwich(270, 230, 1.7, t, clamp(u / wt(0, "بيبوظ،"))) + TG("يومين", 270, 120, u, wt(0, "يومين"), -4) +
+    counter(320, 330, u, wt(0, "تلات"), 1.4, 0, 3000, " سنة", 40, "#c23a26") + vitrine(320, 470, 1.0, t);
 });
 // 1: سر ولا سحر؟
 shot(1, CAM, function (u, d, t) {
   return fill("#2a3a5a") + stars(t) + '<rect x="-400" y="470" width="1440" height="900" fill="#c8964f"/>' + pyramids(300, 470, 1.4) + egyptian(190, 520, t, { role: "man", mood: "curious", pose: "think", s: 1.4 }) +
-    qmark(420, 330, t, 130) + sparkle(420, 290, t, "#fff3b0", 8) + TG("سر؟", 220, 120, u, 0.6, -5) + TG("ولا سحر؟", 400, 190, u, 2.2, 4);
+    qmark(420, 330, t, 130) + sparkle(420, 290, t, "#fff3b0", 8) + TG("سر؟", 220, 120, u, wt(1, "سر؟"), -5) + TG("ولا سحر؟", 400, 190, u, wt(1, "ولا"), 4);
 });
 // 2: نبني التحنيط خطوة خطوة
 shot(2, CAM, function (u, d, t) {
   var s = workshopV(t) + bedBody(t, { clear: true }) ;
   for (var i = 0; i < 4; i++) s += icon(215 + i * 70, 250, u, 0.6 + i * 0.4, '<text y="10" text-anchor="middle" style="font:900 26px Noto Sans Arabic;fill:#c23a26">' + (i + 1) + '</text>');
-  return s + TG("خطوة خطوة", 320, 150, u, 1.0);
+  return s + TG("خطوة خطوة", 320, 150, u, wt(2, "خطوة"));
 });
 // 3: رمل الصحرا بينشف الجسم
 shot(3, CAM, function (u, d, t) {
   return sky("day") + sun(450, 110, 40, "#f7c84a") + pyramids(170, 330, 0.8) + desert(t, 340) +
     G(320, 440, 1.35, '<g transform="translate(-330 -262)">' + body(330, 262, 1, t, { skin: "#b07a4e" }) + '<path d="M180 266 Q330 252 480 266 Q330 286 180 266" fill="' + SAND + '" opacity=".8"/>' + vapor(330, 240, t, 8) + '</g>') +
-    TG("ينشف لوحده", 320, 200, u, 1.6);
+    TG("ينشف لوحده", 320, 200, u, wt(3, "وينشف"));
 });
 // 4: الملك عايز تابوت، والجسم بيتحلل
 shot(4, CAM, function (u, d, t) {
   return workshopV(t) + coffin(400, 200, 0.55, "#8a5a2a") + egyptian(200, 360, t, { role: "king", mood: "happy", pose: "point", s: 1.2 }) +
-    bedBody(t, {}, rot(320, 240, t, clamp((u - 2.5) / 1.5))) + cross(440, 250, u, 4.2) + TG("يتحلل!", 320, 330, u, 4.5, 3, "#b9d98a");
+    bedBody(t, {}, rot(320, 240, t, clamp((u - wt(4, "بعد")) / 1.2))) + cross(440, 250, u, wt(4, "يتحلل.")) + TG("يتحلل!", 320, 330, u, wt(4, "يتحلل."), 3, "#b9d98a");
 });
 // 5: الأعضاء + فتحة في الجنب الشمال
 shot(5, camPush(320, 300, 0.9, 1.0), function (u, d, t) {
-  var g = 0.6 + 0.4 * Math.sin(t * 5), cut = ease((u - 4.5) / 1.2);
+  var g = 0.6 + 0.4 * Math.sin(t * 5), cut = ease((u - wt(5, "فتحة")) / 1.0);
   var organs = '<g opacity="' + f(g) + '"><ellipse cx="300" cy="240" rx="18" ry="9" fill="#9a3a2a"/><ellipse cx="340" cy="246" rx="16" ry="8" fill="#d98a6a"/><path d="M360 240 q10 -10 20 0 q10 10 20 0" stroke="#e8a08a" stroke-width="7" fill="none"/><ellipse cx="270" cy="236" rx="14" ry="8" fill="#e88a9a"/></g>' +
     pulse(330, 242, t, "#e8443a", 40) + '<path d="M300 232 L' + f(300 + 60 * cut) + ' 232" stroke="#c23a26" stroke-width="4" stroke-dasharray="6 4"/>';
   return workshopV(t) + G(320, 440, 1.3, '<g transform="translate(-330 -262)">' + bed(330, 270, 1) + body(330, 254, 1, t, { clear: true }) + organs + '</g>') +
-    TG("الأعضاء", 230, 230, u, 1.0) + TG("الجنب الشمال", 380, 320, u, 4.8, 4);
+    TG("الأعضاء", 230, 230, u, wt(5, "الأعضاء")) + TG("الجنب الشمال", 380, 320, u, wt(5, "الجنب"), 4);
 });
 // 6: المخ من الأنف بخطاف
 shot(6, CAM, function (u, d, t) {
-  var k = ease((u - 1) / 2), wig = Math.sin(t * 8) * 4;
-  return fill("#e9d6b0") + '<rect x="-400" y="520" width="1440" height="900" fill="#c9a87a"/>' + profile(215, 350, 2, t, 1 - clamp((u - 3) / 2) * 0.7) +
-    hook(610 - 185 * k + wig, 368, 1.2) + arrow(470, 210, 430, 335, "#f2c230", 7, ease((u - 0.5) / 1)) + TG("من الأنف", 380, 150, u, 1.2, -3);
+  var k = ease((u - wt(6, "طلعوه")) / 1.0), wig = Math.sin(t * 8) * 4;
+  return fill("#e9d6b0") + '<rect x="-400" y="520" width="1440" height="900" fill="#c9a87a"/>' + profile(215, 350, 2, t, 1 - clamp((u - wt(6, "بخطاف")) / 1.2) * 0.7) +
+    hook(610 - 185 * k + wig, 368, 1.2) + arrow(470, 210, 430, 335, "#f2c230", 7, ease((u - wt(6, "من")) / 0.6)) + TG("من الأنف", 380, 150, u, wt(6, "من"), -3);
 });
 // 7: القلب في مكانه + الميزان
 shot(7, CAM, function (u, d, t) {
   return workshopV(t) + balance(320, 330, 1.3, t) + bedBody(t, { clear: true }, heart(300, 252, 0.6, t) + pulse(300, 252, t, "#e8443a", 26)) +
-    TG("مركز العقل", 220, 130, u, 1.8) + TG("هيتوزن", 430, 180, u, 5.0, 4);
+    TG("مركز العقل", 220, 130, u, wt(7, "مركز")) + TG("هيتوزن", 430, 180, u, wt(7, "هيتوزن"), 4);
 });
 // 8: أربع أواني كانوبية
 shot(8, CAM, function (u, d, t) {
   var s = workshopV(t), names = ["الكبد", "الرئة", "المعدة", "الأمعاء"], P = [[230, 300], [410, 300], [230, 520], [410, 520]];
-  for (var i = 0; i < 4; i++) { var k = pop((u - 1 - i * 0.8) / 0.8); if (k > 0) s += G(P[i][0], P[i][1], k * 1.5, jar(0, 0, 1, i, t) + label(names[i], 0, 26, 17, INK, 900)); }
-  return s + TG("أربع أواني كانوبية", 320, 130, u, 0.6);
+  for (var i = 0; i < 4; i++) { var k = pop((u - wt(8, ["للكبد", "والرئة", "والمعدة", "والأمعاء."][i])) / 0.6); if (k > 0) s += G(P[i][0], P[i][1], k * 1.5, jar(0, 0, 1, i, t) + label(names[i], 0, 26, 17, INK, 900)); }
+  return s + TG("أربع أواني كانوبية", 320, 130, u, wt(8, "أربع"));
 });
 // 9: الجسم مليان مية وبكتيريا
 shot(9, CAM, function (u, d, t) {
   var lvl = 18 * ease(u / 2);
   return fill("#cfe3ee") + '<g transform="translate(320 360) scale(1.65)"><defs><clipPath id="bw"><circle cx="-96" cy="0" r="18"/><rect x="-80" y="-15" width="178" height="30" rx="14"/></clipPath></defs><g clip-path="url(#bw)">' + waterIn(-120, 20, 230, t, lvl) + '</g></g>' +
-    body(320, 360, 1.65, t, { clear: true }) + microbes(t, 170, 330, 300, 50, 9) + counter(320, 200, u, 2.0, 1.8, 0, 60, "٪ مية", 44, "#2b86b5") + TG("أكل للبكتيريا", 320, 500, u, 4.5, 2, "#b9d98a");
+    body(320, 360, 1.65, t, { clear: true }) + microbes(t, 170, 330, 300, 50, 9) + counter(320, 200, u, wt(9, "ستين"), 1.0, 0, 60, "٪ مية", 44, "#2b86b5") + TG("أكل للبكتيريا", 320, 500, u, wt(9, "أكل"), 2, "#b9d98a");
 });
 // 10: ملح النطرون أربعين يوم
 shot(10, CAM, function (u, d, t) {
-  var h = ease(u / 2.5), days = Math.min(40, Math.floor(clamp((u - 3) / 2.6) * 40));
-  return workshopV(t) + bedBody(t, { skin: "#a8784c" }, saltPile(320, 270, 280, h, t) + vapor(320, 200, t, 5)) + G(420, 170, 1.2, calendar(0, 0, days || 1)) + TG("ملح النطرون", 230, 130, u, 0.8);
+  var h = ease(u / 2.5), days = Math.min(40, Math.floor(clamp((u - wt(10, "أربعين") + 0.6) / 1.4) * 40));
+  return workshopV(t) + bedBody(t, { skin: "#a8784c" }, saltPile(320, 270, 280, h, t) + vapor(320, 200, t, 5)) + G(420, 170, 1.2, calendar(0, 0, days || 1)) + TG("ملح النطرون", 230, 130, u, wt(10, "ملح"));
 });
 // 11: الجسم انكمش
 shot(11, CAM, function (u, d, t) {
-  return workshopV(t) + egyptian(440, 360, t, { role: "man", mood: "shock", pose: "stand", s: 1.3 }) + bedBody(t, { shrink: ease(u / 2.5) }) + TG("منكمش ومكرمش", 300, 170, u, 1.4, -3);
+  return workshopV(t) + egyptian(440, 360, t, { role: "man", mood: "shock", pose: "stand", s: 1.3 }) + bedBody(t, { shrink: ease(u / 1.8) }) + TG("منكمش ومكرمش", 300, 170, u, wt(11, "منكمش"), -3);
 });
 // 12: حشو بالكتان والنشارة
 shot(12, CAM, function (u, d, t) {
-  var k = ease((u - 1.5) / 2.5), s = workshopV(t) + bedBody(t, { shrink: 1 - k });
+  var k = ease((u - 0.4) / 2.2), s = workshopV(t) + bedBody(t, { shrink: 1 - k });
   for (var i = 0; i < 4; i++) { var p = ((u * 0.7 + i * 0.25) % 1); s += linenRoll(lerp(480, 320, p), lerp(160, 420, p), 1.1, p * 360); }
-  return s + TG("يرجعله شكله", 300, 140, u, 3.0);
+  return s + TG("يرجعله شكله", 300, 140, u, wt(12, "يرجعله"));
 });
 // 13: دهان بالزيت والراتنج
 shot(13, camPush(320, 300, 0.9, 1.0), function (u, d, t) {
-  var bx = 220 + ((Math.sin(t * 2) + 1) / 2) * 200, shine = clamp((u - 2) / 2);
+  var bx = 220 + ((Math.sin(t * 2) + 1) / 2) * 200, shine = clamp((u - wt(13, "فدهنوه")) / 1.6);
   var cracks = '<g stroke="#5a3a20" stroke-width="2" fill="none" opacity="' + f(1 - shine) + '"><path d="M250 248 l8 6 l-4 6 M330 252 l10 -4 l4 6 M390 246 l-6 8"/></g>';
-  return workshopV(t) + bedBody(t, { skin: "#a8784c" }, cracks + '<rect x="230" y="240" width="' + f(180 * shine) + '" height="10" rx="5" fill="#fff" opacity=".45"/>' + brush(bx, 226, 1, -20) + sparkle(bx, 240, t, "#fff3b0", 4)) + TG("زي الورنيش", 320, 220, u, 3.5);
+  return workshopV(t) + bedBody(t, { skin: "#a8784c" }, cracks + '<rect x="230" y="240" width="' + f(180 * shine) + '" height="10" rx="5" fill="#fff" opacity=".45"/>' + brush(bx, 226, 1, -20) + sparkle(bx, 240, t, "#fff3b0", 4)) + TG("زي الورنيش", 320, 220, u, wt(13, "زي"));
 });
 // 14: لف بالكتان، مئات الأمتار
 shot(14, CAM, function (u, d, t) {
   var w = ease(u / (d * 0.85));
   return workshopV(t) + bedBody(t, { wrap: w }, linenRoll(lerp(440, 210, w), 220 + Math.sin(t * 6) * 10, 0.8, t * 200)) +
-    counter(320, 260, u, 1.5, 3.5, 0, 400, " متر", 44, "#c23a26") + TG("مئات الأمتار", 320, 150, u, 4.0);
+    counter(320, 260, u, wt(14, "كتان"), 1.4, 0, 400, " متر", 44, "#c23a26") + TG("مئات الأمتار", 320, 150, u, wt(14, "لمئات"));
 });
 // 15: تمايم والجعران
 shot(15, CAM, function (u, d, t) {
-  return tombV(t) + bedBody(t, { wrap: 1 }, eyeAmulet(250, 250, 0.6 * pop((u - 0.8) / 0.8)) + eyeAmulet(400, 252, 0.6 * pop((u - 1.4) / 0.8))) +
-    scarab(320, lerp(180, 395, ease((u - 2.4) / 1.5)), 1.2, t) + sparkle(320, 395, t, "#9fd0ff", 6) + TG("الجعران", 320, 520, u, 3.0, -3, "#9fc7f0");
+  return tombV(t) + bedBody(t, { wrap: 1 }, eyeAmulet(250, 250, 0.6 * pop((u - wt(15, "تمايم،")) / 0.8)) + eyeAmulet(400, 252, 0.6 * pop((u - wt(15, "تمايم،") - 0.4) / 0.8))) +
+    scarab(320, lerp(180, 395, ease((u - wt(15, "أشهرها")) / 1.0)), 1.2, t) + sparkle(320, 395, t, "#9fd0ff", 6) + TG("الجعران", 320, 520, u, wt(15, "الجعران"), -3, "#9fc7f0");
 });
 // 16: الوش اتغطى، الروح هتعرفه إزاي؟
 shot(16, CAM, function (u, d, t) {
   var a = t * 1.2;
-  return tombV(t) + bedBody(t, { wrap: 1 }) + baBird(300 + Math.cos(a) * 90, 260 + Math.sin(a * 2) * 25, 1.3, t) + qmark(440, 200, t, 100) + TG("الوش اتغطى", 230, 140, u, 0.8, -3);
+  return tombV(t) + bedBody(t, { wrap: 1 }) + baBird(300 + Math.cos(a) * 90, 260 + Math.sin(a * 2) * 25, 1.3, t) + qmark(440, 200, t, 100) + TG("الوش اتغطى", 230, 140, u, wt(16, "الوش"), -3);
 });
 // 17: قناع توت عنخ آمون الدهب، عشرة كيلو
 shot(17, camPush(320, 300, 0.86, 0.96), function (u, d, t) {
@@ -305,33 +309,33 @@ shot(17, camPush(320, 300, 0.86, 0.96), function (u, d, t) {
   for (var i = 0; i < 14; i++) { var a = i / 14 * 6.283 + t * 0.15; rays += '<path d="M320 290 L' + f(320 + Math.cos(a) * 420) + ' ' + f(290 + Math.sin(a) * 420) + ' L' + f(320 + Math.cos(a + 0.12) * 420) + ' ' + f(290 + Math.sin(a + 0.12) * 420) + ' Z" fill="#ffe9a0" opacity=".12"/>'; }
   return tombV(t) + rays + '<circle cx="320" cy="290" r="230" fill="url(#aura)" opacity="' + f(0.5 + 0.2 * Math.sin(t * 2)) + '"/>' +
     G(320, 305, 0.98 * (k || 0.001), tutMask(t)) + sparkle(320, 230, t, "#fff3b0", 10) +
-    (u > 3.2 ? weight(450, 545, 1.3 * pop((u - 3.2) / 0.8), "١٠ كجم") : "") + TG("قناع دهب", 215, 555, u, 2.4);
+    (u > wt(17, "عشرة") - 0.2 ? weight(450, 545, 1.3 * pop((u - wt(17, "عشرة") + 0.2) / 0.8), "١٠ كجم") : "") + TG("قناع دهب", 215, 555, u, wt(17, "دهب"));
 });
 // 18: توابيت جوه بعض والحرامية
 shot(18, CAM, function (u, d, t) {
   var s = tombV(t), cols = ["#8a5a2a", "#a06a3a", GOLD];
-  for (var i = 0; i < 3; i++) { var k = ease((u - 1.5 - i * 0.9) / 0.8); if (k > 0) s += coffin(320, 320, (1.25 - i * 0.22) * (0.6 + 0.4 * k), cols[i], i === 2 ? "#e8c46a" : "#c9a04e"); }
-  return s + egyptian(180, 560, t, { role: "thief", mood: "worry", pose: "torch", s: 1.1 }) + TG("توابيت جوه بعض", 320, 160, u, 1.4) + (u > 5 ? weight(430, 520, 1.4 * pop((u - 5) / 0.8), "١١٠ كجم") : "");
+  for (var i = 0; i < 3; i++) { var k = ease((u - wt(18, "توابيت") - i * 0.5) / 0.6); if (k > 0) s += coffin(320, 320, (1.25 - i * 0.22) * (0.6 + 0.4 * k), cols[i], i === 2 ? "#e8c46a" : "#c9a04e"); }
+  return s + egyptian(180, 560, t, { role: "thief", mood: "worry", pose: "torch", s: 1.1 }) + TG("توابيت جوه بعض", 320, 160, u, wt(18, "توابيت")) + (u > wt(18, "مية") - 0.2 ? weight(430, 520, 1.4 * pop((u - wt(18, "مية") + 0.2) / 0.8), "١١٠ كجم") : "");
 });
 // 19: تابوت حجري ومقبرة في الجبل
 shot(19, CAM, function (u, d, t) {
-  var lid = ease((u - 0.8) / 1.5);
+  var lid = ease((u - wt(19, "تابوت")) / 1.2);
   return sky("dusk") + sun(440, 120, 34, "#f7a24a") + '<path d="M-400 400 L-20 160 L160 260 L320 130 L520 250 L760 170 L1100 400 Z" fill="#b8865a" stroke="' + INK + '" stroke-width="3"/>' +
     '<path d="M290 400 V330 Q320 310 350 330 V400 Z" fill="#2a1a10" stroke="' + INK + '" stroke-width="2.4"/>' + desert(t, 400) +
     G(320, 500, 0.85, '<rect x="-150" y="-30" width="300" height="80" rx="6" fill="#9a9a92" stroke="' + INK + '" stroke-width="3"/>' + coffin(0, 0, 0.9, GOLD, "#e8c46a") + '<rect x="-160" y="' + f(-130 + lid * 90) + '" width="320" height="26" rx="6" fill="#b8b4ac" stroke="' + INK + '" stroke-width="3"/>') +
-    TG("تابوت حجري", 230, 230, u, 1.0) + TG("مستخبية في الجبل", 380, 300, u, 2.8, 4);
+    TG("تابوت حجري", 230, 230, u, wt(19, "تابوت")) + TG("مستخبية في الجبل", 380, 300, u, wt(19, "مستخبية"), 4);
 });
 // 20: سبعين يوم مع الكهنة
 shot(20, CAM, function (u, d, t) {
-  var days = Math.max(1, Math.min(70, Math.floor(clamp((u - 0.8) / 2.6) * 70)));
-  return workshopV(t) + egyptian(190, 370, t, { role: "priest", mood: "n", pose: "point", s: 1.1 }) + egyptian(450, 370, t, { role: "priest", pose: "think", s: 1.1 }) + bedBody(t, { wrap: 1, mask: 1 }) + G(420, 170, 1.2, calendar(0, 0, days)) + TG("سبعين يوم", 230, 140, u, 1.2);
+  var days = Math.max(1, Math.min(70, Math.floor(clamp((u - 0.2) / Math.max(0.5, wt(20, "سبعين"))) * 70)));
+  return workshopV(t) + egyptian(190, 370, t, { role: "priest", mood: "n", pose: "point", s: 1.1 }) + egyptian(450, 370, t, { role: "priest", pose: "think", s: 1.1 }) + bedBody(t, { wrap: 1, mask: 1 }) + G(420, 170, 1.2, calendar(0, 0, days)) + TG("سبعين يوم", 230, 140, u, wt(20, "سبعين"));
 });
 // 21: أوروبا بتطحن المومياوات كدوا
 shot(21, CAM, function (u, d, t) {
   var s = fill("#5a3e2a") + '<rect x="-400" y="' + FY + '" width="1440" height="900" fill="#8a6a48" stroke="' + INK + '" stroke-width="2"/>';
   for (var r = 0; r < 2; r++) { s += '<rect x="120" y="' + (150 + r * 90) + '" width="400" height="10" fill="#a06a3a" stroke="' + INK + '" stroke-width="2"/>'; for (var i = 0; i < 5; i++) s += potJar(160 + i * 80, 150 + r * 90, 1, ["#3a8fd9", "#4f9f5a", "#c98a2a", "#8a4fc4"][(i + r) % 4]); }
   s += '<rect x="170" y="470" width="260" height="22" fill="#6a4020" stroke="' + INK + '" stroke-width="2.4"/>' + mortar(300, 468, 1.3, t) + label("MUMMIA", 300, 448, 14, "#3a2a1e", 900);
-  return s + person(450, 560, t, { mood: "shock", pose: "point", shirt: "#7a3a2a", s: 1.1 }) + TG("بيطحنوا المومياوات", 320, 320, u, 1.2, -3) + TG("كدوا!", 440, 390, u, 3.8, 6, "#f2a0a0");
+  return s + person(450, 560, t, { mood: "shock", pose: "point", shirt: "#7a3a2a", s: 1.1 }) + TG("بيطحنوا المومياوات", 320, 320, u, wt(21, "بيطحنوا"), -3) + TG("كدوا!", 440, 390, u, wt(21, "كدوا!"), 6, "#f2a0a0");
 });
 // 22: المنظومة كاملة
 shot(22, CAM, function (u, d, t) {
@@ -340,11 +344,11 @@ shot(22, CAM, function (u, d, t) {
   var names = ["تنشيف", "الأعضاء", "النطرون", "الكتان", "القناع", "التوابيت"];
   for (var i = 0; i < 6; i++) { s += G(P[i][0], P[i][1], 1.35, icon(0, 0, u, 0.3 + i * 0.45, icons[i])); if (u > 0.5 + i * 0.45) s += label(names[i], P[i][0], P[i][1] + 68, 18, INK, 900);
     if (i < 5) { var a = P[i], b = P[i + 1], dx = Math.sign(b[0] - a[0]) * 52, dy = Math.sign(b[1] - a[1]) * 52; s += arrow(a[0] + dx, a[1] + dy, b[0] - dx, b[1] - dy, "#c23a26", 4, ease((u - 0.6 - i * 0.45) / 0.4)); } }
-  return s + TG("منظومة كاملة", 320, 545, u, 2.0) + check(320, 218, u, 3.5, 1.3);
+  return s + TG("منظومة كاملة", 320, 545, u, wt(22, "منظومة")) + check(320, 218, u, wt(22, "وتحمي."), 1.3);
 });
 // 23: السندوتش تاني قصاد المومياء
 shot(23, CAM, function (u, d, t) {
-  return roomV(t) + sandwich(260, 230, 1.6, t, 1) + cross(390, 170, u, 0.8, 1.3) + vitrine(320, 470, 1.0, t) + check(450, 390, u, 1.4, 1.3) + TG("ملح + كتان + صبر", 320, 330, u, 3.0, -2);
+  return roomV(t) + sandwich(260, 230, 1.6, t, 1) + cross(390, 170, u, 0.8, 1.3) + vitrine(320, 470, 1.0, t) + check(450, 390, u, 1.4, 1.3) + TG("ملح + كتان + صبر", 320, 330, u, wt(23, "بملح"), -2);
 });
 // 24: الختام
 shot(24, CAM, function (u, d, t) {
