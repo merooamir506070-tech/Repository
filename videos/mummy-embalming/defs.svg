@@ -1,0 +1,4 @@
+<pattern id="nemes" patternUnits="userSpaceOnUse" width="20" height="14"><rect width="20" height="14" fill="#e2b545"/><rect y="7" width="20" height="7" fill="#2f4f9f"/></pattern>
+<pattern id="leopard" patternUnits="userSpaceOnUse" width="12" height="12"><rect width="12" height="12" fill="#e0a64a"/><circle cx="3" cy="3" r="1.8" fill="#5a3a1a"/><circle cx="9" cy="8" r="1.6" fill="#5a3a1a"/></pattern>
+<linearGradient id="tutFace" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbe7a4"/><stop offset=".45" stop-color="#e9bf5c"/><stop offset="1" stop-color="#a87a28"/></linearGradient>
+<radialGradient id="aura"><stop offset="0" stop-color="#ffe9a0" stop-opacity=".9"/><stop offset="1" stop-color="#ffe9a0" stop-opacity="0"/></radialGradient>
