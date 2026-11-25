@@ -1,5 +1,6 @@
 // يرسم لوجو «كوكب إزاي» والغلاف والصورة الشخصية لفيسبوك: node make.js
 const { chromium } = require('playwright');
+const fs = require('fs');
 const INK = '#1c1c1c', YEL = '#f2c230', NAVY = '#16223b';
 const defs = `<defs>
  <radialGradient id="pl" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#7fd0f0"/><stop offset=".55" stop-color="#2b86b5"/><stop offset="1" stop-color="#123f66"/></radialGradient>
@@ -52,8 +53,10 @@ const pages = {
   const b = await chromium.launch();
   for (const [name, [w, h, transparent, body]] of Object.entries(pages)) {
     const p = await b.newPage({ viewport: { width: w, height: h } });
-    await p.goto('about:blank');
-    await p.setContent(`<!doctype html><html><head><meta charset="utf-8"><link href="file://${__dirname}/fonts/fonts.css" rel="stylesheet"><style>html,body{margin:0;background:transparent}</style></head><body><svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${defs}${body}</svg></body></html>`);
+    const tmp = __dirname + '/.page.html';
+    fs.writeFileSync(tmp, `<!doctype html><html><head><meta charset="utf-8"><link href="file://${__dirname}/fonts/fonts.css" rel="stylesheet"><style>html,body{margin:0;background:transparent}</style></head><body><svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${defs}${body}</svg></body></html>`);
+    await p.goto('file://' + tmp);
+    fs.unlinkSync(tmp);
     await p.evaluate(() => document.fonts.ready);
     await p.waitForTimeout(300);
     await p.screenshot({ path: __dirname + '/' + name, omitBackground: transparent });
