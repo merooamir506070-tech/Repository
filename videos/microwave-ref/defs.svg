@@ -1,0 +1,20 @@
+<linearGradient id="kwall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1e4c9"/><stop offset="1" stop-color="#e6d4b0"/></linearGradient>
+<linearGradient id="kwood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9824e"/><stop offset="1" stop-color="#94633a"/></linearGradient>
+<linearGradient id="kcab" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d8f9e"/><stop offset="1" stop-color="#557684"/></linearGradient>
+<linearGradient id="kfloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6a4c"/><stop offset="1" stop-color="#5e4632"/></linearGradient>
+<linearGradient id="ksky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb7e0"/><stop offset="1" stop-color="#cfe6f2"/></linearGradient>
+<linearGradient id="mwbody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f2ed"/><stop offset="1" stop-color="#d7d3ca"/></linearGradient>
+<linearGradient id="mwdark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b3f45"/><stop offset="1" stop-color="#25282c"/></linearGradient>
+<radialGradient id="mwglow" cx=".5" cy=".45" r=".7"><stop offset="0" stop-color="#fff2b8"/><stop offset=".6" stop-color="#f4dc8e"/><stop offset="1" stop-color="#d9bc6a"/></radialGradient>
+<radialGradient id="mwoff" cx=".5" cy=".45" r=".7"><stop offset="0" stop-color="#d9d4ca"/><stop offset="1" stop-color="#b3ada2"/></radialGradient>
+<radialGradient id="hot"><stop offset="0" stop-color="#ff5a2a" stop-opacity=".85"/><stop offset=".6" stop-color="#ff8a3a" stop-opacity=".35"/><stop offset="1" stop-color="#ff8a3a" stop-opacity="0"/></radialGradient>
+<radialGradient id="cold"><stop offset="0" stop-color="#4aa8ff" stop-opacity=".75"/><stop offset=".6" stop-color="#7cc4ff" stop-opacity=".3"/><stop offset="1" stop-color="#7cc4ff" stop-opacity="0"/></radialGradient>
+<radialGradient id="lensbg" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#2f4a63"/><stop offset="1" stop-color="#1a2a3a"/></radialGradient>
+<linearGradient id="rice" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf4"/><stop offset="1" stop-color="#e9e2cf"/></linearGradient>
+<linearGradient id="ice" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8f7ff"/><stop offset="1" stop-color="#9fd3f0"/></linearGradient>
+<linearGradient id="choc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a4a2a"/><stop offset="1" stop-color="#4e2c16"/></linearGradient>
+<linearGradient id="meat" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff6a3a"/><stop offset=".18" stop-color="#f3a07a"/><stop offset=".5" stop-color="#c98a9a"/><stop offset=".82" stop-color="#f3a07a"/><stop offset="1" stop-color="#ff6a3a"/></linearGradient>
+<linearGradient id="mag" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a8f96"/><stop offset=".5" stop-color="#d4d8dc"/><stop offset="1" stop-color="#7a7f86"/></linearGradient>
+<pattern id="mesh" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.15" fill="#0e161b"/></pattern>
+<clipPath id="kwin"><rect x="212" y="40" width="118" height="104" rx="4"/></clipPath>
+<clipPath id="cav"><rect x="112" y="250" width="158" height="136" rx="4"/></clipPath>
