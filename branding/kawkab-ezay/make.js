@@ -52,7 +52,7 @@ const pages = {
   const b = await chromium.launch();
   for (const [name, [w, h, transparent, body]] of Object.entries(pages)) {
     const p = await b.newPage({ viewport: { width: w, height: h } });
-    await p.goto('file://' + __dirname + '/blank.html');
+    await p.goto('about:blank');
     await p.setContent(`<!doctype html><html><head><meta charset="utf-8"><link href="file://${__dirname}/fonts/fonts.css" rel="stylesheet"><style>html,body{margin:0;background:transparent}</style></head><body><svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${defs}${body}</svg></body></html>`);
     await p.evaluate(() => document.fonts.ready);
     await p.waitForTimeout(300);
