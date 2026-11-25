@@ -324,7 +324,7 @@ shot(19, CAM, function (u, d, t) {
 // 20: سبعين يوم مع الكهنة
 shot(20, CAM, function (u, d, t) {
   var days = Math.max(1, Math.min(70, Math.floor(clamp((u - 0.8) / 2.6) * 70)));
-  return workshopV(t) + egyptian(190, 370, t, { role: "anubis", pose: "point", s: 1.1 }) + egyptian(450, 370, t, { role: "priest", pose: "think", s: 1.1 }) + bedBody(t, { wrap: 1, mask: 1 }) + G(420, 170, 1.2, calendar(0, 0, days)) + TG("سبعين يوم", 230, 140, u, 1.2);
+  return workshopV(t) + egyptian(190, 370, t, { role: "priest", mood: "n", pose: "point", s: 1.1 }) + egyptian(450, 370, t, { role: "priest", pose: "think", s: 1.1 }) + bedBody(t, { wrap: 1, mask: 1 }) + G(420, 170, 1.2, calendar(0, 0, days)) + TG("سبعين يوم", 230, 140, u, 1.2);
 });
 // 21: أوروبا بتطحن المومياوات كدوا
 shot(21, CAM, function (u, d, t) {
