@@ -2,182 +2,102 @@
 <html lang="ar"><head><meta charset="utf-8">
 <style>
 @font-face{font-family:Cairo;src:url(cairo.woff2) format('woff2');font-weight:200 1000}
-:root{--navy:#10294a;--navy2:#1d3f6e;--orange:#f2841f;--yellow:#f9b233;--cream:#fbf6ee;--sky:#cfe0f2}
 body{margin:0;background:#888}
-.canvas{position:relative;overflow:hidden;background:var(--cream);margin:0 0 20px}
+.canvas{position:relative;overflow:hidden;background:#10294a;margin:0 0 20px}
 #profile{width:1080px;height:1080px}
 #cover{width:1640px;height:624px}
-svg{position:absolute;inset:0}
-.title{position:absolute;left:0;right:0;text-align:center;font-family:Cairo;font-weight:1000;color:var(--navy);direction:rtl;line-height:1}
-.title .q{color:var(--orange)}
-.pill{position:absolute;font-family:Cairo;font-weight:800;color:#fff;background:var(--navy);direction:rtl;border-radius:40px;text-align:center;white-space:nowrap}
+svg.full{position:absolute;inset:0}
+.t{position:absolute;font-family:Cairo;direction:rtl;line-height:1;white-space:nowrap}
+.cream{color:#fbf6ee}.or{color:#f2841f}
 </style></head><body>
 
 <div class="canvas" id="profile">
-  <svg viewBox="0 0 1080 1080" width="1080" height="1080">
-    <use href="#mark" transform="translate(290,90) scale(0.9)"/>
-    <path d="M320 925 Q540 890 760 908" stroke="#f2841f" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <svg class="full" viewBox="0 0 1080 1080" width="1080" height="1080">
+    <rect width="1080" height="1080" fill="url(#bgGlow)"/>
+    <g id="pStars"></g>
+    <use href="#mark" transform="translate(540,420) scale(1.05)"/>
   </svg>
-  <div class="title" style="top:735px;font-size:135px;white-space:nowrap">كوكب إزاي<span class="q">؟</span></div>
+  <div class="t" style="left:0;right:0;text-align:center;top:745px;font-size:128px;font-weight:1000">
+    <span class="cream">كوكب</span> <span class="or">إزاي</span>
+  </div>
 </div>
 
 <div class="canvas" id="cover">
-  <svg viewBox="0 0 1640 624" width="1640" height="624" id="coverSvg">
-    <!-- clouds -->
-    <g fill="#f6e3cc" opacity=".8">
-      <path d="M40 250 q20-40 60-20 q20-35 60-10 q40 0 40 30 z"/>
-      <path d="M1440 120 q20-40 60-20 q20-35 60-10 q40 0 40 30 z"/>
-      <path d="M1180 300 q15-30 45-15 q15-26 45-8 q30 0 30 23 z"/>
-    </g>
-    <!-- big planet left -->
-    <g transform="translate(205,470)">
-      <ellipse rx="300" ry="62" fill="none" stroke="#9bb8dd" stroke-width="18" transform="rotate(-14)" clip-path="url(#backHalf)"/>
-      <circle r="215" fill="url(#bigPlanet)"/>
-      <path d="M-205 -40 Q0 -80 205 -60" stroke="#ffffff" stroke-width="14" opacity=".35" fill="none"/>
-      <path d="M-212 30 Q0 0 212 20" stroke="#8fb0d8" stroke-width="20" opacity=".45" fill="none"/>
-      <path d="M-190 100 Q0 80 190 95" stroke="#ffffff" stroke-width="10" opacity=".35" fill="none"/>
-      <circle cx="-70" cy="-110" r="26" fill="#a9c3e4" opacity=".7"/>
-      <circle cx="80" cy="-30" r="16" fill="#a9c3e4" opacity=".7"/>
-      <ellipse rx="300" ry="62" fill="none" stroke="#9bb8dd" stroke-width="18" transform="rotate(-14)" clip-path="url(#frontHalf)"/>
-    </g>
-    <!-- right: rocket + stars -->
-    <path d="M1640 0 L1640 420 Q1520 330 1420 300 Q1500 160 1640 0Z" fill="#10294a"/>
-    <g fill="#fff"><circle cx="1560" cy="90" r="4"/><circle cx="1610" cy="200" r="3"/><circle cx="1520" cy="250" r="3"/></g>
-    <use href="#spark" transform="translate(1600,140) scale(.7)" />
-    <use href="#spark" transform="translate(1480,200) scale(.5)" />
-    <path d="M1250 420 Q1380 400 1470 250" stroke="#fff" stroke-width="34" fill="none" stroke-linecap="round" opacity=".95"/>
-    <g fill="#fff"><circle cx="1260" cy="415" r="40"/><circle cx="1310" cy="420" r="32"/><circle cx="1220" cy="430" r="28"/></g>
-    <use href="#rocket" transform="translate(1500,190) rotate(40) scale(1.1)"/>
-    <!-- waves bottom -->
-    <path d="M0 560 Q300 500 620 560 T1250 545 T1640 520 L1640 624 L0 624Z" fill="#10294a"/>
-    <path d="M0 590 Q320 540 700 595 T1640 560 L1640 624 L0 624Z" fill="#f2841f"/>
-    <path d="M0 610 Q400 585 820 612 T1640 595 L1640 624 L0 624Z" fill="#10294a"/>
-    <!-- timeline path -->
-    <path id="road" d="M300 520 C420 480 500 545 620 515 S820 470 940 500 S1150 520 1260 470" stroke="#f2841f" stroke-width="16" fill="none" stroke-linecap="round"/>
-    <g id="icons"></g>
-    <!-- logo mark + tagline -->
-    <use href="#mark" transform="translate(305,40) scale(0.36)"/>
-    
-    <g stroke="#f9b233" stroke-width="7" stroke-linecap="round">
-      <line x1="515" y1="208" x2="550" y2="220"/><line x1="510" y1="240" x2="547" y2="240"/><line x1="515" y1="272" x2="550" y2="260"/>
-      <line x1="1205" y1="208" x2="1170" y2="220"/><line x1="1210" y1="240" x2="1173" y2="240"/><line x1="1205" y1="272" x2="1170" y2="260"/>
+  <svg class="full" viewBox="0 0 1640 624" width="1640" height="624">
+    <rect width="1640" height="624" fill="url(#bgGlowC)"/>
+    <g id="cStars"></g>
+    <g transform="translate(500,312)">
+      <g fill="none" stroke="#2f5a8f" stroke-width="3" stroke-dasharray="10 12">
+        <ellipse rx="190" ry="95"/><ellipse rx="275" ry="150"/><ellipse rx="360" ry="215"/>
+      </g>
+      <use href="#mark" transform="scale(.45)"/>
+      <g id="orbiters"></g>
     </g>
   </svg>
-  <div class="pill" style="left:570px;top:205px;width:580px;height:70px;font-size:34px;line-height:68px">رحلة لاكتشاف إزاي الحاجات بتشتغل</div>
-  <div class="title" style="top:70px;left:470px;right:auto;font-size:84px;">كوكب إزاي<span class="q">؟</span></div>
+  <div class="t" style="right:290px;top:165px;font-size:110px;font-weight:1000">
+    <span class="cream">كوكب</span> <span class="or">إزاي</span>
+  </div>
+  <div class="t cream" style="right:292px;top:320px;font-size:36px;font-weight:700;opacity:.92">رحلة لاكتشاف إزاي الحاجات بتشتغل</div>
+  <svg class="full" viewBox="0 0 1640 624" width="1640" height="624">
+    <path d="M1350 385 h-300" stroke="#f9b233" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="1025" cy="385" r="8" fill="#f2841f"/>
+  </svg>
 </div>
 
 <svg width="0" height="0" style="position:absolute">
   <defs>
+    <radialGradient id="bgGlow" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#1d3f6e"/><stop offset="1" stop-color="#0c2140"/></radialGradient>
+    <radialGradient id="bgGlowC" cx=".34" cy=".5" r=".6"><stop offset="0" stop-color="#1d3f6e"/><stop offset="1" stop-color="#0c2140"/></radialGradient>
     <linearGradient id="pGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9b233"/><stop offset="1" stop-color="#ef6f12"/></linearGradient>
-    <linearGradient id="bigPlanet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3eefa"/><stop offset="1" stop-color="#b9d0ec"/></linearGradient>
-    <clipPath id="backHalf"><rect x="-400" y="-200" width="800" height="200"/></clipPath>
-    <clipPath id="frontHalf"><rect x="-400" y="0" width="800" height="200"/></clipPath>
-    <clipPath id="mBack"><rect x="-300" y="-200" width="600" height="200"/></clipPath>
-    <clipPath id="mFront"><rect x="-300" y="0" width="600" height="200"/></clipPath>
-    <clipPath id="triClip"><path id="triPath"/></clipPath>
+    <clipPath id="rBack"><rect x="-400" y="-300" width="800" height="300"/></clipPath>
+    <clipPath id="rFront"><rect x="-400" y="0" width="800" height="300"/></clipPath>
+    <clipPath id="planetClip"><circle r="150"/></clipPath>
     <g id="spark"><path d="M0 -24 Q4 -4 24 0 Q4 4 0 24 Q-4 4 -24 0 Q-4 -4 0 -24Z" fill="#f9b233"/></g>
-
-    <!-- logo mark, ~620x620 box -->
+    <!-- mark centered at 0,0 : gear-edged planet with ring -->
     <g id="mark">
-      <use href="#triShape" fill="#10294a"/>
-      <g clip-path="url(#triClip)">
-        <!-- orbit swoosh (like the road in the reference) -->
-        <path d="M40 560 Q170 430 320 480 T640 330 L640 700 L0 700Z" fill="url(#pGrad)" opacity=".95"/>
-        <path d="M40 610 Q200 500 360 545 T660 430" stroke="#ffe2b0" stroke-width="9" stroke-dasharray="26 18" stroke-linecap="round" fill="none"/>
-        <g fill="#fff" opacity=".9"><circle cx="150" cy="150" r="5"/><circle cx="420" cy="215" r="4"/><circle cx="200" cy="440" r="4"/><circle cx="130" cy="300" r="3"/></g>
-        <circle cx="150" cy="470" r="30" fill="#5f7fae"/>
-        <circle cx="142" cy="462" r="9" fill="#7e9cc6"/>
+      <g transform="rotate(-20)"><ellipse rx="330" ry="78" fill="none" stroke="#fbf6ee" stroke-width="20" clip-path="url(#rBack)"/></g>
+      <path id="gearPath" fill="#f2841f"/>
+      <circle r="150" fill="url(#pGrad)"/>
+      <g clip-path="url(#planetClip)">
+        <path d="M-160 -60 Q0 -95 160 -70" stroke="#fff" stroke-width="16" opacity=".3" fill="none"/>
+        <path d="M-160 20 Q0 -10 160 10" stroke="#c4560a" stroke-width="24" opacity=".35" fill="none"/>
+        <path d="M-160 90 Q0 70 160 85" stroke="#c4560a" stroke-width="12" opacity=".3" fill="none"/>
+        <circle cx="-60" cy="-85" r="18" fill="#fff" opacity=".35"/>
+        <circle cx="70" cy="45" r="12" fill="#fff" opacity=".25"/>
       </g>
-      <!-- planet with ring -->
-      <g transform="translate(255,300)">
-        <ellipse rx="190" ry="44" fill="none" stroke="#9bb8dd" stroke-width="16" transform="rotate(-18)" clip-path="url(#mBack)"/>
-        <circle r="120" fill="url(#pGrad)"/>
-        <path d="M-118 -25 Q0 -55 118 -35" stroke="#fff" stroke-width="12" opacity=".35" fill="none"/>
-        <path d="M-120 25 Q0 0 120 15" stroke="#c4560a" stroke-width="16" opacity=".35" fill="none"/>
-        <path d="M-105 65 Q0 50 105 62" stroke="#c4560a" stroke-width="9" opacity=".3" fill="none"/>
-        <circle cx="-45" cy="-62" r="14" fill="#fff" opacity=".35"/>
-        <ellipse rx="190" ry="44" fill="none" stroke="#9bb8dd" stroke-width="16" transform="rotate(-18)" clip-path="url(#mFront)"/>
-      </g>
-      <!-- sparkle rays like the reference -->
-      <g stroke="#f9b233" stroke-width="13" stroke-linecap="round">
-        <line x1="400" y1="110" x2="400" y2="150"/><line x1="350" y1="125" x2="366" y2="158"/><line x1="450" y1="125" x2="434" y2="158"/>
-      </g>
-      <use href="#spark" transform="translate(140,220) scale(.9)"/>
-    </g>
-
-    <!-- rocket pointing up -->
-    <g id="rocket">
-      <path d="M-14 40 Q0 90 14 40Z" fill="#f2841f"/><path d="M-7 40 Q0 70 7 40Z" fill="#f9b233"/>
-      <path d="M-22 10 L-40 45 L-18 38Z" fill="#f2841f"/><path d="M22 10 L40 45 L18 38Z" fill="#f2841f"/>
-      <path d="M0 -60 Q28 -30 24 40 L-24 40 Q-28 -30 0 -60Z" fill="#fff" stroke="#10294a" stroke-width="5"/>
-      <path d="M0 -60 Q14 -48 19 -32 L-19 -32 Q-14 -48 0 -60Z" fill="#f2841f"/>
-      <circle cy="-5" r="10" fill="#1d3f6e" stroke="#10294a" stroke-width="4"/>
+      <circle r="150" fill="none" stroke="#10294a" stroke-width="8"/>
+      <g transform="rotate(-20)"><ellipse rx="330" ry="78" fill="none" stroke="#fbf6ee" stroke-width="20" clip-path="url(#rFront)"/>
+        <circle cx="330" cy="0" r="22" fill="#f9b233" stroke="#10294a" stroke-width="6"/></g>
+      <circle cx="-215" cy="-170" r="34" fill="#9bb8dd"/><circle cx="-224" cy="-178" r="10" fill="#c8daf0"/>
+      <use href="#spark" transform="translate(230,-200) scale(1.3)"/>
+      <use href="#spark" transform="translate(-260,150) scale(.8)"/>
     </g>
   </defs>
 </svg>
 
 <script>
-// rounded triangle (play button) path in the 620 box
-function rounded(pts,r){let d='';const n=pts.length;
-  for(let i=0;i<n;i++){const p=pts[i],a=pts[(i-1+n)%n],b=pts[(i+1)%n];
-    const ua=[(a[0]-p[0]),(a[1]-p[1])],ub=[(b[0]-p[0]),(b[1]-p[1])];
-    const la=Math.hypot(...ua),lb=Math.hypot(...ub);
-    const s=[p[0]+ua[0]/la*r,p[1]+ua[1]/la*r],e=[p[0]+ub[0]/lb*r,p[1]+ub[1]/lb*r];
-    d+=(i?'L':'M')+s[0]+' '+s[1]+' Q'+p[0]+' '+p[1]+' '+e[0]+' '+e[1];}
-  return d+'Z';}
-const tri=rounded([[70,40],[70,600],[580,320]],95);
-document.getElementById('triPath').setAttribute('d',tri);
-const ns='http://www.w3.org/2000/svg';
-const ts=document.createElementNS(ns,'path');ts.setAttribute('id','triShape');ts.setAttribute('d',tri);
-document.querySelector('defs').appendChild(ts);
+function gear(R,r,teeth,inset){let d='';for(let i=0;i<teeth*2;i++){const a0=i*Math.PI/teeth,a1=(i+1)*Math.PI/teeth,rr=i%2?r:R;
+  d+=(i?'L':'M')+[rr*Math.cos(a0+inset),rr*Math.sin(a0+inset)]+' L'+[rr*Math.cos(a1-inset),rr*Math.sin(a1-inset)]+' ';}return d+'Z';}
+document.getElementById('gearPath').setAttribute('d',gear(198,168,14,.06));
+function stars(id,w,h,n,seed){let s=seed;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;let o='';
+  for(let i=0;i<n;i++)o+=`<circle cx="${rnd()*w}" cy="${rnd()*h}" r="${1+rnd()*2.5}" fill="#fbf6ee" opacity="${.3+rnd()*.6}"/>`;
+  document.getElementById(id).innerHTML=o;}
+stars('pStars',1080,1080,90,7);stars('cStars',1640,624,140,11);
 
-function gear(cx,cy,R,r,teeth,color,hole){
-  let d='';for(let i=0;i<teeth*2;i++){const a0=i*Math.PI/teeth,a1=(i+1)*Math.PI/teeth,rr=i%2?r:R;
-    const p0=[cx+rr*Math.cos(a0+.08),cy+rr*Math.sin(a0+.08)],p1=[cx+rr*Math.cos(a1-.08),cy+rr*Math.sin(a1-.08)];
-    d+=(i?'L':'M')+p0+' L'+p1+' ';}
-  return `<path d="${d}Z" fill="${color}"/><circle cx="${cx}" cy="${cy}" r="${hole}" fill="#fbf6ee"/>`;}
-
-// icons along the road: [x, groundY, svg]
 const N='#10294a',O='#f2841f',Y='#f9b233';
-const icons=[
- // pyramids
- [380,505,`<polygon points="-70,0 0,-95 70,0" fill="#e9b04f"/><polygon points="0,-95 70,0 15,0" fill="#c98a2f"/>
-   <polygon points="35,0 85,-55 125,0" fill="#e9b04f"/><polygon points="85,-55 125,0 95,0" fill="#c98a2f"/>`],
- // undersea tunnel
- [540,515,`<rect x="-75" y="-105" width="150" height="105" rx="18" fill="#7fb2e0"/>
-   <path d="M-75 -80 q19 -12 37 0 t37 0 t37 0 t38 0" stroke="#fff" stroke-width="5" fill="none"/>
-   <path d="M-60 0 v-35 a60 45 0 0 1 120 0 v35z" fill="#9aa6b4"/><path d="M-44 0 v-30 a44 32 0 0 1 88 0 v30z" fill="#2a3a52"/>
-   <circle cx="-14" cy="-14" r="6" fill="${Y}"/><circle cx="14" cy="-14" r="6" fill="${Y}"/>`],
- // speed radar
- [690,500,`<rect x="-6" y="-80" width="12" height="80" fill="#7a8594"/><rect x="-40" y="-130" width="80" height="58" rx="10" fill="#fff" stroke="${N}" stroke-width="6"/>
-   <circle cx="-8" cy="-101" r="16" fill="${N}"/><circle cx="-8" cy="-101" r="7" fill="#5f8fd0"/><rect x="16" y="-118" width="14" height="10" rx="3" fill="#e8453c"/>
-   <path d="M50 -115 l22 -8 M50 -100 h24 M50 -86 l22 8" stroke="${Y}" stroke-width="5" stroke-linecap="round"/>`],
- // air conditioner
- [840,500,`<rect x="-70" y="-110" width="140" height="58" rx="14" fill="#fff" stroke="${N}" stroke-width="6"/>
-   <path d="M-52 -66 h104" stroke="${N}" stroke-width="5"/><circle cx="48" cy="-92" r="5" fill="#3cb371"/>
-   <path d="M-40 -38 q10 14 0 28 M0 -38 q10 14 0 28 M40 -38 q10 14 0 28" stroke="#6fb6e8" stroke-width="6" fill="none" stroke-linecap="round"/>`],
- // water heater
- [985,495,`<rect x="-38" y="-135" width="76" height="120" rx="28" fill="#fff" stroke="${N}" stroke-width="6"/>
-   <circle cy="-85" r="20" fill="#fff" stroke="${N}" stroke-width="5"/><path d="M0 -85 l11 -11" stroke="${O}" stroke-width="5" stroke-linecap="round"/>
-   <circle cx="-14" cy="-40" r="7" fill="#e8453c"/><circle cx="14" cy="-40" r="7" fill="#3a7fd5"/>
-   <path d="M-16 -15 v15 M16 -15 v15" stroke="#7a8594" stroke-width="8"/>`],
- // light bulb
- [1120,490,`<path d="M-30 -90 a38 38 0 1 1 60 0 q-10 12 -12 30 h-36 q-2 -18 -12 -30z" fill="${Y}"/>
-   <path d="M-10 -80 q10 -10 20 0 l-10 18z" stroke="#fff" stroke-width="5" fill="none"/>
-   <rect x="-18" y="-58" width="36" height="10" rx="3" fill="#7a8594"/><rect x="-15" y="-46" width="30" height="10" rx="3" fill="#7a8594"/>
-   <g stroke="${Y}" stroke-width="6" stroke-linecap="round"><path d="M0 -165 v-14 M-55 -140 l-10 -10 M55 -140 l10 -10 M-72 -95 h-14 M72 -95 h14"/></g>`],
- // gears
- [1250,475,gear(0,-80,52,40,10,N,16)+gear(-55,-25,32,24,8,O,10)],
-];
-const g=document.getElementById('icons');
-const road=document.getElementById('road');
-function yAt(x){const L=road.getTotalLength();let best=null;for(let l=0;l<=L;l+=2){const p=road.getPointAtLength(l);if(!best||Math.abs(p.x-x)<Math.abs(best.x-x))best=p;}return best.y;}
-icons.forEach(([x,y,s])=>{
-  g.insertAdjacentHTML('beforeend',`<g transform="translate(${x},${yAt(x)-14})">${s}</g>`);});
-// dots on road
-const L=road.getTotalLength();
-for(const x of [300,460,615,765,912,1052,1185]){const p={x,y:yAt(x)};
-  g.insertAdjacentHTML('beforeend',`<circle cx="${p.x}" cy="${p.y}" r="11" fill="#fff" stroke="${O}" stroke-width="6"/>`);}
+const icons={
+ pyramid:`<polygon points="-70,0 0,-95 70,0" fill="#e9b04f"/><polygon points="0,-95 70,0 15,0" fill="#c98a2f"/>`,
+ tunnel:`<rect x="-75" y="-105" width="150" height="105" rx="18" fill="#7fb2e0"/><path d="M-60 0 v-35 a60 45 0 0 1 120 0 v35z" fill="#9aa6b4"/><path d="M-44 0 v-30 a44 32 0 0 1 88 0 v30z" fill="#2a3a52"/><circle cx="-14" cy="-14" r="7" fill="${Y}"/><circle cx="14" cy="-14" r="7" fill="${Y}"/>`,
+ radar:`<rect x="-7" y="-70" width="14" height="70" fill="#7a8594"/><rect x="-45" y="-125" width="90" height="62" rx="10" fill="#fff" stroke="${N}" stroke-width="7"/><circle cx="-10" cy="-94" r="18" fill="${N}"/><circle cx="-10" cy="-94" r="8" fill="#5f8fd0"/><rect x="16" y="-112" width="16" height="11" rx="3" fill="#e8453c"/>`,
+ ac:`<rect x="-80" y="-110" width="160" height="66" rx="14" fill="#fff" stroke="${N}" stroke-width="7"/><path d="M-60 -60 h120" stroke="${N}" stroke-width="6"/><circle cx="55" cy="-90" r="6" fill="#3cb371"/><path d="M-40 -32 q12 14 0 28 M0 -32 q12 14 0 28 M40 -32 q12 14 0 28" stroke="#6fb6e8" stroke-width="7" fill="none" stroke-linecap="round"/>`,
+ heater:`<rect x="-42" y="-140" width="84" height="125" rx="30" fill="#fff" stroke="${N}" stroke-width="7"/><circle cy="-88" r="22" fill="#fff" stroke="${N}" stroke-width="6"/><path d="M0 -88 l12 -12" stroke="${O}" stroke-width="6" stroke-linecap="round"/><circle cx="-15" cy="-40" r="8" fill="#e8453c"/><circle cx="15" cy="-40" r="8" fill="#3a7fd5"/>`,
+ bulb:`<path d="M-32 -95 a40 40 0 1 1 64 0 q-10 12 -12 32 h-40 q-2 -20 -12 -32z" fill="${Y}"/><rect x="-20" y="-60" width="40" height="11" rx="3" fill="#7a8594"/><rect x="-16" y="-46" width="32" height="11" rx="3" fill="#7a8594"/>`,
+};
+// [orbit rx, ry, angle deg, icon, scale, lift]
+const dims={pyramid:[140,95],tunnel:[150,105],radar:[90,125],ac:[160,110],heater:[84,140],bulb:[80,135]};
+const orb=[[190,95,200,'bulb'],[275,150,300,'radar'],[275,150,115,'ac'],[360,215,235,'pyramid'],[360,215,165,'heater'],[190,95,55,'tunnel']];
+const g=document.getElementById('orbiters');
+orb.forEach(([rx,ry,a,k])=>{const [w,h]=dims[k],sc=Math.min(56/w,56/h),lift=h/2*sc;const t=a*Math.PI/180,x=rx*Math.cos(t),y=ry*Math.sin(t);
+  g.insertAdjacentHTML('beforeend',`<g transform="translate(${x},${y})"><circle r="44" fill="#fbf6ee" stroke="${O}" stroke-width="6"/><g transform="translate(0,${lift}) scale(${sc})">${icons[k]}</g></g>`);});
 </script>
 </body></html>
