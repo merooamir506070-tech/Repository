@@ -1,5 +1,5 @@
 // «إزاي بيبنوا نفق تحت البحر؟»: مشهد لكل سطر من script.txt
-// اللوحة هنا طولية: الجزء الظاهر من العالم تقريباً x من 0 لـ640، وy من -167 لـ527 (المركز 320، 180).
+// اللوحة مالية الشاشة كلها: الجزء الظاهر من العالم تقريباً x من 80 لـ560، وy من -330 لـ523. الترجمة فوق بتغطي لحد y≈-150.
 // المقطع العرضي ثابت تقريباً في كل المشاهد: سما فوق، سطح البحر عند y≈20، القاع عند y≈300، والصخر تحته.
 
 // ── ألوان ─────────────────────────────────────────────
@@ -13,8 +13,8 @@ function g(x, y, s, inner, rot) { return '<g transform="translate(' + f(x) + ' '
 function seabed(t, bed) {
   var d = "M-400 " + bed;
   for (var x = -400; x <= 1040; x += 40) d += " L" + x + " " + f(bed + Math.sin(x * 0.03) * 6);
-  var s = '<rect x="-400" y="' + (bed + 34) + '" width="1440" height="700" fill="' + ROCK + '"/>' +
-    '<rect x="-400" y="' + (bed + 200) + '" width="1440" height="600" fill="' + ROCK2 + '"/>' +
+  var s = '<rect x="-400" y="' + (bed + 34) + '" width="1440" height="1100" fill="' + ROCK + '"/>' +
+    '<rect x="-400" y="' + (bed + 200) + '" width="1440" height="1000" fill="' + ROCK2 + '"/>' +
     '<path d="' + d + ' L1040 ' + (bed + 40) + ' L-400 ' + (bed + 40) + ' Z" fill="' + SAND + '" stroke="' + INK + '" stroke-width="3"/>';
   for (var i = 0; i < 70; i++) { var px = -300 + hash(i) * 1240, py = bed + 50 + hash(i + 9) * 330; s += '<ellipse cx="' + f(px) + '" cy="' + f(py) + '" rx="' + f(5 + hash(i + 3) * 9) + '" ry="' + f(3 + hash(i + 4) * 5) + '" fill="' + (i % 2 ? "#9b8064" : "#5e4a38") + '" opacity=".8"/>'; }
   return s;
@@ -176,24 +176,24 @@ function canalScene(t) {
 // ── المشاهد ─────────────────────────────────────────────
 // 0: حاجة نعرفها: مركب فوق في القناة، وعربيات بتعدي في نفق تحته
 shot(0, camMove([320, 230, 1.12], [320, 180, 1.0]), function (u, d, t) {
-  return canalScene(t) + tag("قناة السويس", 320, -82, u, 0.5, -3, 28) + tag("سينا ←", 520, 470, u, 2.2, 2, 22, "#bfe0ff");
+  return canalScene(t) + tag("قناة السويس", 320, 110, u, 0.5, -3, 28) + tag("سينا ←", 460, 470, u, 2.2, 2, 22, "#bfe0ff");
 });
 // 1: واحد بيحفر في القاع والمية بتغرّقه
 shot(1, camPush(320, 200, 1, 1.12), function (u, d, t) {
   var lvl = Math.max(0, 1 - u / d) * 110, hole = '<path d="M200 300 L230 470 H410 L440 300 Z" fill="#4a3a2c" stroke="' + INK + '" stroke-width="3"/>' + '<rect x="214" y="' + f(360 + lvl) + '" width="212" height="' + f(130 - lvl) + '" fill="' + WATER + '" opacity=".85"/>';
-  return world(t, 20, 300) + hole + person(320, 470 - (110 - lvl) * 0.2, t, { mood: "shock", hat: "hard", pose: "cheer" }) + bubbles(t, 320, 330, 8, 140) + arrow(200, 160, 260, 320, "#7fc4ff", 8, ease(u / 1)) + arrow(440, 160, 380, 320, "#7fc4ff", 8, ease(u / 1)) + qmark(520, 220, t, 110) + tag("تحفر تحت المية؟", 320, -82, u, 0.4, -3, 28);
+  return world(t, 20, 300) + hole + person(320, 470 - (110 - lvl) * 0.2, t, { mood: "shock", hat: "hard", pose: "cheer" }) + bubbles(t, 320, 330, 8, 140) + arrow(200, 160, 260, 320, "#7fc4ff", 8, ease(u / 1)) + arrow(440, 160, 380, 320, "#7fc4ff", 8, ease(u / 1)) + qmark(520, 220, t, 110) + tag("تحفر تحت المية؟", 320, -30, u, 0.4, -3, 28);
 });
 // 2: وزن البحر كله ضاغط على النفق
 shot(2, camPush(320, 220, 1, 1.1), function (u, d, t) {
   var s = world(t, -40, 300) + tube(t, -100, 740, 400, 80);
   for (var i = 0; i < 5; i++) { var x = 120 + i * 100, k = (t * 0.9 + i * 0.2) % 1; s += arrow(x, 20 + k * 40, x, 120 + k * 120, "#ffffff", 7, 1) ; }
-  return s + tag("وزن البحر كله!", 320, -82, u, 0.8, -3, 30) + qmark(560, 260, t, 80);
+  return s + tag("وزن البحر كله!", 320, -30, u, 0.8, -3, 30) + qmark(500, 250, t, 80);
 });
 // 3: طريقتين: الأولى الحفر تحت القاع
 shot(3, camPush(320, 220, 1, 1.08), function (u, d, t) {
   var hl = 0.6 + 0.4 * Math.abs(Math.sin(t * 3));
   return world(t, 20, 260) + '<rect x="60" y="330" width="520" height="110" rx="20" fill="none" stroke="' + YEL + '" stroke-width="6" stroke-dasharray="16 10" opacity="' + f(hl) + '"/>' + rings(80, 420, 385, 74, 14) + tbm(540, 385, t, 0.55) + debris(560, 385, t, 8, 60) +
-    tag("١", 120, 120, u, 0.3, 0, 40) + tag("٢", 520, 120, u, 0.6, 0, 40, "#bfe0ff") + tag("الأولى: نحفر تحت القاع", 320, 490, u, 1.4, -2, 24);
+    tag("١", 160, 120, u, 0.3, 0, 40) + tag("٢", 520, 120, u, 0.6, 0, 40, "#bfe0ff") + tag("الأولى: نحفر تحت القاع", 320, 490, u, 1.4, -2, 24);
 });
 // 4: ماكينة الـTBM
 shot(4, camMove([200, 260, 1.15], [330, 250, 1.0]), function (u, d, t) {
@@ -202,7 +202,7 @@ shot(4, camMove([200, 260, 1.15], [330, 250, 1.0]), function (u, d, t) {
 });
 // 5: وش العجلة بالسكاكين بيطحن الصخر
 shot(5, camPush(320, 190, 1, 1.15), function (u, d, t) {
-  return fill(ROCK2) + seabed(t, -400) + cutter(320, 190, 190, t) + debris(320, 190, t, 22, 300) + tag("سكاكين فولاذ", 320, -82, u, 0.8, -3, 30) + tag("بتطحن الصخر", 320, 460, u, 2.2, 2, 24, "#bfe0ff");
+  return fill(ROCK2) + seabed(t, -400) + cutter(320, 190, 190, t) + debris(320, 190, t, 22, 300) + tag("سكاكين فولاذ", 320, -45, u, 0.8, -3, 30) + tag("بتطحن الصخر", 320, 460, u, 2.2, 2, 24, "#bfe0ff");
 });
 // 6: وراها على طول بتتركب حلقات خرسانة
 shot(6, camPan(260, 360, 230, 1.05), function (u, d, t) {
@@ -220,12 +220,12 @@ shot(8, camPan(380, 260, 240, 1.05), function (u, d, t) {
 });
 // 9: الحفر بطيء: عشرين لتلاتين متر في اليوم
 shot(9, camPush(320, 200, 1, 1.1), function (u, d, t) {
-  return sky("day") + dayCycle(t, 320, -60, 230) + clouds(t, 30, -120, 4, 0.8) + '<rect x="-400" y="40" width="1440" height="600" fill="' + ROCK + '"/>' + seabed(t, 40) + rings(-200, 180 + u * 8, 260, 110, 20) + tbm(330 + u * 8, 260, t, 0.75) + counter(320, 160, u, 0.8, 2.5, 0, 30, " متر", 62) + label("في اليوم بس", 320, 205, 26, "#fff", 900) + tag("بطيء!", 320, 420, u, 0.4, -3, 30);
+  return sky("day") + dayCycle(t, 320, -60, 230) + clouds(t, 30, -120, 4, 0.8) + '<rect x="-400" y="40" width="1440" height="1000" fill="' + ROCK + '"/>' + seabed(t, 40) + rings(-200, 180 + u * 8, 260, 110, 20) + tbm(330 + u * 8, 260, t, 0.75) + counter(320, 160, u, 0.8, 2.5, 0, 30, " متر", 62) + label("في اليوم بس", 320, 205, 26, "#fff", 900) + tag("بطيء!", 320, 420, u, 0.4, -3, 30);
 });
 // 10: الطريقة التانية: تبني على الأرض وتغرّق
 shot(10, camPush(320, 220, 1, 1.08), function (u, d, t) {
   var drop = ease(clamp((u - 1.8) / 1.6)), y = lerp(15, 330, drop);
-  return world(t, 120, 400) + '<path d="M-400 120 H140 L180 100 V60 H-400 Z" fill="' + SAND + '" stroke="' + INK + '" stroke-width="3"/>' + element(lerp(20, 380, drop), y, 260, 90) + (drop > 0.05 && drop < 0.6 ? bubbles(t, 380, 200, 10, 120) : "") + tag("٢", 120, -78, u, 0.2, 0, 40, "#bfe0ff") + tag("تبنيه وتغرّقه!", 320, 470, u, 0.9, -3, 30) + qmark(520, -40, t, 90);
+  return world(t, 120, 400) + '<path d="M-400 120 H140 L180 100 V60 H-400 Z" fill="' + SAND + '" stroke="' + INK + '" stroke-width="3"/>' + element(lerp(20, 380, drop), y, 260, 90) + (drop > 0.05 && drop < 0.6 ? bubbles(t, 380, 200, 10, 120) : "") + tag("٢", 210, -30, u, 0.2, 0, 40, "#bfe0ff") + tag("تبنيه وتغرّقه!", 320, 470, u, 0.9, -3, 30) + qmark(520, -40, t, 90);
 });
 // 11: كراكة بتحفر خندق في القاع
 shot(11, camPush(320, 200, 1, 1.1), function (u, d, t) {
@@ -235,7 +235,7 @@ shot(11, camPush(320, 200, 1, 1.1), function (u, d, t) {
 // 12: حوض جاف بيصبّوا فيه قطع النفق
 shot(12, camPush(320, 210, 1, 1.1), function (u, d, t) {
   var fillH = clamp(u / d) * 120, hook = Math.sin(t * 1.4) * 20;
-  return sky("day") + sun(520, -100, 26) + clouds(t, 14, -140, 4, 0.9) + sea(t, 120).replace('x="-400"', 'x="560"') + '<rect x="-400" y="120" width="960" height="600" fill="' + SAND + '"/>' + '<path d="M40 140 V400 H520 V140" fill="#bdb6a4" stroke="' + INK + '" stroke-width="4"/>' +
+  return sky("day") + sun(520, -100, 26) + clouds(t, 14, -140, 4, 0.9) + sea(t, 120).replace('x="-400"', 'x="560"') + '<rect x="-400" y="120" width="960" height="1000" fill="' + SAND + '"/>' + '<path d="M40 140 V400 H520 V140" fill="#bdb6a4" stroke="' + INK + '" stroke-width="4"/>' +
     element(280, 340, 420, 110) + '<rect x="70" y="' + f(395 - fillH * 0.4) + '" width="420" height="' + f(fillH * 0.4) + '" fill="#8f8a7f" opacity=".5"/>' +
     '<path d="M560 400 V-60 H160" stroke="' + YEL + '" stroke-width="12" fill="none"/><path d="M' + f(240 + hook) + ' -60 V180" stroke="' + INK + '" stroke-width="2.5"/><rect x="' + f(222 + hook) + '" y="180" width="36" height="40" fill="#8a8f96" stroke="' + INK + '" stroke-width="2"/>' +
     person(130, 270, t, { hat: "hard", s: 0.55, shirt: ORG, pose: "point" }) + person(430, 270, t, { hat: "hard", s: 0.55, shirt: ORG, mood: "happy" }) + tag("حوض جاف", 300, 470, u, 0.6, -3, 28) + tag("مقفولة من الناحيتين", 300, 70, u, 2.6, 2, 22, "#bfe0ff");
@@ -243,7 +243,7 @@ shot(12, camPush(320, 210, 1, 1.1), function (u, d, t) {
 // 13: القطعة بتعوم والقاطرات بتسحبها
 shot(13, camPan(260, 380, 140, 1.05), function (u, d, t) {
   var x = 300 + u * 12;
-  return world(t, 120, 450) + element(x, 140, 300, 70) + tug(x + 290, 118, t, 1) + tug(x - 300, 118, t, 1, true) + '<path d="M' + f(x + 158) + ' 130 Q' + f(x + 210) + ' 150 ' + f(x + 254) + ' 112" stroke="' + INK + '" stroke-width="3" fill="none"/><path d="M' + f(x - 158) + ' 130 Q' + f(x - 210) + ' 150 ' + f(x - 254) + ' 112" stroke="' + INK + '" stroke-width="3" fill="none"/>' + tag("بتعوم زي المركب!", 320, -78, u, 0.5, -3, 30);
+  return world(t, 120, 450) + element(x, 140, 300, 70) + tug(x + 230, 118, t, 0.9) + tug(x - 240, 118, t, 0.9, true) + '<path d="M' + f(x + 158) + ' 130 Q' + f(x + 180) + ' 150 ' + f(x + 200) + ' 112" stroke="' + INK + '" stroke-width="3" fill="none"/><path d="M' + f(x - 158) + ' 130 Q' + f(x - 180) + ' 150 ' + f(x - 210) + ' 112" stroke="' + INK + '" stroke-width="3" fill="none"/>' + tag("بتعوم زي المركب!", 320, -30, u, 0.5, -3, 30);
 });
 // 14: الخزانات بتتملي مية والقطعة بتنزل للخندق
 shot(14, camMove([320, 160, 1.05], [320, 260, 1.05]), function (u, d, t) {
@@ -256,7 +256,7 @@ shot(14, camMove([320, 160, 1.05], [320, 260, 1.05]), function (u, d, t) {
 // 15: غطاسين وروبوت بيظبطوها بالسنتي
 shot(15, camPush(320, 250, 1, 1.15), function (u, d, t) {
   var gap = lerp(40, 14, ease(u / d));
-  return world(t, -120, 380, { fish: 3 }) + element(170 - gap / 2, 320, 300, 100, { ends: false }) + element(470 + gap / 2, 320, 300, 100, { ends: false }) + diver(200, 180, t) + diver(470, 140, t, true) + rov(400, 230, t) + ruler(320, 420, 140, t, "سم") + pulse(320, 320, t, YEL, 50) + tag("بالسنتي", 320, -60, u, 0.6, -3, 30);
+  return world(t, -120, 380, { fish: 3 }) + element(170 - gap / 2, 320, 300, 100, { ends: false }) + element(470 + gap / 2, 320, 300, 100, { ends: false }) + diver(200, 180, t) + diver(470, 140, t, true) + rov(400, 230, t) + ruler(320, 420, 140, t, "سم") + pulse(320, 320, t, YEL, 50) + tag("بالسنتي", 320, -30, u, 0.6, -3, 30);
 });
 // 16: يشفطوا المية من الوصلة وضغط البحر يقفلها
 shot(16, camPush(320, 240, 1.05, 1.2), function (u, d, t) {
@@ -269,22 +269,22 @@ shot(16, camPush(320, 240, 1.05, 1.2), function (u, d, t) {
 shot(17, camPush(320, 200, 1, 1.1), function (u, d, t) {
   var sag = Math.sin(t * 3) * 3;
   return world(t, -140, 420, { fish: 4 }) + '<rect x="70" y="' + f(330 + sag) + '" width="500" height="22" rx="6" fill="url(#gMetal)" stroke="' + INK + '" stroke-width="3"/><path d="M320 352 V420 M260 420 H380" stroke="' + INK + '" stroke-width="10" stroke-linecap="round"/>' + element(320, 270 + sag, 460, 110) +
-    counter(320, 90, u, 0.8, 2.8, 0, 80000, " طن", 58) + tag("هونج كونج وماكاو", 320, -60, u, 0.4, -3, 26) + label("كل قطعة!", 320, 140, 26, "#fff", 900);
+    counter(320, 90, u, 0.8, 2.8, 0, 80000, " طن", 58) + tag("هونج كونج وماكاو", 320, -20, u, 0.4, -3, 26) + label("كل قطعة!", 320, 140, 26, "#fff", 900);
 });
 // 18: خريطة نفق المانش بين إنجلترا وفرنسا
 shot(18, camPush(320, 180, 1, 1.08), function (u, d, t) {
   var p = ease(clamp((u - 1) / 3)), y1 = -60, y2 = 420, ye = lerp(y1, y2, p);
-  return fill("#2b86b5") + sea(t, -400) + '<path d="M-400 -400 H1040 V-40 C900 -10 700 20 500 -20 C380 -50 240 0 120 -30 C0 -60 -200 -30 -400 -10 Z" fill="#8fbf6a" stroke="' + INK + '" stroke-width="3"/>' +
-    '<path d="M-400 700 H1040 V380 C880 360 720 420 520 400 C400 390 260 450 120 410 C0 380 -200 420 -400 400 Z" fill="#b5c97a" stroke="' + INK + '" stroke-width="3"/>' + fishes(t, 60, 320, 3) + ship(500, 180, t, 0.6) +
+  return fill("#2b86b5") + sea(t, -400) + '<path d="M-400 -900 H1040 V-40 C900 -10 700 20 500 -20 C380 -50 240 0 120 -30 C0 -60 -200 -30 -400 -10 Z" fill="#8fbf6a" stroke="' + INK + '" stroke-width="3"/>' +
+    '<path d="M-400 1000 H1040 V380 C880 360 720 420 520 400 C400 390 260 450 120 410 C0 380 -200 420 -400 400 Z" fill="#b5c97a" stroke="' + INK + '" stroke-width="3"/>' + fishes(t, 60, 320, 3) + ship(500, 180, t, 0.6) +
     '<path d="M300 ' + y1 + ' L' + f(lerp(300, 340, p)) + ' ' + f(ye) + '" stroke="' + INK + '" stroke-width="14" stroke-linecap="round"/><path d="M300 ' + y1 + ' L' + f(lerp(300, 340, p)) + ' ' + f(ye) + '" stroke="' + YEL + '" stroke-width="8" stroke-linecap="round" stroke-dasharray="16 8"/>' +
     flag(130, -140, "uk", t) + label("إنجلترا", 260, -110, 30, INK, 900) + flag(470, 440, "fr", t) + label("فرنسا", 380, 480, 30, INK, 900) +
-    counter(150, 200, u, 2.0, 2, 0, 50, " كم", 46) + counter(150, 260, u, 5.0, 2, 0, 38, " تحت البحر", 30, "#bfe0ff");
+    counter(200, 200, u, 2.0, 2, 0, 50, " كم", 46) + counter(200, 260, u, 5.0, 2, 0, 38, " تحت البحر", 30, "#bfe0ff");
 });
 // 19: الإنجليز من ناحية والفرنساويين من الناحية التانية
 shot(19, camPush(320, 220, 1, 1.08), function (u, d, t) {
   var k = clamp(u / d);
   return world(t, -100, 160, { fish: 3 }) + rings(-300, 90 + k * 60, 340, 110, 24) + tbm(180 + k * 60, 340, t, 0.8) + '<g transform="translate(640 0) scale(-1 1)">' + rings(-300, 90 + k * 60, 340, 110, 24) + '</g>' + tbm(460 - k * 60, 340, t, 0.8, -1) + debris(330, 340, t, 10, 50) +
-    flag(60, 200, "uk", t) + flag(520, 200, "fr", t) + tag("من الناحيتين", 320, 470, u, 0.8, -3, 28);
+    flag(100, 200, "uk", t) + flag(480, 200, "fr", t) + tag("من الناحيتين", 320, 470, u, 0.8, -3, 28);
 });
 // 20: اتقابلوا في النص بفرق أقل من نص متر
 shot(20, camPush(320, 240, 1, 1.15), function (u, d, t) {
@@ -300,9 +300,9 @@ shot(21, camPush(320, 220, 1, 1.1), function (u, d, t) {
 });
 // 22: نرجع للقناة: فوقك بحر كامل
 shot(22, camMove([320, 380, 1.25], [320, 160, 1.0]), function (u, d, t) {
-  return canalScene(t) + pulse(320, 400, t, YEL, 60) + arrow(320, 330, 320, 120, "#fff", 9, ease(u / 3)) + tag("فوقك بحر كامل", 320, -82, u, 1.5, -3, 28);
+  return canalScene(t) + pulse(320, 400, t, YEL, 60) + arrow(200, 360, 200, 70, "#fff", 9, ease(u / 3)) + tag("فوقك بحر كامل", 360, 170, u, 1.5, -3, 28);
 });
 // 23: الختام
 shot(23, camPush(320, 200, 1, 1.1), function (u, d, t) {
-  return world(t, 260, 470, { fish: 4 }) + ship(470, 260, t, 0.8) + person(220, 250, t, { mood: "happy", pose: "wave", hat: "hard", shirt: ORG }) + bubble(360, 0, "نشرحلكم إيه؟", u, 0.6, 26) + qmark(540, 120, t, 90) + tag("قولولنا!", 320, 400, u, 0.2, -3, 32);
+  return world(t, 260, 470, { fish: 4 }) + ship(470, 260, t, 0.8) + person(220, 250, t, { mood: "happy", pose: "wave", hat: "hard", shirt: ORG }) + bubble(360, 0, "نشرحلكم إيه؟", u, 0.6, 26) + qmark(460, 120, t, 90) + tag("قولولنا!", 320, 400, u, 0.2, -3, 32);
 });

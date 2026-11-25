@@ -11,9 +11,9 @@ function camPan(x0, x1, y, z) { return function (u, d) { var k = ease(u / d); re
 function camMove(a, b) { return function (u, d) { var k = ease(u / d); return [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)]; }; }  // من [x,y,z] لـ[x,y,z]
 
 window.__panel = function (svg, t) {
-  if (!SH.length) { svg.innerHTML = '<rect y="-167" width="640" height="693" fill="#333"/>'; return 0; }
+  if (!SH.length) { svg.innerHTML = '<rect x="80" y="-330" width="480" height="853" fill="#333"/>'; return 0; }
   var i = at(t), sh = SH[i], next = i + 1 < SH.length ? SH[i + 1].a : L(LN.length), u = Math.max(0, t - sh.a), d = Math.max(0.5, next - sh.a);
   var c = sh.cam(u, d), cx = c[0] + 16 * Math.sin(t * 1.2), cy = c[1] + 12 * Math.cos(t * 1.2), z = c[2] * (1 + 0.03 * Math.sin(t * 1.1));   // الكاميرا عمرها ما بتقف
-  svg.innerHTML = '<g transform="translate(320 180) rotate(' + f(0.9 * Math.sin(t * 0.83)) + ') scale(' + z.toFixed(4) + ') translate(' + f(-cx) + ' ' + f(-cy) + ')">' + sh.draw(u, d, t) + '</g><rect y="-167" width="640" height="693" filter="url(#grain)"/>';
+  svg.innerHTML = '<g transform="translate(320 180) rotate(' + f(0.9 * Math.sin(t * 0.83)) + ') scale(' + z.toFixed(4) + ') translate(' + f(-cx) + ' ' + f(-cy) + ')">' + sh.draw(u, d, t) + '</g><rect x="80" y="-330" width="480" height="853" filter="url(#grain)"/>';
   return i;
 };

@@ -14,8 +14,8 @@ function f(n) { return (+n).toFixed(1); }
 var INK = "#1c1c1c";
 
 // ── خلفيات ───────────────────────────────────────────────
-function fill(col) { return '<rect x="-400" y="-300" width="1440" height="960" fill="' + col + '"/>'; }
-function sky(kind) { return '<rect x="-400" y="-300" width="1440" height="960" fill="url(#sky-' + (kind || "day") + ')"/>'; }   // day | dusk | night | dawn
+function fill(col) { return '<rect x="-400" y="-900" width="1440" height="1900" fill="' + col + '"/>'; }
+function sky(kind) { return '<rect x="-400" y="-900" width="1440" height="1900" fill="url(#sky-' + (kind || "day") + ')"/>'; }   // day | dusk | night | dawn
 function sun(x, y, r, col) { col = col || "#f7d24a"; return '<circle cx="' + x + '" cy="' + y + '" r="' + (r * 1.8) + '" fill="' + col + '" opacity=".45" filter="url(#soft)"/><circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + col + '"/>'; }
 function moon(x, y) { return '<circle cx="' + x + '" cy="' + y + '" r="34" fill="#f2efe0" opacity=".22" filter="url(#soft)"/><circle cx="' + x + '" cy="' + y + '" r="20" fill="#f4f1e4"/><circle cx="' + (x + 8) + '" cy="' + (y - 6) + '" r="18" fill="#1a2c4c"/>'; }
 function clouds(t, speed, y, n, op, sc) {
@@ -56,7 +56,7 @@ function room(t, wall, floor) {   // أوضة: حيطة وأرضية وشباك 
 }
 function sea(t, y0) {   // بحر بموج متحرك من سطح y0 لتحت
   var d = "M-400 " + y0; for (var x = -400; x <= 1040; x += 20) d += " L" + x + " " + f(y0 + Math.sin(x * 0.04 + t * 2.2) * 4 + Math.sin(x * 0.11 - t * 3) * 2);
-  return '<rect x="-400" y="' + y0 + '" width="1440" height="700" fill="url(#sea)"/><path d="' + d + ' V' + (y0 + 20) + ' H-400 Z" fill="#8fd0ee" opacity=".7"/>';
+  return '<rect x="-400" y="' + y0 + '" width="1440" height="1100" fill="url(#sea)"/><path d="' + d + ' V' + (y0 + 20) + ' H-400 Z" fill="#8fd0ee" opacity=".7"/>';
 }
 
 // ── الشخصيات ─────────────────────────────────────────────
