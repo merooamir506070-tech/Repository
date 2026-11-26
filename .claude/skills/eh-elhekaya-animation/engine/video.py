@@ -7,6 +7,7 @@
   timing  <dir>          يقرا الصوت من <dir>/voice/ ويطلع توقيت كل سطر (build/timing.js) و build/voice.wav
   build   <dir>          يجمع الرسم والترجمة في build/index.html
   check   <dir>          يدور على أخطاء في الرسم ويعمل صورة فيها لقطة من كل مشهد (build/sheet.png)
+  stills  <dir>          صورة لكل مشهد لوحده في build/scenes/ (للمراجعة قبل الـrender)
   sound   <dir>          يركّب الصوت + المؤثرات + موسيقى خفيفة في build/mix.wav (محتاج numpy)
   render  <dir> [--fps 30]  يطلع الفيديو النهائي build/video.mp4 بمقاس 1080×1920
   all     <dir>          timing + build + check + sound + render
@@ -102,6 +103,31 @@ def speech_segments(p, min_sil):
     return segs, dur
 
 
+def word_times(wav, T):
+    """وقت بداية كل كلمة (l["w"]) من الصوت نفسه: الكلام بيتوزّع على الكلمات على حسب طولها، بس على الأجزاء اللي فيها صوت بس (السكتات عند الفصلة والنقطة مابتتحسبش)."""
+    try: import numpy as np
+    except ImportError: return
+    a = np.frombuffer(wav_frames(wav), dtype=np.int16).astype(np.float32); hop = SR // 100
+    rms = np.sqrt(np.convolve(a * a, np.ones(hop) / hop, "same")[::hop] + 1e-6)
+    for l in T:
+        i0, i1 = int(l["start"] * 100), max(int(l["start"] * 100) + 2, int(l["end"] * 100))
+        seg = rms[i0:i1]; thr = max(np.percentile(seg, 90) * 0.12, 60)
+        v = seg > thr
+        gaps, run = v.copy(), 0
+        for j in range(len(v)):   # سكتة أقل من 0.12 ثانية جوه الكلام تتحسب كلام
+            if not v[j]: run += 1
+            else:
+                if 0 < run < 12: gaps[j - run:j] = True
+                run = 0
+        cum = np.concatenate([[0], np.cumsum(gaps)]); tot = cum[-1] or 1
+        ws = l["text"].split(" "); n = [len(re.sub(r"[^\w]", "", w)) + 1 for w in ws]; acc = 0; out_w = []
+        for k in n:
+            j = int(np.searchsorted(cum, tot * acc / sum(n), side="right")) - 1
+            while j < len(gaps) - 1 and not gaps[j]: j += 1   # الكلمة بتبدأ أول ما الصوت يرجع
+            out_w.append(round(l["start"] + j / 100, 2)); acc += k
+        l["w"] = out_w
+
+
 def cmd_timing(d):
     need("ffmpeg")
     lines = lines_of(d); vdir = os.path.join(d, "voice")
@@ -132,6 +158,7 @@ def cmd_timing(d):
     else:
         die(f"في voice/ {len(files)} ملفات والسكريبت {len(lines)} سطر. يا إما ملف لكل سطر بالظبط، يا إما ملف واحد بس.")
     if os.path.exists(tmp): os.remove(tmp)
+    word_times(out(d, "voice.wav"), T)
     js = "window.TIMING = " + json.dumps({"duration": round(total, 2), "lines": T}, ensure_ascii=False, indent=1) + ";\n"
     open(out(d, "timing.js"), "w", encoding="utf-8").write(js)
     # مراجعة: سطر سرعته غريبة غالباً متقسم غلط
@@ -185,7 +212,7 @@ def cmd_build(d):
     shots = open(os.path.join(d, "shots.js"), encoding="utf-8").read()
     js = "(function () {\n" + open(os.path.join(sd, "helpers.js"), encoding="utf-8").read() + "\n" + open(os.path.join(sd, "panel.js"), encoding="utf-8").read() + "\n// ── shots.js ──\n" + shots + "\n})();\n"
     open(out(d, "scenes.js"), "w", encoding="utf-8").write(js)
-    data = "window.CAPS = " + json.dumps(caps, ensure_ascii=False) + ";\nwindow.CFG = " + json.dumps({k: cfg.get(k, "") for k in ("title", "sub", "brand")}, ensure_ascii=False) + ";"
+    data = "window.CAPS = " + json.dumps(caps, ensure_ascii=False) + ";\nwindow.CFG = " + json.dumps({k: cfg.get(k, "") for k in ("title", "sub", "brand", "captions")}, ensure_ascii=False) + ";"
     html = open(os.path.join(sd, "template.html"), encoding="utf-8").read().replace("/*DATA*/", data)
     sk = cfg.get("sketch", {})
     html = (html.replace("/*BRAND*/", cfg.get("brand", "")).replace("/*CATEGORY*/", sk.get("category", ""))
@@ -248,6 +275,11 @@ def cmd_check(d):
     cmd_build(d); node("check.js", os.path.abspath(out(d, "index.html")), os.path.abspath(out(d, "sheet.png")))
 
 
+def cmd_stills(d):
+    """صورة لكل مشهد لوحده (1080×1920) في build/scenes/ عشان المستخدم يراجعها قبل الـrender."""
+    cmd_build(d); node("stills.js", os.path.abspath(out(d, "index.html")), os.path.abspath(out(d, "scenes")))
+
+
 def cmd_sound(d):
     lines = lines_of(d); cfg = config_of(d)
     if not os.path.exists(out(d, "timing.js")): die("شغّل timing الأول.")
@@ -296,6 +328,7 @@ if __name__ == "__main__":
     elif c == "timing": cmd_timing(d)
     elif c == "build": cmd_build(d)
     elif c == "check": cmd_check(d)
+    elif c == "stills": cmd_stills(d)
     elif c == "sound": cmd_sound(d)
     elif c == "render": cmd_render(d, fps)
     elif c == "all": cmd_timing(d); cmd_check(d); cmd_sound(d); cmd_render(d, fps)

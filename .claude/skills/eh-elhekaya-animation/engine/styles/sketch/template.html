@@ -14,6 +14,14 @@
   .rule { position: absolute; left: 40px; right: 40px; top: 414px; height: 0; border-top: .8px solid #2b2b2b; }
   .cap { position: absolute; left: 22px; right: 22px; top: 428px; text-align: center; font: 800 16px/1.65 "Noto Sans Arabic", sans-serif; transition: none; }
   .cap .o { color: #c4532c; } .cap .b { color: #46698a; } .cap .g { color: #6b7d3c; }
+  /* الكلام بيمشي مع الصوت: الكلمة اللي بتتقال عليها هايلايت، واللي لسه ماتقالتش باهتة */
+  .cap span { display: inline-block; padding: 0 2px; border-radius: 4px; transition: none; }
+  .cap span.soon { opacity: .28; }
+  .cap span.now { background: #f2c26a; color: #2b2b2b; transform: scale(1.08); }
+  /* "captions": "top" في config.json: الكلام فوق والرسمة تحته */
+  .canvas.top .cap { top: 12px; min-height: 80px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; font-size: 17px; }
+  .canvas.top .rule { top: 102px; }
+  .canvas.top .panel { top: 112px; height: 482px; }
   .brand { position: absolute; left: 0; right: 0; bottom: 26px; text-align: center; font: 600 9.5px "Noto Sans Arabic", sans-serif; color: #8a8070; letter-spacing: .3px; }
   .lab { font: 700 20px "Noto Sans Arabic", sans-serif; }
   .over { position: absolute; inset: 3px; background: #eee5d0; display: none; }
@@ -70,6 +78,7 @@
   (function () {
     var LN = TIMING.lines, cap = document.getElementById("cap"), panel = document.getElementById("panel"), intro = document.getElementById("intro"), outro = document.getElementById("outro"), cur = -1;
     window.VIDEO_END = TIMING.duration;
+    if (CFG.captions === "top") { document.querySelector(".canvas").classList.add("top"); panel.setAttribute("preserveAspectRatio", "xMidYMid slice"); }
     window.renderAt = function (t) {
       var i = 0; while (i < LN.length - 1 && LN[i + 1].start - 0.05 <= t) i++;
       var first = i === 0, last = i === LN.length - 1;
@@ -80,7 +89,13 @@
       if (first) window.__intro(document.getElementById("introArt"), t);
       else if (last) window.__outro(document.getElementById("outroArt"), t - LN[i].start, t);
       else window.__panel(panel, t);
-      if (i !== cur) { var c = CAPS[i]; cap.innerHTML = c.w.map(function (w, k) { return c.k[k] ? '<span class="' + c.k[k] + '">' + w + '</span>' : w; }).join(" "); cur = i; }
+      if (i !== cur) { var c = CAPS[i]; cap.innerHTML = c.w.map(function (w, k) { return '<span class="' + (c.k[k] || "") + '">' + w + '</span>'; }).join(" "); cur = i; }
+      // كل كلمة بتنوّر في وقتها من الصوت (TIMING.lines[i].w)، أو على حسب طولها لو مفيش
+      var l = LN[i], ws = CAPS[i].w, sp = cap.children, tot = ws.join("").length, acc = 0;
+      for (var k = 0; k < sp.length; k++) {
+        var a0 = l.w ? l.w[k] : l.start + (l.end - l.start) * acc / tot, a1 = l.w ? (k + 1 < l.w.length ? l.w[k + 1] : l.end) : l.start + (l.end - l.start) * (acc + ws[k].length) / tot; acc += ws[k].length;
+        sp[k].classList.toggle("soon", t < a0 - 0.04); sp[k].classList.toggle("now", t >= a0 - 0.04 && t < a1 - 0.04);
+      }
       var a = Math.min(1, (t - LN[i].start + 0.05) / 0.25); cap.style.opacity = first || last ? 0 : a; cap.style.transform = "translateY(" + ((1 - a) * 6).toFixed(1) + "px)";
     };
     var q = location.hash.match(/t=([\d.]+)/); renderAt(q ? +q[1] : 0.5);

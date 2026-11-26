@@ -80,7 +80,7 @@ function globe(x, y, r, t) { var off = (t * 10) % (r * 2), land = ""; for (var i
 // ── الشخصية الثابتة (المذيع المرسوم) ──────────────────────────
 // guide(x, y, s, t, o): (x,y) = نص رجليه على الأرض، وطوله حوالي 320 لما s = 1.
 // o = { who: "fikri" | "nour" | "ostaz" | "zizo" (الشخصية، والافتراضي GUIDE_WHO),
-//       pose: "idle" | "point" | "wave" | "think" | "alarm" | "ok" | "stop",
+//       pose: "idle" | "point" | "wave" | "think" | "alarm" | "ok" | "stop" | "hold" (دراعاته لفوق شايل حاجة),
 //       mood: "happy" | "neutral" | "worried" | "surprised" (لكل pose مود افتراضي),
 //       dir: 1 (بيشاور يمين) أو -1 (شمال), talk: true (بقه بيتحرك وهو بيتكلم), k: من 0 لـ1 لظهوره بـpop }
 var GUIDE_WHO = "zizo";
@@ -106,7 +106,7 @@ function guide(x, y, s, t, o) {
   function hand(hx, hy, r) { return circle(hx, hy, r || 9, SKIN, false, 2); }
   function finger(x1, y1, x2, y2) { var d = 'M' + f(x1) + ' ' + f(y1) + ' L' + f(x2) + ' ' + f(y2); return '<path d="' + d + '" stroke="' + INK + '" stroke-width="7" stroke-linecap="round"/><path d="' + d + '" stroke="' + SKIN + '" stroke-width="3.5" stroke-linecap="round"/>'; }
   var w1 = Math.sin(t * 3) * 3, back = "", front = "", Lsh = [-36, -160], Rsh = [36, -160];
-  if (pose === "alarm") {
+  if (pose === "alarm" || pose === "hold") {
     back += arm(Lsh[0], Lsh[1], -80, -205, -64 + shake, -255) + hand(-64 + shake, -258, 10);
     back += arm(Rsh[0], Rsh[1], 80, -205, 64 - shake, -255) + hand(64 - shake, -258, 10);
   } else {
