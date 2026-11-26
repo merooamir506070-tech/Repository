@@ -1,0 +1,210 @@
+[
+ {
+  "line": 0,
+  "at": 0.4,
+  "fx": "splash",
+  "gain": 0.35
+ },
+ {
+  "line": 1,
+  "at": 0.1,
+  "fx": "creak",
+  "gain": 0.4
+ },
+ {
+  "line": 1,
+  "at": 1.0,
+  "fx": "pop",
+  "gain": 0.4
+ },
+ {
+  "line": 2,
+  "at": 0.2,
+  "fx": "fill",
+  "gain": 0.35,
+  "dur": 1.8
+ },
+ {
+  "line": 2,
+  "at": 2.1,
+  "fx": "zap",
+  "gain": 0.45
+ },
+ {
+  "line": 3,
+  "at": 0.4,
+  "fx": "splash",
+  "gain": 0.45
+ },
+ {
+  "line": 3,
+  "at": 2.1,
+  "fx": "chime",
+  "gain": 0.45
+ },
+ {
+  "line": 4,
+  "at": 0.2,
+  "fx": "sizzle",
+  "gain": 0.4
+ },
+ {
+  "line": 4,
+  "at": 1.0,
+  "fx": "steam",
+  "gain": 0.3
+ },
+ {
+  "line": 5,
+  "at": 0.1,
+  "fx": "motor",
+  "gain": 0.45,
+  "dur": 2.2
+ },
+ {
+  "line": 6,
+  "at": 0.8,
+  "fx": "spray",
+  "gain": 0.35,
+  "dur": 2
+ },
+ {
+  "line": 7,
+  "at": 0.2,
+  "fx": "servo",
+  "gain": 0.4
+ },
+ {
+  "line": 7,
+  "at": 1.7,
+  "fx": "thud",
+  "gain": 0.45
+ },
+ {
+  "line": 8,
+  "at": 0.1,
+  "fx": "spray",
+  "gain": 0.4,
+  "dur": 3
+ },
+ {
+  "line": 9,
+  "at": 0.4,
+  "fx": "clink",
+  "gain": 0.4
+ },
+ {
+  "line": 9,
+  "at": 2.3,
+  "fx": "whoosh",
+  "gain": 0.4
+ },
+ {
+  "line": 10,
+  "at": 1.0,
+  "fx": "snip",
+  "gain": 0.35
+ },
+ {
+  "line": 10,
+  "at": 1.6,
+  "fx": "snip",
+  "gain": 0.35
+ },
+ {
+  "line": 10,
+  "at": 2.2,
+  "fx": "snip",
+  "gain": 0.35
+ },
+ {
+  "line": 11,
+  "at": 0.1,
+  "fx": "slosh",
+  "gain": 0.45
+ },
+ {
+  "line": 11,
+  "at": 1.6,
+  "fx": "splash",
+  "gain": 0.4
+ },
+ {
+  "line": 12,
+  "at": 0.6,
+  "fx": "drop",
+  "gain": 0.5
+ },
+ {
+  "line": 12,
+  "at": 2.0,
+  "fx": "spark",
+  "gain": 0.45
+ },
+ {
+  "line": 13,
+  "at": 0.2,
+  "fx": "steam",
+  "gain": 0.35
+ },
+ {
+  "line": 13,
+  "at": 1.6,
+  "fx": "drip",
+  "gain": 0.4
+ },
+ {
+  "line": 14,
+  "at": 0.3,
+  "fx": "gear",
+  "gain": 0.35
+ },
+ {
+  "line": 14,
+  "at": 2.8,
+  "fx": "splash",
+  "gain": 0.4
+ },
+ {
+  "line": 15,
+  "at": 0.4,
+  "fx": "thud",
+  "gain": 0.5
+ },
+ {
+  "line": 15,
+  "at": 1.0,
+  "fx": "chime",
+  "gain": 0.4
+ },
+ {
+  "line": 16,
+  "at": 0.3,
+  "fx": "thud",
+  "gain": 0.4
+ },
+ {
+  "line": 16,
+  "at": 0.65,
+  "fx": "thud",
+  "gain": 0.4
+ },
+ {
+  "line": 16,
+  "at": 1.0,
+  "fx": "thud",
+  "gain": 0.4
+ },
+ {
+  "line": 16,
+  "at": 1.35,
+  "fx": "thud",
+  "gain": 0.4
+ },
+ {
+  "line": 16,
+  "at": 1.7,
+  "fx": "boom",
+  "gain": 0.45
+ }
+]
