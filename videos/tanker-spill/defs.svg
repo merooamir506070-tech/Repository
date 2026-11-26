@@ -1,0 +1,11 @@
+  <linearGradient id="gas" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9d27a"/><stop offset=".45" stop-color="#c7a64a"/><stop offset="1" stop-color="#8c7a3a"/></linearGradient>
+  <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff7ad9"/><stop offset=".33" stop-color="#7ae0ff"/><stop offset=".66" stop-color="#9dff7a"/><stop offset="1" stop-color="#ffd37a"/></linearGradient>
+  <linearGradient id="tank" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f6f8"/><stop offset=".45" stop-color="#c9d0d6"/><stop offset="1" stop-color="#8a949c"/></linearGradient>
+  <linearGradient id="cab" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2573e"/><stop offset="1" stop-color="#a5321f"/></linearGradient>
+  <radialGradient id="fireG" cx=".5" cy=".7" r=".6"><stop offset="0" stop-color="#fff3a0"/><stop offset=".45" stop-color="#ffb02e"/><stop offset="1" stop-color="#e2461f"/></radialGradient>
+  <linearGradient id="asph" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5e5b57"/><stop offset="1" stop-color="#3a3835"/></linearGradient>
+  <linearGradient id="sand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dcc08a"/><stop offset="1" stop-color="#b8925a"/></linearGradient>
+  <linearGradient id="cold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d7fa8"/><stop offset=".6" stop-color="#a9c4dd"/><stop offset="1" stop-color="#e4eef5"/></linearGradient>
+  <linearGradient id="dash" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f46"/><stop offset="1" stop-color="#1f2328"/></linearGradient>
+  <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6efdf"/><stop offset="1" stop-color="#e6dcc4"/></linearGradient>
+  <linearGradient id="carRed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8fd0"/><stop offset="1" stop-color="#2c5f99"/></linearGradient>
