@@ -409,7 +409,7 @@ shot(18, camPush(180, 330, 1.05, 1.1), function (u, d, t) {
 // 19: نبّه الناس اللي حواليك يبعدوا، الثانية بتفرق
 shot(19, camPush(180, 330, 1.0, 1.06), function (u, d, t) {
   var go = ease(u / d);
-  return bgSky("day") + groundOnly(430) + vapor(340, 440, 120, 160, t, 0.45) +
+  return bgSky("day") + clouds(t, 12, 70, 3, 0.9, 0.5) + hillsFar(355) + road2(365, t, 0) + tanker(320, 405, 0.55, t, true) + puddle(300, 412, 60, 1, t) + vapor(300, 408, 110, 150, t, 0.45) +
     hero(220, 455, t, { who: "zizo", mood: "shock", pose: "wave", s: 0.9 }) + hero(130 - go * 60, 450, t, { who: "fikri", mood: "worry", s: 0.65, walk: true, flip: true }) +
     people(40 - go * 90, 450, t * 1.3, 3, "worry") + clock(285, 140, 46, t) + arrow(150, 290, 30, 290, "#ffd23a", 7, ease((u - 0.4) / 1.2));
 });
@@ -421,7 +421,8 @@ shot(20, camPush(180, 300, 1.0, 1.04), function (u, d, t) {
     ["في العالي", 260, 270, '<path d="M-18 10 Q0 -14 18 10 Z" fill="#a8bd6e" stroke="' + INK + '" stroke-width="2.4"/><circle cx="0" cy="-6" r="4" fill="' + ORANGE + '"/>'],
     ["اطفي الموتور", 100, 270, keyIcon(0, 4, 0, 0.45)],
     ["اتصل", 180, 390, '<rect x="-9" y="-15" width="18" height="30" rx="4" fill="#1c1c1c"/><rect x="-6" y="-11" width="12" height="20" fill="#6fd0ff"/>']];
-  var s = bgSky("day") + clouds(t, 12, 60, 3, 0.9, 0.5) + tag("افتكر", 180, 70, u, 0.8, -3, 30, "#f08a24");
+  var s = bgSky("day") + clouds(t, 12, 60, 3, 0.9, 0.5) + hillsFar(335) + road2(345, t, 0) + tanker(250, 392, 0.5, t, true) + puddle(232, 398, 50, 1, t) + vapor(232, 395, 80, 70, t, 0.4) +
+    carS(70, 405, 0.55, t, { driver: "zizo", mood: "n", lights: true }) + tag("افتكر", 180, 70, u, 0.8, -3, 30, "#f08a24");
   cells.forEach(function (c, i) { var k = pop((u - tt[i]) / 0.9); if (k <= 0) return; s += '<g transform="translate(' + c[1] + ' ' + c[2] + ') scale(' + f(k) + ')"><rect x="-74" y="-48" width="148" height="96" rx="20" fill="#fff" stroke="' + INK + '" stroke-width="3"/><circle cx="0" cy="-18" r="20" fill="#fdf1d6" stroke="' + INK + '" stroke-width="2"/><g transform="translate(0 -18)">' + c[3] + '</g><text x="0" y="30" text-anchor="middle" style="font:900 18px Noto Sans Arabic;fill:' + INK + '">' + c[0] + '</text><circle cx="58" cy="-34" r="11" fill="' + ORANGE + '" stroke="' + INK + '" stroke-width="2"/><text x="58" y="-29" text-anchor="middle" style="font:900 13px Noto Sans Arabic;fill:#fff">' + (i + 1) + '</text></g>'; });
   return s + hero(40, 490, t, { who: "zizo", mood: "happy", pose: "cheer", s: 0.55 }) + hero(320, 490, t, { who: "fikri", mood: "happy", pose: "wave", s: 0.55 });
 });
