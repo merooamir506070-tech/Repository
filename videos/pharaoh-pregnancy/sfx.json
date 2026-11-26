@@ -1,17 +1,5 @@
 [
 {
-"line": 0,
-"at": 1.0,
-"fx": "tick",
-"gain": 0.5
-},
-{
-"line": 0,
-"at": 2.2,
-"fx": "ping",
-"gain": 0.5
-},
-{
 "line": 1,
 "at": 0.3,
 "fx": "wind",
@@ -279,6 +267,30 @@
 "line": 24,
 "at": 0.3,
 "fx": "bell",
+"gain": 0.5
+},
+{
+"line": 0,
+"at": 0.3,
+"fx": "pop",
+"gain": 0.45
+},
+{
+"line": 0,
+"at": 0.7,
+"fx": "tick",
+"gain": 0.5
+},
+{
+"line": 0,
+"at": 1.6,
+"fx": "tick",
+"gain": 0.5
+},
+{
+"line": 0,
+"at": 2.3,
+"fx": "ping",
 "gain": 0.5
 }
 ]

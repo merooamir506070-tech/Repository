@@ -87,9 +87,48 @@ function gauge(x, y, r, v) {
   return stroke(d, PUTTY, 34) + stroke(d, INK, 1.5, ' transform="translate(0 17)"') + (v > 0.01 ? stroke(e, OLIVE, 30) : "") + stroke("M" + f(x) + " " + f(y) + " L" + f(x + Math.cos(a1) * (r - 40)) + " " + f(y + Math.sin(a1) * (r - 40)), INK, 5) + circle(x, y, 12, INK) + T(Math.round(v * 100) + "%", x, y + 80, 64, OLIVE, 900);
 }
 
-// ── كارت البداية: شريط الحمل والخطين بيظهروا
-intro(function (t) {
-  return dark("#1d1a16") + '<circle cx="290" cy="160" r="' + f(150 + 8 * Math.sin(t * 2)) + '" fill="url(#glowW)" opacity=".35"/>' + testStrip(290, 165, 0.85, ease((t - 0.8) / 0.6), ease((t - 2) / 0.6), t, -12) + ring(282, 125, 60, t, ease((t - 2.6) / 1));
+var SKIN2 = "#c98e6c", HAIR = "#4a3426", WHITE = "#f7f3e8";
+function P(d, fill, sw, hatched) { return shape(d, fill, hatched, sw || 2.2); }
+function limbS(d, col, w) { w = w || 22; return '<path d="' + d + '" fill="none" stroke="' + INK + '" stroke-width="' + (w + 4) + '" stroke-linecap="round" stroke-linejoin="round"/><path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"/>'; }
+function eyesF(lash, glasses) {
+  var s = '<ellipse cx="-12" cy="-300" rx="4" ry="5" fill="' + INK + '"/><ellipse cx="12" cy="-300" rx="4" ry="5" fill="' + INK + '"/>';
+  if (lash) s += stroke("M-19 -301 Q-12 -308 -4 -302 L0 -304 M19 -301 Q12 -308 4 -302 M-19 -301 L-25 -304 M19 -301 L25 -304", INK, 2);
+  if (glasses) s += '<circle cx="-13" cy="-300" r="11" fill="none" stroke="' + INK + '" stroke-width="2.4"/><circle cx="13" cy="-300" r="11" fill="none" stroke="' + INK + '" stroke-width="2.4"/>' + stroke("M-2 -301 H2 M-24 -302 L-34 -305 M24 -302 L34 -305", INK, 2);
+  return s;
+}
+function faceF(o) {
+  o = o || {}; var s = circle(0, -292, 36, o.skin || SKIN);
+  s += eyesF(o.lash, o.glasses) + stroke("M-19 -314 Q-12 -318 -5 -314 M19 -314 Q12 -318 5 -314", o.brow || INK, 2.4) + stroke("M0 -296 L-3 -284 L2 -283", INK, 1.6);
+  s += o.mus ? P("M-14 -273 Q0 -280 14 -273 Q8 -270 0 -272 Q-8 -270 -14 -273 Z", o.mus, 1.2) + stroke("M-8 -266 Q0 -262 8 -266", INK, 2) : stroke("M-9 -272 Q0 -265 9 -272", o.lip || INK, 2.4);
+  return s;
+}
+function legs(col, shoe) { return limbS("M-14 -120 L-16 -14", col, 22) + limbS("M14 -120 L16 -14", col, 22) + '<ellipse cx="-20" cy="-6" rx="17" ry="8" fill="' + (shoe || INK) + '" stroke="' + INK + '" stroke-width="2"/><ellipse cx="20" cy="-6" rx="17" ry="8" fill="' + (shoe || INK) + '" stroke="' + INK + '" stroke-width="2"/>'; }
+function feetBare(sk) { return '<ellipse cx="-16" cy="-6" rx="15" ry="7" fill="' + sk + '" stroke="' + INK + '" stroke-width="2"/><ellipse cx="16" cy="-6" rx="15" ry="7" fill="' + sk + '" stroke="' + INK + '" stroke-width="2"/>'; }
+function collar(y) { return '<ellipse cx="0" cy="' + y + '" rx="52" ry="20" fill="' + BLUE + '" stroke="' + INK + '" stroke-width="2"/><ellipse cx="0" cy="' + (y - 2) + '" rx="40" ry="13" fill="' + ORANGE + '" stroke="' + INK + '" stroke-width="1.4"/><ellipse cx="0" cy="' + (y - 4) + '" rx="26" ry="7" fill="' + OLIVE + '" stroke="' + INK + '" stroke-width="1.2"/>'; }
+
+
+// ست مصرية بطرحة وحامل، ماسكة شريط الحمل في إيدها المرفوعة (الأصل عند رجليها)
+function womanHijabPreg(t, strip) {
+  var b = Math.sin(t * 1.6) * 2;
+  return legs(INK, "#5a4a3e") +
+    P("M-48 -228 L44 -228 C52 -204 96 -176 92 -124 C88 -92 62 -84 58 -60 L56 -14 L-56 -14 C-60 -60 -58 -150 -48 -228 Z", "#46698a", 2.2, true) +
+    stroke("M30 -196 C70 -178 84 -140 70 -104", "#2f4c66", 2) + stroke("M-8 -200 V-14", INK, 1.2) +
+    limbS("M44 -220 L74 " + f(-176 + b) + " L50 " + f(-140 + b), "#46698a", 20) + circle(48, -138 + b, 10, SKIN) +
+    limbS("M-46 -220 L-104 -176 L-104 -246", "#46698a", 20) + circle(-104, -252, 10, SKIN) + (strip || "") +
+    P("M-46 -296 C-50 -350 50 -350 46 -296 L58 -226 C30 -210 -30 -210 -58 -226 Z", "#b5683c", 2.2, true) + faceF({ lash: true, lip: "#8a3a2a" }) +
+    stroke("M-38 -300 C-38 -332 38 -332 38 -300", "#b5683c", 6);
+}
+// 0 — النهارده الست بتعرف إنها حامل بشريط من الصيدلية
+shot(0, camPush(320, 420, 1, 1.06), function (u, d, t) {
+  var k1 = ease((u - 0.6) / 0.5), k2 = ease((u - 1.5) / 0.5), glow = 0.55 + 0.45 * Math.sin(t * 6);
+  var small = testStrip(-104, -282, 0.28, k1, k2, t, -8);
+  var big = testStrip(0, 64, 1.6, k1, k2, t, 0) + (k1 > 0.5 ? '<ellipse cx="0" cy="-48" rx="44" ry="20" fill="url(#glowO)" opacity="' + f(0.6 * glow) + '"/>' : "") + (k2 > 0.5 ? '<ellipse cx="0" cy="6" rx="44" ry="20" fill="url(#glowO)" opacity="' + f(0.6 * glow) + '"/>' : "") +
+    '<rect x="-22.4" y="-53.6" width="44.8" height="11.2" rx="3" fill="' + RED + '" opacity="' + f(k1) + '"/><rect x="-22.4" y="0.8" width="44.8" height="11.2" rx="3" fill="' + RED + '" opacity="' + f(k2) + '"/>';
+  return paper() + R(-600, 640, 1840, 600, "#d9cfb6", 2) + '<rect x="-600" y="640" width="1840" height="600" fill="url(#hatch)"/>' +
+    G(420, 720, 1.3, womanHijabPreg(t, small)) +
+    stroke("M282 352 L240 290", INK, 1.6, ' stroke-dasharray="6 5"') +
+    inset(165, 200, 125, big, (u - 0.2) / 0.6) + ring(165, 179, 56, t, ease((u - 2.2) / 0.8)) +
+    label(470, 560, 270, 640, "حامل", ORANGE, ease((u - 2.8) / 0.7), 28);
 });
 
 // 1 — من أكتر من تلات تلاف سنة: الصحرا والأهرامات
