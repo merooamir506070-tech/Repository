@@ -333,10 +333,30 @@ shot(19, camPan(250, 390, 400, 1.04), function (u, d, t) {
     tray(320, 610, 440) + dots(t, 120, 595, 400, 14, 10, "#b5a274", 4) + crossMark(560, 610, 0.8, (u - 1.2) / 0.5) + T("رجالة", 320, 680, 24, GREY, 800);
 });
 // 20 — الهرمونات بتنزل في البول وبتساعد البذرة تنبت
-shot(20, camMove([320, 330, 1.0], [320, 470, 1.12]), function (u, d, t) {
-  var s = paper() + tube(320, 200, 1.1, "#e6cf6a", 0.6) + desert(600) + '<ellipse cx="320" cy="600" rx="34" ry="18" fill="' + WHEAT + '" stroke="' + INK + '" stroke-width="2"/>';
-  for (var i = 0; i < 14; i++) { var k = (t * 0.6 + hash(i)) % 1; s += '<circle cx="' + f(320 + Math.sin(k * 9 + i) * 40 * (1 - k)) + '" cy="' + f(300 + k * 290) + '" r="' + f(6 + hash(i) * 3) + '" fill="url(#glowO)"/><circle cx="' + f(320 + Math.sin(k * 9 + i) * 40 * (1 - k)) + '" cy="' + f(300 + k * 290) + '" r="3.5" fill="' + ORANGE + '"/>'; }
-  return s + sprout(320, 590, ease((u - 2.5) / 2), t, 150) + label(345, 360, 480, 300, "هرمونات", BLUE, ease((u - 1) / 0.8), 28) + label(345, 600, 470, 700, "البذرة", OLIVE, ease((u - 3.4) / 0.8), 26);
+// ست مصرية بطرحة وحامل، من الجنب (باصة يمين). الأصل عند رجليها
+function womanHijabSide(t) {
+  var b = Math.sin(t * 1.6) * 1.5, HJ = "#b5683c", AB = "#46698a";
+  return '<ellipse cx="62" cy="-6" rx="20" ry="7" fill="#5a4a3e" stroke="' + INK + '" stroke-width="2"/><ellipse cx="-14" cy="-6" rx="18" ry="7" fill="#5a4a3e" stroke="' + INK + '" stroke-width="2"/>' +
+    limbS("M-4 -222 L-16 -160 L46 " + f(-104 + b), AB, 18) +
+    P("M-32 -232 C-42 -150 -46 -60 -40 -12 L80 -12 C78 -40 70 -66 74 -90 C118 -112 122 -190 54 -206 L30 -232 Z", AB, 2.2, true) +
+    stroke("M56 -200 C112 -186 112 -116 74 -94", "#2f4c66", 2) + stroke("M40 -186 C70 -170 78 -140 70 -116", "#9fb8cc", 3) +
+    circle(50, -102 + b, 10, SKIN) +
+    limbS("M8 -222 L18 -172 L66 " + f(-188 + b), AB, 18) + circle(70, -190 + b, 10, SKIN) +
+    P("M12 -334 C34 -336 44 -320 44 -306 L52 -296 L44 -292 C46 -280 40 -268 26 -266 L12 -266 Z", SKIN) +
+    '<ellipse cx="34" cy="-308" rx="3.5" ry="4.5" fill="' + INK + '"/>' + stroke("M30 -317 Q36 -320 42 -316 M37 -309 L42 -312", INK, 2) + stroke("M36 -279 Q41 -276 45 -279", "#8a3a2a", 2.2) +
+    P("M-38 -300 C-44 -356 40 -362 36 -322 C24 -326 16 -306 16 -290 C16 -276 20 -264 30 -256 L44 -240 C20 -222 -24 -224 -46 -238 Z", HJ, 2.2, true) +
+    stroke("M30 -330 C16 -320 12 -290 26 -262", HJ, 5);
+}
+// 20 — جسم الحامل بيعمل هرمونات زيادة بتنزل في البول وبتساعد البذرة تنبت
+shot(20, camPush(320, 450, 1, 1.06), function (u, d, t) {
+  var BX = 290, BY = 478, SX = 505, SY = 640, glow = 0.6 + 0.4 * Math.sin(t * 4);
+  var s = paper() + desert(660) + '<ellipse cx="' + BX + '" cy="' + BY + '" rx="' + f(120 + 10 * Math.sin(t * 4)) + '" ry="' + f(110 + 10 * Math.sin(t * 4)) + '" fill="url(#glowO)" opacity="' + f(0.55 * glow * ease(u / 0.6)) + '"/>' +
+    G(190, 670, 1.3, womanHijabSide(t)) + ring(BX, BY, 92, t, ease((u - 0.3) / 0.9));
+  var flow = ease((u - 0.9) / 0.6);
+  for (var i = 0; i < 16 && flow > 0; i++) { var k = (t * 0.45 + hash(i)) % 1, x = lerp(BX + 40, SX, k), y = lerp(BY + 20, SY - 20, k) - Math.sin(k * Math.PI) * 90 + Math.sin(t * 3 + i) * 8;
+    s += '<g opacity="' + f(flow) + '"><circle cx="' + f(x) + '" cy="' + f(y) + '" r="' + f(8 + hash(i) * 4) + '" fill="url(#glowO)"/><circle cx="' + f(x) + '" cy="' + f(y) + '" r="4" fill="' + ORANGE + '"/></g>'; }
+  s += '<ellipse cx="' + SX + '" cy="' + SY + '" rx="30" ry="15" fill="' + WHEAT + '" stroke="' + INK + '" stroke-width="2"/>' + sprout(SX, SY - 8, ease((u - 2.6) / 2), t, 150);
+  return s + label(BX + 60, BY - 70, 470, 320, "هرمونات الحمل", BLUE, ease((u - 1) / 0.8), 26) + label(SX + 20, SY, 560, 740, "البذرة", OLIVE, ease((u - 3.4) / 0.8), 26);
 });
 // 21 — ولد ولا بنت: تخمين زي رمي العملة
 shot(21, camPush(320, 400, 1, 1.1), function (u, d, t) {
