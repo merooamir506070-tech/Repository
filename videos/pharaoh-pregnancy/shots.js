@@ -258,11 +258,35 @@ shot(14, camPush(320, 400, 1.05, 1.12), function (u, d, t) {
   return paper() + papyrus(320, 380, 460, 320, 1 - 0.75 * ease((u - 0.2) / 1.2), t, true) + stamp(320, 400, "خرافة؟", (u - 1.6) / 0.5, t);
 });
 // 15 — سنة 1963، علماء في القاهرة
-shot(15, camPan(280, 360, 420, 1.06), function (u, d, t) {
-  var blink = Math.sin(t * 6) > 0;
-  return paper() + R(-600, 560, 1840, 600, "#b39b7a", 2) + '<rect x="-600" y="560" width="1840" height="600" fill="url(#hatch)"/>' + lamp(320, 150, t, blink, 1.3) +
-    flask(180, 490, 1.1, t, "#c7a640") + flask(470, 490, 0.9, t + 1, "#9fb8cc") + tube(330, 480, 0.9, OLIVE, 0.6) +
-    numBox("1963", 320, 670, (u - 0.4) / 0.6, 40) + label(470, 430, 560, 300, "القاهرة", OLIVE, ease((u - 3.4) / 0.8), 28);
+// عالم بالبالطو (نص فوق بس، الرجلين ورا البنش). armL/armR مسارات الدراعين، وhand مكان الإيد اللي ماسكة حاجة
+function scientist(o, t) {
+  var skin = o.skin || SKIN;
+  var g = P("M-48 -232 L48 -232 L56 -60 L-56 -60 Z", WHITE, 2.2, true) + stroke("M0 -196 V-60", INK, 1.6) +
+    (o.tie ? P("M-16 -232 L16 -232 L0 -190 Z", "#b9d0e0", 1.6) + P("M-5 -226 L5 -226 L7 -170 L0 -160 L-7 -170 Z", ORANGE, 1.4) : P("M-18 -232 L18 -232 L0 -196 Z", "#8a8070", 1.6)) +
+    R(18, -170, 24, 26, "none", 1.6) + stroke("M24 -170 V-180", BLUE, 3) +
+    limbS(o.armL, WHITE, 20) + limbS(o.armR, WHITE, 20) + circle(o.hL[0], o.hL[1], 10, skin) + circle(o.hR[0], o.hR[1], 10, skin) +
+    R(-9, -262, 18, 30, skin, 2) + faceF(o.face) + (o.hair || "");
+  return g;
+}
+// 15 — سنة 1963، علماء في معمل في القاهرة بيجربوا، وقدامهم المحاليل
+shot(15, camPan(290, 350, 430, 1.04), function (u, d, t) {
+  var blink = Math.sin(t * 6) > 0, sh = Math.sin(t * 9) * 8, nod = Math.sin(t * 1.4) * 3;
+  // العالم الشاب: رافع أنبوبة قدام عينه وبيهزها
+  var s1 = scientist({ tie: true, armR: "M-48 -222 L-64 -140 L-40 -90", hL: [-40, -86], armL: "M48 -222 L92 -176 L76 -296", hR: [76, -300],
+    face: { glasses: true, mus: INK }, hair: P("M-36 -300 C-40 -340 30 -346 38 -306 C24 -326 -10 -320 -36 -300 Z", INK, 1.4) }, t);
+  s1 += G(76, -330, 0.55, tube(0, 0, 1, "#c7a640", 0.55), sh);
+  // الدكتور الكبير: ماسك قطارة فوق الدورق
+  var s2 = scientist({ skin: SKIN2, armL: "M-48 -222 L-96 -262 L-104 -326", hL: [-104, -330], armR: "M48 -222 L64 -140 L40 -90", hR: [40, -86],
+    face: { skin: SKIN2, mus: "#d8d2c4", brow: "#8a8070" },
+    hair: P("M-38 -296 C-44 -310 -40 -322 -32 -318 L-30 -300 Z", "#d8d2c4", 1.4) + P("M38 -296 C44 -310 40 -322 32 -318 L30 -300 Z", "#d8d2c4", 1.4) + stroke("M-24 -296 H-4 M4 -296 H24", INK, 2.6) }, t);
+  s2 += R(-110, -330, 12, 44, "url(#glass)", 1.6, 3) + R(-112, -346, 16, 18, ORANGE, 1.6, 6);
+  var drops = ""; for (var i = 0; i < 3; i++) { var k = (t * 1.3 + i / 3) % 1; drops += drop(351, 352 + k * 80, 0.7); }
+  return paper() + '<rect x="-600" y="-600" width="1840" height="1200" fill="#e4dccb"/><rect x="-600" y="-600" width="1840" height="1200" fill="url(#grid)" opacity=".5"/>' +
+    lamp(250, 120, t, blink, 1.1) + R(430, 150, 150, 70, BONE, 2, 6) + T("معمل القاهرة", 505, 194, 22, OLIVE, 800) +
+    G(160, 700 + nod, 1.15, s1) + G(470, 700 - nod, 1.15, s2) + drops +
+    R(-600, 590, 1840, 600, "#8a6a48", 2) + '<rect x="-600" y="590" width="1840" height="600" fill="url(#hatch)"/>' + stroke("M-600 606 H1240", "#6a5038", 2) +
+    flask(350, 528, 0.88, t, "#9fb8cc") + flask(590, 540, 0.7, t + 1, "#c7a640") + tube(30, 530, 0.7, OLIVE, 0.6) + tube(62, 530, 0.7, ORANGE, 0.5) + tube(94, 530, 0.7, BLUE, 0.45) +
+    numBox("1963", 320, 700, (u - 0.4) / 0.6, 40) + ring(505, 185, 90, t, ease((u - 3.4) / 0.8));
 });
 // 16 — تلات مجموعات عينات
 shot(16, camPan(260, 380, 400, 1.04), function (u, d, t) {
