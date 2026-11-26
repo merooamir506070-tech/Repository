@@ -324,7 +324,7 @@ shot(16, camPush(180, 290, 1.0, 1.06), function (u, d, t) {
   var pinY = 170 - 30 * Math.abs(Math.sin(t * 3));
   return bgFill("#e9e1cc") + card(180, 185, 300, 240, "#f6efdf") + grid + '<path d="M30 200 Q180 150 330 230" stroke="#9aa0a6" stroke-width="16" fill="none"/>' +
     pulse(180, 185, t, "#c23a26", 30) + '<g transform="translate(180 ' + f(pinY + 15) + ')"><path d="M0 0 C-22 -26 -18 -48 0 -48 C18 -48 22 -26 0 0 Z" fill="#c23a26" stroke="' + INK + '" stroke-width="2.6"/><circle cy="-32" r="7" fill="#fff"/></g>' +
-    chip("المكان بالظبط", 180, 345, u, 0.2) + chip("عربية بنزين", 180, 400, u, 1.4) + chip("فيه تسريب", 180, 455, u, 2.6);
+    chip("المكان بالظبط", 180, 330, u, 0.2) + chip("عربية بنزين", 180, 378, u, 1.4) + chip("فيه تسريب", 180, 426, u, 2.6);
 });
 // 17: لو شميت ريحة بنزين أو دخت، ابعد أكتر
 shot(17, camMove([200, 320, 1.1], [150, 320, 1.0]), function (u, d, t) {
