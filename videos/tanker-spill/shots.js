@@ -129,6 +129,7 @@ function hero(x, y, t, o) {
   else if (p === "wave") s += arm(-16, -40 - w * 0.4, -110 + Math.abs(w) * 0.2) + arm(16, 40 + w * 0.4, -110 + Math.abs(w) * 0.2);
   else if (p === "think") s += arm(-16, -28, -40) + arm(16, 6, -92);
   else if (p === "cheer") s += arm(-16, -34 - w * 0.2, -112) + arm(16, 34 + w * 0.2, -112);
+  else if (p === "film") { s += arm(-16, 30, -84) + arm(16, 46, -86); extra = '<rect x="34" y="-108" width="16" height="28" rx="3" fill="#1c1c1c" stroke="' + INK + '" stroke-width="1.8"/><circle cx="42" cy="-102" r="2.4" fill="#ff3a2a" opacity="' + (Math.floor(t * 3) % 2 ? 1 : 0.2) + '"/>'; }
   else if (p === "phone") { s += arm(-16, -28, -40) + arm(16, 18, -100); extra = '<rect x="12" y="-118" width="12" height="22" rx="3" fill="#1c1c1c" stroke="' + INK + '" stroke-width="1.5"/><rect x="14" y="-115" width="8" height="14" fill="#6fd0ff"/>'; }
   else if (p === "smoke") { s += arm(-16, -28, -40) + arm(16, 22, -92); extra = '<rect x="22" y="-95" width="16" height="3.5" fill="#fbfbf7" stroke="' + INK + '" stroke-width="1"/><circle cx="38" cy="-93.5" r="2.5" fill="#ff7a2e"/>' + smoke(39, -98, t); }
   else if (p === "shiver") s += arm(-16, 10, -56) + arm(16, -10, -56);
@@ -392,12 +393,18 @@ shot(17, camMove([200, 320, 1.1], [150, 320, 1.0]), function (u, d, t) {
     arrow(200, 160, 60, 160, "#ffd23a", 8, ease((u - 1.8) / 1.2)) + tag("ابعد!", 130, 110, u, 2.0, -3, 30, "#e8c48e");
 });
 // 18: ما تقرّبش تصوّر، وسيب الشغل للمطافي
-shot(18, camPush(180, 320, 1.0, 1.06), function (u, d, t) {
-  var ft = ease((u - 2.4) / 2), pk = clamp(1 - (u - 2.2) / 0.4);
-  return bgSky("day") + clouds(t, 12, 70, 3, 0.9, 0.5) + hillsFar(350) + road2(370, t, 0) + tanker(240, 408, 0.55, t, true) + puddle(230, 416, 60, 1, t) + vapor(230, 412, 90, 80, t, 0.4) +
-    fireTruck(lerp(520, 100, ft), 440, 0.6, t * (ft < 1 ? 1 : 0)) +
-    (pk > 0 ? '<g opacity="' + f(pk) + '">' + phone(180, 230, t, 0.75, '<rect width="120" height="220" fill="#7fb7e0"/><rect y="140" width="120" height="80" fill="#5e5b57"/><circle cx="16" cy="18" r="' + (Math.floor(t * 3) % 2 ? 5 : 0) + '" fill="#ff3a2a"/>' + tanker(70, 160, 0.3, t, true)) + '</g>' + cross(240, 140, u, 0.7, 1.3) : "") +
-    tag("سيبها للمطافي", 180, 120, u, 3.0, -3, 26, "#e8c48e");
+shot(18, camPush(180, 330, 1.05, 1.1), function (u, d, t) {
+  var ft = ease((u - 2.2) / 2), ph = clamp(1 - (u - 3.0) / 0.4), back = ease((u - 2.6) / 1.5);
+  var screen = '<rect width="120" height="220" fill="#8fc2e6"/><path d="M0 120 Q40 100 80 112 T120 108 V140 H0 Z" fill="#c9b48a"/><rect y="138" width="120" height="82" fill="#4a4845"/><path d="M0 178 H120" stroke="#f2e6c8" stroke-width="3" stroke-dasharray="12 10"/>' +
+    tanker(66, 170, 0.45, t, true) + puddle(56, 176, 40, 1, t) + vapor(56, 174, 50, 40, t, 0.5) +
+    '<circle cx="16" cy="16" r="6" fill="#ff3a2a" opacity="' + (Math.floor(t * 3) % 2 ? 1 : 0.25) + '"/><text x="28" y="21" style="font:900 13px Noto Sans Arabic;fill:#fff" direction="ltr">REC</text>' +
+    '<path d="M10 40 v-10 h10 M110 40 v-10 h-10 M10 200 v10 h10 M110 200 v10 h-10" stroke="#fff" stroke-width="2.4" fill="none"/>';
+  var zx = lerp(62, 40, back), zy = 445;
+  var s = bgSky("day") + clouds(t, 12, 70, 3, 0.9, 0.5) + hillsFar(350) + road2(360, t, 0) +
+    fireTruck(lerp(560, 300, ft), 392, 0.5, t * (ft < 1 ? 1 : 0)) + tanker(245, 400, 0.6, t, true) + puddle(225, 408, 70, 1, t) + vapor(225, 404, 100, 80, t, 0.45) +
+    hero(zx, zy, t, { who: "zizo", mood: u > 0.9 ? "worry" : "curious", pose: u < 2.6 ? "film" : "back", s: 0.6, walk: back > 0.02 && back < 0.98, flip: back > 0.02 });
+  if (ph > 0) s += '<g opacity="' + f(ph) + '"><path d="M' + f(zx + 25) + ' ' + f(zy - 58) + ' L130 268 L230 268 Z" fill="#fff" opacity=".35"/>' + '<g transform="translate(180 175) rotate(' + f(Math.sin(t * 1.3) * 2) + ') scale(0.8)"><rect x="-70" y="-128" width="140" height="256" rx="20" fill="#1c1c1c" stroke="' + INK + '" stroke-width="3"/><svg x="-60" y="-110" width="120" height="220" viewBox="0 0 120 220">' + screen + '</svg><rect x="-18" y="-122" width="36" height="6" rx="3" fill="#333"/></g>' + '</g>' + (ph > 0.5 ? cross(255, 100, u, 0.8, 1.2) : "");
+  return s + tag("سيبها للمطافي", 180, 150, u, 3.1, -3, 26, "#e8c48e");
 });
 // 19: نبّه الناس اللي حواليك يبعدوا، الثانية بتفرق
 shot(19, camPush(180, 330, 1.0, 1.06), function (u, d, t) {
