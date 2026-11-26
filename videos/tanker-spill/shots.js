@@ -81,13 +81,14 @@ function tanker(x, y, s, t, over) {
 // عربية ملاكي من الجنب، وفيها السواق (driver: "zizo" أو null). dir = 1 بصة يمين
 function carS(x, y, s, t, o) {
   o = o || {}; s = s || 1; var col = o.col || "url(#carRed)", spin = o.spin || 0, dir = o.dir || 1, drv = "";
-  if (o.driver) drv = '<g transform="translate(6 -40)">' + faceHead(0, 0, 10, o.mood || "n", t, 0.6, o.driver) + '</g>';
+  if (o.driver) drv = '<g transform="translate(6 -40)">' + faceHead(0, 0, 10, o.mood || "n", t, 1, o.driver) + '</g>';
+  var beam = o.lights ? '<path d="M60 -25 L120 -40 L120 -8 Z" fill="#fff4c8" opacity="' + f(0.35 + 0.1 * Math.sin(t * 6)) + '" filter="url(#soft2)"/>' : '';
   return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + f(s * dir) + ' ' + f(s) + ')"><ellipse cx="0" cy="2" rx="62" ry="4" fill="#000" opacity=".2"/>' +
     '<path d="M-60 -8 V-26 Q-58 -32 -46 -33 L-28 -34 L-14 -52 Q-10 -56 -2 -56 H24 Q31 -56 36 -50 L48 -34 L56 -32 Q62 -30 62 -20 V-8 Z" fill="' + col + '" stroke="' + INK + '" stroke-width="2.6"/>' +
     '<path d="M-24 -34 L-12 -50 H8 V-34 Z" fill="url(#gGlass)" stroke="' + INK + '" stroke-width="1.8"/>' +
     '<path d="M12 -34 V-50 H24 Q28 -50 31 -46 L40 -34 Z" fill="url(#gGlass)" stroke="' + INK + '" stroke-width="1.8"/>' + drv +
     '<rect x="56" y="-28" width="6" height="5" rx="1" fill="#fff4c8" stroke="' + INK + '" stroke-width="1"/><rect x="-61" y="-28" width="5" height="5" fill="#d24a3a" stroke="' + INK + '" stroke-width="1"/>' +
-    wheel(-36, -6, 11, t, spin) + wheel(38, -6, 11, t, spin) + '</g>';
+    wheel(-36, -6, 11, t, spin) + wheel(38, -6, 11, t, spin) + beam + '</g>';
 }
 
 // ── الشخصيات ───────────────────────────────────────────
@@ -201,8 +202,8 @@ function distArrow(x1, x2, y, label2, k, col) {   // سهم مسافة بسنّ�
 shot(0, camMove([170, 370, 1.3], [205, 378, 1.45]), function (u, d, t) {
   var cx = lerp(-60, 95, ease(u / 3.2)), sp = u < 3.2 ? 2 * (1 - u / 3.2) : 0;
   return bgSky("day") + sun(300, 110, 26) + clouds(t, 12, 70, 4, 0.9, 0.6) + hillsFar(345) + road2(350, t, 0) +
-    tanker(255, 392, 0.75, t, true) + drips(186, 384, 400, t) + puddle(235, 402, 90, 0.35 + 0.65 * ease(u / d), t) + vapor(235, 400, 120, 60, t, 0.25 + 0.2 * ease(u / d)) +
-    carS(cx, 410, 0.8, t, { driver: "zizo", mood: u > 3 ? "shock" : "n", spin: sp }) + tag("عربية بنزين مقلوبة!", 210, 270, u, 3.4, -3, 18, "#f08a24");
+    carS(cx, 402, 0.8, t, { driver: "zizo", mood: u > 3 ? "shock" : "n", spin: sp, lights: true }) +
+    tanker(262, 400, 0.75, t, true) + drips(193, 392, 406, t) + puddle(240, 408, 90, 0.35 + 0.65 * ease(u / d), t) + vapor(240, 404, 120, 60, t, 0.25 + 0.2 * ease(u / d)) + tag("عربية بنزين مقلوبة!", 210, 270, u, 3.4, -3, 18, "#f08a24");
 });
 // 1: تقف ولا تعدّي؟
 shot(1, camPush(180, 320, 1.05, 1.15), function (u, d, t) {
@@ -255,17 +256,18 @@ shot(7, camMove([185, 380, 1.25], [175, 385, 1.3]), function (u, d, t) {
     spark(68, 412, t, u > 2.4 && u < 3 ? 1 : 0);
 });
 // 8: ما تعدّيش فوق البنزين أو جوه البخار
-shot(8, camPush(180, 340, 1.0, 1.1), function (u, d, t) {
+shot(8, camPush(195, 345, 1.0, 1.06), function (u, d, t) {
   var cx = lerp(-60, 70, ease(u / 1.8));
-  return bgSky("day") + road2(370, t, 0) + puddle(250, 412, 110, 1, t) + vapor(250, 405, 160, 140, t, 0.55) +
-    carS(cx, 425, 1.1, t, { driver: "zizo", mood: u > 1.8 ? "worry" : "n", spin: u < 1.8 ? 1.5 : 0 }) +
-    (u > 1.6 ? '<path d="M150 300 V440" stroke="#c23a26" stroke-width="5" stroke-dasharray="10 8"/>' : "") + cross(250, 250, u, 1.8, 2.2) + tag("ما تعدّيش!", 180, 130, u, 1.0, -3, 30, "#e8c48e");
+  return bgSky("day") + road2(370, t, 0) +
+    carS(cx, 418, 1.1, t, { driver: "zizo", mood: u > 1.8 ? "worry" : "n", spin: u < 1.8 ? 1.5 : 0, lights: true }) +
+    tanker(292, 412, 0.55, t, true) + puddle(232, 420, 90, 1, t) + vapor(232, 414, 140, 140, t, 0.55) +
+    (u > 1.6 ? '<path d="M150 300 V440" stroke="#c23a26" stroke-width="5" stroke-dasharray="10 8"/>' : "") + cross(232, 250, u, 1.8, 2.2) + tag("ما تعدّيش!", 180, 130, u, 1.0, -3, 30, "#e8c48e");
 });
 // 9: اقف بعيد، تلتمية متر، ولو فيه نار تمنمية
 shot(9, camMove([180, 350, 1.15], [180, 345, 1.08]), function (u, d, t) {
   var fireK = clamp((u - 2.3) / 0.5);
-  return bgSky("day") + clouds(t, 10, 60, 3, 0.9, 0.5) + hillsFar(350) + road2(380, t, 0) + tanker(285, 418, 0.45, t, true) + puddle(275, 426, 45, 1, t) +
-    (fireK > 0 ? flame(268, 410, 0.9 * fireK, t, 1) + flame(298, 412, 0.7 * fireK, t, 4) : "") + carS(45, 440, 0.55, t, { driver: "zizo", mood: "n" }) +
+  return bgSky("day") + clouds(t, 10, 60, 3, 0.9, 0.5) + hillsFar(350) + road2(380, t, 0) + carS(45, 425, 0.55, t, { driver: "zizo", mood: "n", lights: true }) + tanker(285, 425, 0.45, t, true) + puddle(268, 430, 45, 1, t) +
+    (fireK > 0 ? flame(268, 415, 0.9 * fireK, t, 1) + flame(298, 417, 0.7 * fireK, t, 4) : "") +
     distArrow(260, 95, 310, "300 م", ease((u - 0.4) / 1.4), "#ffd23a") + distArrow(260, 25, 240, "800 م", ease((u - 2.6) / 1.4), "#ff7a2e");
 });
 // 10: اقف عكس اتجاه الهوا
