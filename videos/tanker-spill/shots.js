@@ -316,15 +316,49 @@ shot(12, camPush(180, 300, 1.0, 1.05), function (u, d, t) {
     tag("اطفي الموتور", 180, 130, u, 0.9, -3, 24, "#e8c48e") + check(300, 460, u, 1.6, 0.9);
 });
 // 13: اقفل الشبابيك والتكييف على الدوران الداخلي
-shot(13, camPush(180, 300, 1.0, 1.06), function (u, d, t) {
-  var g = ease((u - 0.4) / 1.6), wy = lerp(260, 120, g);
-  return bgSky("day") + vapor(60, 330, 120, 200, t, 0.45) + vapor(300, 330, 120, 200, t, 0.45, 5) +
-    '<rect x="20" y="100" width="320" height="280" rx="30" fill="#2c5f99" stroke="' + INK + '" stroke-width="4"/><rect x="40" y="120" width="280" height="140" rx="16" fill="#cfe1ec" stroke="' + INK + '" stroke-width="3"/>' +
-    faceHead(120, 210, 26, "worry", t, 0.3, "zizo") + faceHead(240, 210, 26, "n", t, -0.3, "fikri") +
-    '<rect x="40" y="' + f(wy) + '" width="280" height="' + f(260 - wy) + '" fill="url(#gGlass)" opacity=".75" stroke="' + INK + '" stroke-width="2"/>' +
-    '<rect x="40" y="260" width="280" height="110" fill="#2c5f99"/>' +
-    '<g transform="translate(180 320)"><circle r="34" fill="#14171b" stroke="#6a717a" stroke-width="3"/><path d="M-14 6 h28 l-4 -10 h-20 Z" fill="#fbfbf7"/><g transform="rotate(' + f(t * 160) + ')"><path d="M-22 -4 A22 22 0 0 1 18 -12" stroke="#6fd0ff" stroke-width="4" fill="none"/><path d="M18 -12 l2 -9 l6 8 Z" fill="#6fd0ff"/><path d="M22 4 A22 22 0 0 1 -18 12" stroke="#6fd0ff" stroke-width="4" fill="none"/><path d="M-18 12 l-2 9 l-6 -8 Z" fill="#6fd0ff"/></g></g>' +
-    check(250, 320, u, 2.6, 0.9);
+// راس زيزو من ورا (كاب بالمقلوب وحافته ناحيتنا)
+function zizoBack(x, y) {
+  return '<rect x="' + (x - 14) + '" y="' + (y + 24) + '" width="28" height="26" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2.4"/>' +
+    '<circle cx="' + (x - 34) + '" cy="' + (y + 4) + '" r="8" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2"/><circle cx="' + (x + 34) + '" cy="' + (y + 4) + '" r="8" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2"/>' +
+    '<circle cx="' + x + '" cy="' + y + '" r="34" fill="#3b2a1e" stroke="' + INK + '" stroke-width="3"/>' +
+    '<path d="M' + (x - 35) + ' ' + (y - 4) + ' C' + (x - 37) + ' ' + (y - 46) + ' ' + (x + 37) + ' ' + (y - 46) + ' ' + (x + 35) + ' ' + (y - 4) + ' Z" fill="' + ORANGE + '" stroke="' + INK + '" stroke-width="3"/>' +
+    '<path d="M' + (x - 24) + ' ' + (y - 6) + ' L' + (x - 32) + ' ' + (y - 22) + ' Q' + x + ' ' + (y - 32) + ' ' + (x + 32) + ' ' + (y - 22) + ' L' + (x + 24) + ' ' + (y - 6) + ' Z" fill="#d66f12" stroke="' + INK + '" stroke-width="2.6"/><circle cx="' + x + '" cy="' + (y - 40) + '" r="4" fill="#d66f12" stroke="' + INK + '" stroke-width="1.5"/>';
+}
+// راس فكري من ورا (شعر منكوش وقلم ورا ودنه ودراع النضارة)
+function fikriBack(x, y, t) {
+  var hp = "";
+  for (var i = 0; i <= 14; i++) { var a = Math.PI * 0.95 + i / 14 * Math.PI * 1.1, r = (i % 2 ? 34 : 41) + Math.sin(t * 2 + i) * 0.8; hp += (i ? " L" : "M") + f(x + Math.cos(a) * r) + " " + f(y + Math.sin(a) * r); }
+  return '<rect x="' + (x - 13) + '" y="' + (y + 24) + '" width="26" height="26" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2.4"/>' +
+    '<circle cx="' + (x - 33) + '" cy="' + (y + 4) + '" r="8" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2"/><circle cx="' + (x + 33) + '" cy="' + (y + 4) + '" r="8" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2"/>' +
+    '<path d="' + hp + ' Q' + x + ' ' + (y + 40) + ' ' + f(x + Math.cos(Math.PI * 0.95) * 41) + ' ' + f(y + Math.sin(Math.PI * 0.95) * 41) + ' Z" fill="#3b2a1e" stroke="' + INK + '" stroke-width="3"/>' +
+    '<path d="M' + (x - 38) + ' ' + (y - 2) + ' h-6 M' + (x + 38) + ' ' + (y - 2) + ' h6" stroke="' + INK + '" stroke-width="2.4"/>' +
+    '<g transform="rotate(-30 ' + (x + 36) + ' ' + (y - 6) + ')"><rect x="' + (x + 24) + '" y="' + (y - 9) + '" width="30" height="6" fill="#f2c230" stroke="' + INK + '" stroke-width="1.4"/><path d="M' + (x + 54) + ' ' + (y - 9) + ' l7 3 l-7 3 Z" fill="#e8c9a0" stroke="' + INK + '" stroke-width="1.2"/></g>';
+}
+shot(13, camPush(180, 300, 1.0, 1.04), function (u, d, t) {
+  var g = ease((u - 0.3) / 1.8), press = u > 2.3 && u < 2.6 ? 3 : 0, on = u > 2.4;
+  var WS = "M108 98 Q180 88 252 98 L272 330 H88 Z", SL = "M-60 120 L94 100 L76 330 H-60 Z", SR = "M420 120 L266 100 L284 330 H420 Z";
+  var outside = bgSky("day") + clouds(t, 10, 110, 3, 0.9, 0.5) + hillsFar(220) + '<rect x="-80" y="215" width="520" height="130" fill="url(#sand)"/>' + '<path d="M150 215 H210 L390 340 H-30 Z" fill="url(#asph)"/>' +
+    '<path d="M178 222 h4 l1 10 h-6 Z M175 245 h10 l2 18 h-14 Z" fill="#f2e6c8"/>' + tanker(205, 280, 0.5, t, true) + puddle(188, 287, 62, 1, t) + vapor(188, 283, 100, 70, t, 0.45);
+  var s = bgFill("#1d2228") + '<clipPath id="ws2"><path d="' + WS + '"/></clipPath><clipPath id="sl2"><path d="' + SL + '"/></clipPath><clipPath id="sr2"><path d="' + SR + '"/></clipPath>' +
+    '<g clip-path="url(#ws2)">' + outside + '</g>' +
+    '<g clip-path="url(#sl2)">' + outside + vapor(30, 300, 90, 180, t, 0.7, 3) + '<rect x="-60" y="' + f(lerp(335, 98, g)) + '" width="160" height="260" fill="url(#gGlass)" opacity=".8"/><path d="M-60 ' + f(lerp(335, 98, g)) + ' H100" stroke="' + INK + '" stroke-width="4"/><path d="M10 ' + f(lerp(335, 98, g) + 20) + ' l40 40 M30 ' + f(lerp(335, 98, g) + 14) + ' l30 30" stroke="#fff" stroke-width="4" opacity=".6"/></g>' +
+    '<g clip-path="url(#sr2)">' + outside + vapor(330, 300, 90, 180, t, 0.7, 7) + '<rect x="260" y="' + f(lerp(335, 98, g)) + '" width="160" height="260" fill="url(#gGlass)" opacity=".8"/><path d="M260 ' + f(lerp(335, 98, g)) + ' H420" stroke="' + INK + '" stroke-width="4"/><path d="M300 ' + f(lerp(335, 98, g) + 20) + ' l40 40 M320 ' + f(lerp(335, 98, g) + 14) + ' l30 30" stroke="#fff" stroke-width="4" opacity=".6"/></g>' +
+    '<path d="' + WS + '" fill="none" stroke="#14171b" stroke-width="12"/><path d="' + SL + '" fill="none" stroke="#14171b" stroke-width="12"/><path d="' + SR + '" fill="none" stroke="#14171b" stroke-width="12"/>' +
+    '<path d="M-60 322 Q180 300 420 322 V700 H-60 Z" fill="url(#dash)" stroke="' + INK + '" stroke-width="3"/>' +
+    '<circle cx="95" cy="395" r="62" fill="none" stroke="#14171b" stroke-width="15"/>';
+  // زرار التكييف (دوران داخلي) في النص
+  s += '<g transform="translate(185 392)"><rect x="-34" y="-28" width="68" height="56" rx="12" fill="' + (on ? "#1f4a66" : "#14171b") + '" stroke="#6a717a" stroke-width="3"/>' +
+    '<path d="M-14 10 h28 l-4 -10 h-20 Z" fill="#fbfbf7"/><g transform="rotate(' + f(on ? t * 160 : 0) + ')"><path d="M-18 -3 A18 18 0 0 1 15 -10" stroke="' + (on ? "#6fd0ff" : "#6a717a") + '" stroke-width="4" fill="none"/><path d="M15 -10 l2 -8 l5 7 Z" fill="' + (on ? "#6fd0ff" : "#6a717a") + '"/><path d="M18 3 A18 18 0 0 1 -15 10" stroke="' + (on ? "#6fd0ff" : "#6a717a") + '" stroke-width="4" fill="none"/><path d="M-15 10 l-2 8 l-5 -7 Z" fill="' + (on ? "#6fd0ff" : "#6a717a") + '"/></g></g>' +
+    (on ? pulse(185, 392, t, "#6fd0ff", 40) : "");
+  // زيزو (السواق) وفكري جنبه، من ورا
+  var hx = lerp(150, 172, ease((u - 1.9) / 0.4)), hy = 395 + press;
+  s += '<path d="M20 520 Q22 345 98 330 Q174 345 178 520 Z" fill="' + ORANGE + '" stroke="' + INK + '" stroke-width="3"/><path d="M64 334 Q98 352 132 334" stroke="#d66f12" stroke-width="10" fill="none" stroke-linecap="round"/>' +
+    '<path d="M42 360 Q' + f(lerp(10, 20, g)) + ' 330 ' + f(lerp(14, 20, g)) + ' ' + f(lerp(300, 270, g)) + '" stroke="' + INK + '" stroke-width="22" fill="none" stroke-linecap="round"/><path d="M42 360 Q' + f(lerp(10, 20, g)) + ' 330 ' + f(lerp(14, 20, g)) + ' ' + f(lerp(300, 270, g)) + '" stroke="' + ORANGE + '" stroke-width="17" fill="none" stroke-linecap="round"/><circle cx="' + f(lerp(14, 20, g)) + '" cy="' + f(lerp(296, 266, g)) + '" r="10" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2"/>' +
+    '<path d="M156 360 Q' + f(hx - 4) + ' ' + f(hy - 30) + ' ' + f(hx) + ' ' + f(hy) + '" stroke="' + INK + '" stroke-width="22" fill="none" stroke-linecap="round"/><path d="M156 360 Q' + f(hx - 4) + ' ' + f(hy - 30) + ' ' + f(hx) + ' ' + f(hy) + '" stroke="' + ORANGE + '" stroke-width="17" fill="none" stroke-linecap="round"/><circle cx="' + f(hx + 2) + '" cy="' + f(hy) + '" r="10" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2"/>' +
+    zizoBack(98, 268) +
+    '<path d="M218 540 Q222 352 290 338 Q358 352 362 540 Z" fill="#3d7bd1" stroke="' + INK + '" stroke-width="3"/><path d="M272 340 L290 356 L308 340" stroke="' + INK + '" stroke-width="2.4" fill="#fbfbf7"/>' +
+    fikriBack(290, 282, t);
+  return s + tag("اقفل الشبابيك", 180, 135, u, 0.6, -3, 22, "#e8c48e") + check(185, 470, u, 2.8, 0.9);
 });
 // 14: ممنوع سجاير ولا ولّاعة ولا أي نار
 shot(14, camPush(180, 300, 1.0, 1.06), function (u, d, t) {
