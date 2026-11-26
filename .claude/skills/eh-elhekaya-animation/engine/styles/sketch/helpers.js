@@ -77,20 +77,27 @@ function gearS(x, y, r, t, sp, col, teeth) {
 function sunS(x, y, r, t) { var s = '<circle cx="' + f(x) + '" cy="' + f(y) + '" r="' + f(r * 2.2) + '" fill="url(#glowO)" opacity=".6"/>'; for (var i = 0; i < 12; i++) { var a = i / 12 * 6.283 + t * 0.3; s += '<path d="M' + f(x + Math.cos(a) * r * 1.25) + ' ' + f(y + Math.sin(a) * r * 1.25) + ' L' + f(x + Math.cos(a) * r * 1.6) + ' ' + f(y + Math.sin(a) * r * 1.6) + '" stroke="' + ORANGE + '" stroke-width="3" stroke-linecap="round"/>'; } return s + circle(x, y, r, "#f2c26a", true); }
 function globe(x, y, r, t) { var off = (t * 10) % (r * 2), land = ""; for (var i = -1; i < 3; i++) { var cx = -r + i * r * 1.1 + off; land += '<path d="M' + f(cx) + ' ' + f(-r * 0.3) + ' c' + f(r * 0.2) + ' ' + f(-r * 0.3) + ' ' + f(r * 0.5) + ' ' + f(-r * 0.2) + ' ' + f(r * 0.45) + ' ' + f(r * 0.1) + ' c' + f(-r * 0.05) + ' ' + f(r * 0.4) + ' ' + f(-r * 0.4) + ' ' + f(r * 0.6) + ' ' + f(-r * 0.45) + ' ' + f(r * 0.2) + ' Z" fill="' + OLIVE + '"/>'; } var id = "gl" + (++CLIPN); return '<g transform="translate(' + f(x) + ' ' + f(y) + ')"><clipPath id="' + id + '"><circle r="' + r + '"/></clipPath><circle r="' + r + '" fill="' + BLUE + '" opacity=".75"/><g clip-path="url(#' + id + ')">' + land + '<circle r="' + r + '" fill="url(#hatch)"/></g><circle r="' + r + '" fill="none" stroke="' + INK + '" stroke-width="2.4"/></g>'; }
 
-// ── الشخصية الثابتة: «فكري» ─────────────────────────────────
-// فكري هو المذيع المرسوم اللي بيظهر في كل فيديوهات السكتش: شعره منكوش، ونضارة مدوّرة، وقلم رصاص ورا ودنه، وقميص أزرق بتظليل.
-// guide(x, y, s, t, o): (x,y) = نص رجليه على الأرض، وطوله حوالي 280 لما s = 1.
-// o = { pose: "idle" | "point" | "wave" | "think" | "alarm" | "ok" | "stop",
+// ── الشخصية الثابتة (المذيع المرسوم) ──────────────────────────
+// guide(x, y, s, t, o): (x,y) = نص رجليه على الأرض، وطوله حوالي 320 لما s = 1.
+// o = { who: "fikri" | "nour" | "ostaz" | "zizo" (الشخصية، والافتراضي GUIDE_WHO),
+//       pose: "idle" | "point" | "wave" | "think" | "alarm" | "ok" | "stop",
 //       mood: "happy" | "neutral" | "worried" | "surprised" (لكل pose مود افتراضي),
 //       dir: 1 (بيشاور يمين) أو -1 (شمال), talk: true (بقه بيتحرك وهو بيتكلم), k: من 0 لـ1 لظهوره بـpop }
+var GUIDE_WHO = "fikri";
+var GUIDES = {
+  fikri: { top: BLUE, legs: "#5b574d", shoes: INK, hair: "messy", glasses: "round", pencil: true },          // شاب بنضارة وقلم ورا ودنه
+  nour:  { top: OLIVE, legs: "#5b574d", shoes: INK, hair: "hijab", skirt: true, blush: true, badge: true },  // بنت بطرحة برتقالي وكارنيه
+  ostaz: { top: BONE, legs: "#5b574d", shoes: "#5a3a26", hair: "bald", glasses: "half", mustache: true, coat: true },   // أستاذ كبير ببالطو أبيض وشنب
+  zizo:  { top: "#b8603a", legs: BLUE, shoes: BONE, hair: "cap", hoodie: true, bag: true }                     // شاب بكاب وهودي وشنطة
+};
 function guide(x, y, s, t, o) {
-  o = o || {}; s = s || 1; var pose = o.pose || "idle", dir = o.dir === -1 ? -1 : 1;
+  o = o || {}; s = s || 1; var C = GUIDES[o.who || GUIDE_WHO] || GUIDES.fikri, pose = o.pose || "idle", dir = o.dir === -1 ? -1 : 1;
   var mood = o.mood || { alarm: "surprised", stop: "worried", think: "neutral", idle: "neutral" }[pose] || "happy";
   var k = o.k == null ? 1 : pop(o.k); if (k <= 0) return "";
-  var bob = Math.sin(t * 2.4) * 2, shake = pose === "alarm" ? Math.sin(t * 30) * 2 : 0;
+  var bob = Math.sin(t * 2.4) * 2, shake = pose === "alarm" ? Math.sin(t * 30) * 2 : 0, LIFT = 46, sleeve = C.coat ? BONE : C.top;
   function arm(sx, sy, ex, ey, hx, hy) {
     var d = "M" + f(sx) + " " + f(sy) + " Q" + f(ex) + " " + f(ey) + " " + f(hx) + " " + f(hy);
-    return '<path d="' + d + '" stroke="' + INK + '" stroke-width="17" fill="none" stroke-linecap="round"/><path d="' + d + '" stroke="' + BLUE + '" stroke-width="12" fill="none" stroke-linecap="round"/>';
+    return '<path d="' + d + '" stroke="' + INK + '" stroke-width="17" fill="none" stroke-linecap="round"/><path d="' + d + '" stroke="' + sleeve + '" stroke-width="12" fill="none" stroke-linecap="round"/>';
   }
   function hand(hx, hy, r) { return circle(hx, hy, r || 9, SKIN, false, 2); }
   function finger(x1, y1, x2, y2) { var d = 'M' + f(x1) + ' ' + f(y1) + ' L' + f(x2) + ' ' + f(y2); return '<path d="' + d + '" stroke="' + INK + '" stroke-width="7" stroke-linecap="round"/><path d="' + d + '" stroke="' + SKIN + '" stroke-width="3.5" stroke-linecap="round"/>'; }
@@ -99,45 +106,64 @@ function guide(x, y, s, t, o) {
     back += arm(Lsh[0], Lsh[1], -80, -205, -64 + shake, -255) + hand(-64 + shake, -258, 10);
     back += arm(Rsh[0], Rsh[1], 80, -205, 64 - shake, -255) + hand(64 - shake, -258, 10);
   } else {
-    var lh = pose === "think" ? [-6, -122] : [-48, -84 + w1];
-    front += arm(Lsh[0], Lsh[1], pose === "think" ? -44 : -54, -120, lh[0], lh[1]) + hand(lh[0], lh[1]);
+    var lh = pose === "think" ? [-6, -122] : [-48, -80 + w1];
+    front += arm(Lsh[0], Lsh[1], pose === "think" ? -44 : -56, -118, lh[0], lh[1]) + hand(lh[0], lh[1]);
     if (pose === "point") { var px = 124 + Math.sin(t * 4) * 5, py = -180; front += arm(Rsh[0], Rsh[1], 84, -150, px, py) + finger(px + 6, py - 2, px + 26, py - 7) + hand(px, py); }
     else if (pose === "wave") { var wx = 76 + Math.sin(t * 9) * 12; back += arm(Rsh[0], Rsh[1], 80, -190, wx, -250) + hand(wx, -254, 11); }
     else if (pose === "think") { front += arm(Rsh[0], Rsh[1], 52, -118, 14, -170) + hand(14, -172, 9); }
     else if (pose === "ok") { var oy = -186 + Math.sin(t * 5) * 3; front += arm(Rsh[0], Rsh[1], 76, -130, 80, oy) + finger(80, oy - 6, 80, oy - 24) + hand(80, oy, 11); }
     else if (pose === "stop") { var sy = -192 + Math.sin(t * 6) * 2; front += arm(Rsh[0], Rsh[1], 82, -168, 102, sy) + '<g transform="translate(108 ' + f(sy - 6) + ')">' + finger(-8, -12, -9, -28) + finger(0, -12, 0, -32) + finger(8, -12, 9, -28) + finger(-12, 0, -22, -10) + R(-13, -16, 26, 30, SKIN, 2, 9) + '</g>'; }
-    else { front += arm(Rsh[0], Rsh[1], 54, -120, 48, -84 - w1) + hand(48, -84 - w1); }
+    else { front += arm(Rsh[0], Rsh[1], 56, -118, 48, -80 - w1) + hand(48, -80 - w1); }
   }
-  // الجسم: بنطلون رمادي، جزمة، وقميص أزرق بياقة وجيب فيه قلم
-  var body = '<path d="M-20 -72 V-8 M20 -72 V-8" stroke="' + INK + '" stroke-width="21" stroke-linecap="round"/><path d="M-20 -72 V-9 M20 -72 V-9" stroke="#5b574d" stroke-width="16" stroke-linecap="round"/>'
-    + shape("M-32 -6 H-8 V6 H-42 Q-44 -4 -32 -6 Z", INK) + shape("M8 -6 H32 Q44 -4 42 6 H8 Z", INK)
-    + shape("M-40 -158 Q0 -172 40 -158 Q50 -110 42 -66 H-42 Q-50 -110 -40 -158 Z", BLUE, true)
-    + '<path d="M-13 -164 L0 -146 L13 -164 Z" stroke="' + INK + '" stroke-width="2" fill="' + BONE + '" stroke-linejoin="round"/><path d="M0 -146 V-70" stroke="' + INK + '" stroke-width="1.4"/>'
+  // الرجلين (طوال) والجزمة: بره جروب الجسم المرفوع
+  var legs;
+  if (C.skirt) legs = shape("M-38 -116 L-48 -6 H48 L38 -116 Z", C.legs, true) + shape("M-34 -8 H-6 V6 H-42 Q-44 -6 -34 -8 Z", C.shoes) + shape("M6 -8 H34 Q44 -6 42 6 H6 Z", C.shoes);
+  else legs = '<path d="M-20 -116 V-8 M20 -116 V-8" stroke="' + INK + '" stroke-width="21" stroke-linecap="round"/><path d="M-20 -116 V-9 M20 -116 V-9" stroke="' + C.legs + '" stroke-width="16" stroke-linecap="round"/>'
+    + shape("M-32 -6 H-8 V6 H-42 Q-44 -4 -32 -6 Z", C.shoes) + shape("M8 -6 H32 Q44 -4 42 6 H8 Z", C.shoes);
+  // الجسم
+  var body = "";
+  if (C.bag) body += shape("M-44 -150 H44 V-80 H-44 Z", "#7a6a4a", true);   // الشنطة ورا ضهره
+  body += shape("M-40 -158 Q0 -172 40 -158 Q50 -110 42 -66 H-42 Q-50 -110 -40 -158 Z", C.coat ? BLUE : C.top, !C.coat);
+  if (C.coat) body += '<path d="M0 -164 L-6 -150 L0 -100 L6 -150 Z" fill="' + ORANGE + '" stroke="' + INK + '" stroke-width="1.6"/>'   // الكرافتة
+    + shape("M-42 -160 Q-30 -168 -12 -166 L-6 -112 L-10 -2 H-50 Q-56 -90 -42 -160 Z", BONE, true) + shape("M42 -160 Q30 -168 12 -166 L6 -112 L10 -2 H50 Q56 -90 42 -160 Z", BONE, true)
+    + R(22, -120, 18, 20, BONE, 1.6, 2) + '<path d="M27 -118 V-134 M33 -118 V-132" stroke-width="3.5" stroke="' + BLUE + '"/>';
+  else if (C.hoodie) body += shape("M-30 -166 Q0 -150 30 -166 Q20 -150 0 -146 Q-20 -150 -30 -166 Z", C.top, false, 2) + '<path d="M-8 -150 V-124 M8 -150 V-124" stroke="' + BONE + '" stroke-width="2.5"/>' + shape("M-26 -98 H26 L30 -72 H-30 Z", C.top, false, 1.6)
+    + (C.bag ? '<path d="M-36 -160 L-30 -70 M36 -160 L30 -70" stroke="#5a4a30" stroke-width="5"/>' : "");
+  else if (C.hair === "hijab") body += (C.badge ? R(14, -132, 18, 24, BONE, 1.6, 2) + R(18, -126, 10, 8, BLUE, 0) + '<path d="M17 -112 H29" stroke="' + INK + '" stroke-width="1.5"/>' : "");
+  else body += '<path d="M-13 -164 L0 -146 L13 -164 Z" stroke="' + INK + '" stroke-width="2" fill="' + BONE + '" stroke-linejoin="round"/><path d="M0 -146 V-70" stroke="' + INK + '" stroke-width="1.4"/>'
     + '<circle cx="0" cy="-128" r="2" fill="' + INK + '"/><circle cx="0" cy="-104" r="2" fill="' + INK + '"/><circle cx="0" cy="-80" r="2" fill="' + INK + '"/>'
-    + '<path d="M-26 -132 V-148" stroke="' + ORANGE + '" stroke-width="3.5"/>' + R(-34, -136, 18, 18, BLUE, 1.6, 2);   // جيب وفيه قلم
+    + '<path d="M-26 -132 V-148" stroke="' + ORANGE + '" stroke-width="3.5"/>' + R(-34, -136, 18, 18, C.top, 1.6, 2);
   // الراس
   var tilt = pose === "think" ? -7 : 0, blink = ((t + 0.7) % 3.4) < 0.13, eyeH = blink ? 0.6 : (mood === "surprised" ? 5.5 : 4.2);
-  var look = pose === "point" || pose === "stop" ? 3 : Math.sin(t * 0.7) * 1.5;
-  var head = '<g transform="rotate(' + tilt + ' 0 -170)">'
-    + circle(-39, -208, 9, SKIN) + circle(39, -208, 9, SKIN)   // الودان
-    + '<g transform="translate(40 -232) rotate(62)">' + R(-4, -24, 8, 44, "#e0a83c", 1.4) + shape("M-4 20 L0 30 L4 20 Z", BONE, false, 1.2) + '<path d="M-1 27 L0 30 L1 27" stroke="' + INK + '" stroke-width="2"/>' + R(-4, -30, 8, 7, ORANGE, 1.2) + '</g>'   // القلم ورا الودن
-    + circle(0, -210, 40, SKIN)
-    + shape("M-40 -214 C-50 -258 -12 -270 0 -254 C10 -274 50 -264 42 -220 C38 -232 28 -238 20 -230 C14 -244 -4 -244 -10 -232 C-18 -242 -34 -238 -40 -214 Z", INK)   // الشعر المنكوش
-    + '<circle cx="-15" cy="-206" r="13" fill="' + BONE + '" fill-opacity=".5" stroke="' + INK + '" stroke-width="2.6"/><circle cx="15" cy="-206" r="13" fill="' + BONE + '" fill-opacity=".5" stroke="' + INK + '" stroke-width="2.6"/><path d="M-2 -207 Q0 -210 2 -207" stroke="' + INK + '" stroke-width="2.4" fill="none"/>'
-    + '<ellipse cx="' + f(-15 + look) + '" cy="-206" rx="3.6" ry="' + eyeH + '" fill="' + INK + '"/><ellipse cx="' + f(15 + look) + '" cy="-206" rx="3.6" ry="' + eyeH + '" fill="' + INK + '"/>';
+  var look = pose === "point" || pose === "stop" ? 3 : Math.sin(t * 0.7) * 1.5, head = '<g transform="rotate(' + tilt + ' 0 -170)">';
+  if (C.hair === "hijab") head += shape("M-50 -204 C-54 -268 54 -268 50 -204 C52 -172 40 -156 0 -152 C-40 -156 -52 -172 -50 -204 Z", ORANGE, true) + circle(0, -206, 34, SKIN)
+    + '<path d="M-32 -224 Q0 -258 32 -224" stroke="' + ORANGE + '" stroke-width="9" fill="none"/><path d="M-34 -222 Q0 -260 34 -222" stroke="' + INK + '" stroke-width="1.6" fill="none"/>'
+    + shape("M-46 -166 Q0 -138 46 -166 L42 -148 Q0 -124 -42 -148 Z", ORANGE, true);
+  else {
+    head += circle(-39, -208, 9, SKIN) + circle(39, -208, 9, SKIN);
+    if (C.pencil) head += '<g transform="translate(40 -232) rotate(62)">' + R(-4, -24, 8, 44, "#e0a83c", 1.4) + shape("M-4 20 L0 30 L4 20 Z", BONE, false, 1.2) + '<path d="M-1 27 L0 30 L1 27" stroke="' + INK + '" stroke-width="2"/>' + R(-4, -30, 8, 7, ORANGE, 1.2) + '</g>';
+    head += circle(0, -210, 40, SKIN);
+    if (C.hair === "messy") head += shape("M-40 -214 C-50 -258 -12 -270 0 -254 C10 -274 50 -264 42 -220 C38 -232 28 -238 20 -230 C14 -244 -4 -244 -10 -232 C-18 -242 -34 -238 -40 -214 Z", INK);
+    if (C.hair === "bald") head += shape("M-41 -200 C-46 -226 -38 -238 -30 -236 C-34 -226 -34 -214 -34 -200 Z", "#a39e92") + shape("M41 -200 C46 -226 38 -238 30 -236 C34 -226 34 -214 34 -200 Z", "#a39e92") + '<path d="M-14 -240 Q-4 -246 6 -242" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>';
+    if (C.hair === "cap") head += shape("M-38 -222 C-36 -228 -30 -226 -28 -220 C-24 -230 -16 -226 -16 -220 Z", INK) + shape("M-40 -220 C-42 -266 42 -266 40 -220 Z", ORANGE, true) + shape("M-38 -222 L-74 -218 Q-76 -210 -68 -210 L-38 -214 Z", "#9a3f20") + circle(0, -253, 4, ORANGE, false, 1.4);
+  }
+  if (C.glasses === "round") head += '<circle cx="-15" cy="-206" r="13" fill="' + BONE + '" fill-opacity=".5" stroke="' + INK + '" stroke-width="2.6"/><circle cx="15" cy="-206" r="13" fill="' + BONE + '" fill-opacity=".5" stroke="' + INK + '" stroke-width="2.6"/><path d="M-2 -207 Q0 -210 2 -207" stroke="' + INK + '" stroke-width="2.4" fill="none"/>';
+  head += '<ellipse cx="' + f(-15 + look) + '" cy="-206" rx="3.6" ry="' + eyeH + '" fill="' + INK + '"/><ellipse cx="' + f(15 + look) + '" cy="-206" rx="3.6" ry="' + eyeH + '" fill="' + INK + '"/>';
+  if (C.glasses === "half") head += '<path d="M-28 -204 H-4 Q-6 -192 -16 -192 Q-26 -192 -28 -204 Z M4 -204 H28 Q26 -192 16 -192 Q6 -192 4 -204 Z" fill="' + BONE + '" fill-opacity=".4" stroke="' + INK + '" stroke-width="2.4"/><path d="M-4 -204 H4" stroke="' + INK + '" stroke-width="2.4"/>';
   var brow = { neutral: "M-24 -226 L-8 -226 M8 -226 L24 -226", happy: "M-24 -225 Q-16 -230 -8 -226 M8 -226 Q16 -230 24 -225", worried: "M-24 -224 L-8 -230 M8 -230 L24 -224", surprised: "M-24 -232 Q-16 -238 -8 -233 M8 -233 Q16 -238 24 -232" }[mood];
-  head += '<path d="' + brow + '" stroke="' + INK + '" stroke-width="3" fill="none" stroke-linecap="round"/>';
-  var mo = o.talk ? Math.abs(Math.sin(t * 13)) * 6 + 1 : 0;
-  if (mood === "surprised") head += '<ellipse cx="0" cy="-184" rx="6" ry="' + f(6 + mo * 0.4) + '" fill="' + INK + '"/>';
-  else if (o.talk) head += '<ellipse cx="0" cy="-185" rx="' + (mood === "happy" ? 9 : 7) + '" ry="' + f(mo) + '" fill="' + INK + '"/>';
-  else head += '<path d="' + { happy: "M-11 -189 Q0 -178 11 -189", neutral: "M-8 -186 L8 -186", worried: "M-9 -183 Q0 -190 9 -183" }[mood] + '" stroke="' + INK + '" stroke-width="2.6" fill="none" stroke-linecap="round"/>';
-  if (mood === "happy") head += '<circle cx="-27" cy="-190" r="5" fill="' + ORANGE + '" opacity=".28"/><circle cx="27" cy="-190" r="5" fill="' + ORANGE + '" opacity=".28"/>';
+  head += '<path d="' + brow + '" stroke="' + (C.hair === "bald" ? "#a39e92" : INK) + '" stroke-width="' + (C.hair === "bald" ? 4.5 : 3) + '" fill="none" stroke-linecap="round"/>';
+  var mo = o.talk ? Math.abs(Math.sin(t * 13)) * 6 + 1 : 0, my = C.mustache ? 4 : 0;
+  if (mood === "surprised") head += '<ellipse cx="0" cy="' + (-184 + my) + '" rx="6" ry="' + f(6 + mo * 0.4) + '" fill="' + INK + '"/>';
+  else if (o.talk) head += '<ellipse cx="0" cy="' + (-185 + my) + '" rx="' + (mood === "happy" ? 9 : 7) + '" ry="' + f(mo) + '" fill="' + INK + '"/>';
+  else head += '<g transform="translate(0 ' + my + ')"><path d="' + { happy: "M-11 -189 Q0 -178 11 -189", neutral: "M-8 -186 L8 -186", worried: "M-9 -183 Q0 -190 9 -183" }[mood] + '" stroke="' + INK + '" stroke-width="2.6" fill="none" stroke-linecap="round"/></g>';
+  if (C.mustache) head += shape("M-18 -188 Q-8 -198 0 -192 Q8 -198 18 -188 Q8 -186 0 -189 Q-8 -186 -18 -188 Z", "#a39e92", false, 1.6);
+  if (mood === "happy" || C.blush) head += '<circle cx="-26" cy="-190" r="5" fill="' + ORANGE + '" opacity=".28"/><circle cx="26" cy="-190" r="5" fill="' + ORANGE + '" opacity=".28"/>';
   head += '</g>';
   // إضافات حسب الوضع
   var extra = "";
-  if (pose === "alarm" || mood === "worried") { var dy = ((t * 0.8) % 1) * 14; extra += shape("M-46 " + f(-236 + dy) + " q-7 10 0 13 q7 -3 0 -13 Z", "#9fc3dc", false, 1.4); }
+  if (pose === "alarm" || mood === "worried") { var dy = ((t * 0.8) % 1) * 14; extra += shape("M-48 " + f(-236 + dy) + " q-7 10 0 13 q7 -3 0 -13 Z", "#9fc3dc", false, 1.4); }
   if (pose === "alarm") extra += '<path d="M-84 -272 l-12 -10 M84 -272 l12 -10 M-98 -242 l-14 -2 M98 -242 l14 -2" stroke="' + ORANGE + '" stroke-width="3" stroke-linecap="round"/>';
   if (pose === "think") extra += circle(66, -232, 4, PAPER, false, 1.4) + circle(78, -248, 6, PAPER, false, 1.4) + '<g opacity="' + f(0.6 + 0.4 * Math.sin(t * 3)) + '" transform="scale(' + dir + ' 1)">' + T("؟", 92 * dir, -266 + Math.sin(t * 2) * 5, 40, ORANGE, 900) + '</g>';
   var shadow = '<ellipse cx="0" cy="5" rx="' + f(56 - bob) + '" ry="8" fill="' + INK + '" opacity=".12"/>';
-  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + f(s * k * dir) + ' ' + f(s * k) + ')">' + shadow + '<g transform="translate(0 ' + f(bob) + ')">' + back + body + front + head + extra + '</g></g>';
+  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + f(s * k * dir) + ' ' + f(s * k) + ')">' + shadow + '<g transform="translate(0 ' + f(bob * 0.4) + ')">' + legs + '</g><g transform="translate(0 ' + f(bob - LIFT) + ')">' + back + body + front + head + extra + '</g></g>';
 }
