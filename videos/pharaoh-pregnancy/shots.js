@@ -216,11 +216,26 @@ shot(9, camPush(320, 430, 1, 1.1), function (u, d, t) {
   return paper() + desert(560) + sack(210, 490, 1.25, WHEAT, true, t, "قمح") + sack(430, 490, 1.25, BARLEY, true, t, "شعير") + dots(t, 120, 520, 400, 40, 10, "#b5a274", 8) +
     crossMark(320, 280, 2, (u - 0.6) / 0.5) + label(430, 440, 540, 660, "مفيش حمل", ORANGE, ease((u - 1.6) / 0.8), 28);
 });
+// طفل رضيع ملفوف في قماطة، بيتهز يمين وشمال
+function swaddledBaby(x, y, s, t) {
+  var r = Math.sin(t * 2.2) * 7;
+  var g = '<circle r="150" fill="url(#glowW)" opacity=".8"/>' +
+    P("M-110 10 C-110 -40 -60 -62 0 -60 C70 -58 118 -34 118 6 C118 46 70 62 0 62 C-60 62 -110 50 -110 10 Z", "#f4efe0", 2.4, true) +
+    stroke("M-40 -56 C-20 -10 -24 30 -44 58 M20 -58 C44 -14 40 30 20 62 M70 -44 C90 -10 88 26 70 50", "#c9b37a", 2) +
+    stroke("M-60 -40 Q-20 0 -60 46", "#9fb8cc", 4) +
+    P("M-150 -6 C-150 -58 -96 -74 -66 -50 C-50 -36 -50 34 -66 48 C-96 70 -150 50 -150 -6 Z", "#f4efe0", 2.4, true) +
+    circle(-102, -2, 38, SKIN) +
+    stroke("M-120 -8 Q-114 -3 -108 -8 M-96 -8 Q-90 -3 -84 -8", INK, 2.4) + '<circle cx="-116" cy="10" r="6" fill="#e9a08a" opacity=".8"/><circle cx="-86" cy="10" r="6" fill="#e9a08a" opacity=".8"/>' +
+    stroke("M-108 18 Q-102 23 -96 18", INK, 2) + stroke("M-112 -38 Q-104 -46 -96 -38", HAIR, 3) +
+    P("M-150 -6 C-150 -58 -96 -74 -66 -50 C-90 -54 -136 -50 -144 -6 Z", "#e2d6b6", 1.6) +
+    stroke("M-20 -54 Q10 -40 -4 -20", ORANGE, 4) + stroke("M-20 54 Q10 40 -4 20", ORANGE, 4);
+  return G(x, y, s, g, r);
+}
 // 10 — نبتت: مبروك
 shot(10, camPush(320, 420, 1, 1.1), function (u, d, t) {
   var k = ease(u / 1.8);
   return paper() + desert(580) + sack(200, 510, 1.2, WHEAT, true, t, "قمح") + sack(440, 510, 1.2, BARLEY, true, t, "شعير") + sprouts(200, 440, k, t, 3) + sprouts(440, 440, k, t, 3) +
-    (u > 1.8 ? heart(320, 200, 2 * pop((u - 1.8) / 0.5), t) : "") + label(320, 230, 470, 120, "حامل!", ORANGE, ease((u - 2.4) / 0.7), 30);
+    (u > 1.8 ? swaddledBaby(320, 230, 1.15 * pop((u - 1.8) / 0.5), t) : "") + label(380, 240, 500, 130, "بيبي جاي!", ORANGE, ease((u - 2.4) / 0.7), 30);
 });
 // 11 — الجزء الأغرب
 shot(11, camPush(320, 470, 1, 1.25), function (u, d, t) {
