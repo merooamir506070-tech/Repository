@@ -99,6 +99,13 @@ function eyesF(lash, glasses) {
 function faceF(o) {
   o = o || {}; var s = circle(0, -292, 36, o.skin || SKIN);
   s += eyesF(o.lash, o.glasses) + stroke("M-19 -314 Q-12 -318 -5 -314 M19 -314 Q12 -318 5 -314", o.brow || INK, 2.4) + stroke("M0 -296 L-3 -284 L2 -283", INK, 1.6);
+  if (o.wow) {   // وش متفاجئ: حواجب مرفوعة وبق مفتوح
+    s = circle(0, -292, 36, o.skin || SKIN) + '<circle cx="-12" cy="-300" r="6.5" fill="#fff" stroke="' + INK + '" stroke-width="1.6"/><circle cx="12" cy="-300" r="6.5" fill="#fff" stroke="' + INK + '" stroke-width="1.6"/><circle cx="-12" cy="-300" r="3" fill="' + INK + '"/><circle cx="12" cy="-300" r="3" fill="' + INK + '"/>' +
+      (o.glasses ? '<circle cx="-13" cy="-300" r="12" fill="none" stroke="' + INK + '" stroke-width="2.4"/><circle cx="13" cy="-300" r="12" fill="none" stroke="' + INK + '" stroke-width="2.4"/>' + stroke("M-1 -301 H1 M-25 -302 L-34 -305 M25 -302 L34 -305", INK, 2) : "") +
+      stroke("M-20 -320 Q-12 -328 -4 -321 M20 -320 Q12 -328 4 -321", o.brow || INK, 2.6) + stroke("M0 -294 L-3 -284 L2 -283", INK, 1.6) +
+      (o.mus ? P("M-14 -276 Q0 -283 14 -276 Q8 -273 0 -275 Q-8 -273 -14 -276 Z", o.mus, 1.2) : "") + '<ellipse cx="0" cy="-265" rx="7" ry="9" fill="#6a2a22" stroke="' + INK + '" stroke-width="1.8"/>';
+    return s;
+  }
   s += o.mus ? P("M-14 -273 Q0 -280 14 -273 Q8 -270 0 -272 Q-8 -270 -14 -273 Z", o.mus, 1.2) + stroke("M-8 -266 Q0 -262 8 -266", INK, 2) : stroke("M-9 -272 Q0 -265 9 -272", o.lip || INK, 2.4);
   return s;
 }
@@ -296,8 +303,23 @@ shot(16, camPan(260, 380, 400, 1.04), function (u, d, t) {
   return s;
 });
 // 17 — مفاجأة للكل
-shot(17, camPush(320, 400, 1, 1.15), function (u, d, t) {
-  return paper() + bigBang(320, 380, t, u / 0.5) + dots(t, 80, 600, 480, 80, 18, ORANGE, 30);
+shot(17, camPush(320, 430, 1, 1.08), function (u, d, t) {
+  var jump = function (dl) { var k = clamp((u - dl) / 0.5); return -Math.sin(k * Math.PI) * 30; };
+  var up = function (dl) { return ease((u - dl) / 0.35); };
+  function wowMan(face, hair, skin, dl) {
+    var k = up(dl), ay = lerp(-140, -300, k), ax = lerp(64, 70, k);
+    return scientist({ skin: skin, tie: !!face.glasses, armL: "M48 -222 L" + f(ax + 14) + " " + f(lerp(-176, -250, k)) + " L" + f(ax) + " " + f(ay), hL: [ax, ay - 4],
+      armR: "M-48 -222 L" + f(-ax - 14) + " " + f(lerp(-176, -250, k)) + " L" + f(-ax) + " " + f(ay), hR: [-ax, ay - 4], face: face, hair: hair }, t);
+  }
+  var s = paper() + '<rect x="-600" y="-600" width="1840" height="1200" fill="#e4dccb"/><rect x="-600" y="-600" width="1840" height="1200" fill="url(#grid)" opacity=".5"/>' +
+    bigBang(320, 170, t, (u - 0.1) / 0.5).replace('scale(', 'scale(0.55*').replace(/scale\(0\.55\*([\d.]+)\)/, function (m, v) { return "scale(" + (0.55 * v).toFixed(3) + ")"; });
+  s += G(120, 700 + jump(0.2), 1.05, wowMan({ wow: true, glasses: true, mus: INK }, P("M-36 -300 C-40 -340 30 -346 38 -306 C24 -326 -10 -320 -36 -300 Z", INK, 1.4), SKIN, 0.2));
+  s += G(520, 700 + jump(0.45), 1.05, wowMan({ wow: true, skin: SKIN2, mus: "#d8d2c4", brow: "#8a8070" }, P("M-38 -296 C-44 -310 -40 -322 -32 -318 L-30 -300 Z", "#d8d2c4", 1.4) + P("M38 -296 C44 -310 40 -322 32 -318 L30 -300 Z", "#d8d2c4", 1.4), SKIN2, 0.45));
+  s += G(320, 676 + jump(0.3), 1.05, wowMan({ wow: true, skin: "#b97f5e" }, P("M-38 -296 C-48 -350 48 -350 38 -296 C30 -322 -30 -322 -38 -296 Z", HAIR, 1.4) + circle(-30, -318, 9, HAIR, false, 1.2) + circle(0, -330, 10, HAIR, false, 1.2) + circle(30, -318, 9, HAIR, false, 1.2), "#b97f5e", 0.3));
+  s += R(-600, 640, 1840, 600, "#8a6a48", 2) + '<rect x="-600" y="640" width="1840" height="600" fill="url(#hatch)"/>' + stroke("M-600 656 H1240", "#6a5038", 2) +
+    tray(320, 646, 300, null) + sprouts(320, 646, ease((u - 0.1) / 0.8), t, 7, 42);
+  for (var i = 0; i < 2; i++) s += G([120, 520][i], 290, pop((u - 0.4 - i * 0.15) / 0.4), T("!", 0, 20, 60, ORANGE, 900));
+  return s;
 });
 // 18 — حوالي 70% من عينات الحوامل نبّتت
 shot(18, camPush(320, 420, 1, 1.06), function (u, d, t) {
