@@ -1,0 +1,20 @@
+[
+  {"line": 0, "at": 0.3, "fx": "hum", "gain": 0.35},
+  {"line": 0, "at": 3.6, "fx": "bell", "gain": 0.5},
+  {"line": 1, "at": 1.4, "fx": "pop", "gain": 0.5},
+  {"line": 1, "at": 2.4, "fx": "pop", "gain": 0.5},
+  {"line": 3, "at": 0.6, "fx": "hum", "gain": 0.45},
+  {"line": 4, "at": 0.4, "fx": "zap", "gain": 0.35},
+  {"line": 5, "at": 0.5, "fx": "tick", "gain": 0.5},
+  {"line": 7, "at": 1.0, "fx": "ping", "gain": 0.45},
+  {"line": 8, "at": 0.4, "fx": "servo", "gain": 0.4},
+  {"line": 9, "at": 1.2, "fx": "fizz", "gain": 0.4},
+  {"line": 10, "at": 2.0, "fx": "chime", "gain": 0.45},
+  {"line": 11, "at": 0.4, "fx": "motor", "gain": 0.35},
+  {"line": 13, "at": 0.9, "fx": "clink", "gain": 0.5},
+  {"line": 14, "at": 0.6, "fx": "thud", "gain": 0.45},
+  {"line": 15, "at": 0.4, "fx": "notify", "gain": 0.6},
+  {"line": 16, "at": 2.6, "fx": "drip", "gain": 0.5},
+  {"line": 17, "at": 1.4, "fx": "thud", "gain": 0.6},
+  {"line": 18, "at": 3.2, "fx": "bell", "gain": 0.5}
+]
