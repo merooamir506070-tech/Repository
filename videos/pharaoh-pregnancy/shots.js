@@ -358,12 +358,19 @@ shot(20, camPush(320, 450, 1, 1.06), function (u, d, t) {
   s += '<ellipse cx="' + SX + '" cy="' + SY + '" rx="30" ry="15" fill="' + WHEAT + '" stroke="' + INK + '" stroke-width="2"/>' + sprout(SX, SY - 8, ease((u - 2.6) / 2), t, 150);
   return s + label(BX + 60, BY - 70, 470, 320, "هرمونات الحمل", BLUE, ease((u - 1) / 0.8), 26) + label(SX + 20, SY, 560, 740, "البذرة", OLIVE, ease((u - 3.4) / 0.8), 26);
 });
+// دايرة فيها علامة ولد (أزرق) أو بنت (برتقالي)، وبتنوّر لما وش العملة يبقى عليها
+function sexCircle(x, y, boy, on, k, t) {
+  if (k <= 0) return ""; var col = boy ? BLUE : ORANGE, sc = k * (on ? 1.1 : 0.95);
+  return G(x, y, sc, (on ? '<circle r="105" fill="url(#glowO)" opacity=".6"/>' : "") + '<circle r="72" fill="' + PAPER + '" stroke="' + col + '" stroke-width="' + (on ? 7 : 4) + '"/><circle r="72" fill="url(#hatch)"/>' +
+    (boy ? maleSym(0, 4, 26, col, 1) : femaleSym(0, 8, 24, col, 1)) + T(boy ? "ولد" : "بنت", 0, 112, 26, col, 800));
+}
 // 21 — ولد ولا بنت: تخمين زي رمي العملة
 shot(21, camPush(320, 400, 1, 1.1), function (u, d, t) {
   var c = Math.cos(t * 7), y = 360 - Math.abs(Math.sin(t * 2.2)) * 120, sym = c > 0 ? maleSym(0, 0, 30, BLUE, 1) : femaleSym(0, 6, 28, ORANGE, 1);
   return paper() + '<ellipse cx="320" cy="640" rx="' + f(90 - (360 - y) * 0.3) + '" ry="14" fill="' + INK + '" opacity=".15"/>' +
     '<g transform="translate(320 ' + f(y) + ') scale(' + f(Math.max(0.06, Math.abs(c))) + ' 1)"><circle r="110" fill="#e6c36a" stroke="' + INK + '" stroke-width="3"/><circle r="92" fill="url(#hatch)" stroke="' + INK + '" stroke-width="1.5"/>' + sym + '</g>' +
-    numBox("بالصدفة", 320, 140, (u - 2.4) / 0.6, 32);
+    sexCircle(130, 560, true, c > 0, pop((u - 0.3) / 0.45), t) + sexCircle(510, 560, false, c <= 0, pop((u - 0.6) / 0.45), t) +
+    numBox("بالصدفة", 320, 95, (u - 2.4) / 0.6, 32);
 });
 // 22 — الطريقة سافرت من مصر لأوروبا
 shot(22, camMove([360, 500, 1.0], [300, 360, 1.05]), function (u, d, t) {
