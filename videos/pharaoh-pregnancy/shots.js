@@ -372,6 +372,13 @@ shot(21, camPush(320, 400, 1, 1.1), function (u, d, t) {
     sexCircle(130, 560, true, c > 0, pop((u - 0.3) / 0.45), t) + sexCircle(510, 560, false, c <= 0, pop((u - 0.6) / 0.45), t) +
     numBox("بالصدفة", 320, 95, (u - 2.4) / 0.6, 32);
 });
+// طيارة من فوق، بوزها ناحية +x
+function airplane() {
+  return P("M-44 -6 L30 -7 C44 -7 52 -3 54 0 C52 3 44 7 30 7 L-44 6 C-50 6 -50 -6 -44 -6 Z", "#fbf8ef", 2) +
+    P("M4 -6 L-14 -50 L-2 -50 L22 -6 Z", "#fbf8ef", 2) + P("M4 6 L-14 50 L-2 50 L22 6 Z", "#fbf8ef", 2) +
+    P("M-36 -5 L-48 -22 L-40 -22 L-26 -5 Z", "#fbf8ef", 1.8) + P("M-36 5 L-48 22 L-40 22 L-26 5 Z", "#fbf8ef", 1.8) +
+    stroke("M-30 0 H34", BLUE, 2) + stroke("M-6 -36 L4 -30 M-6 36 L4 30", ORANGE, 3);
+}
 // 22 — الطريقة سافرت من مصر لأوروبا
 shot(22, camMove([360, 500, 1.0], [300, 360, 1.05]), function (u, d, t) {
   var s = paper() + '<rect x="-600" y="-600" width="1840" height="2000" fill="#9fb8cc" opacity=".55"/>' +
@@ -381,6 +388,11 @@ shot(22, camMove([360, 500, 1.0], [300, 360, 1.05]), function (u, d, t) {
   var p = ease((u - 0.4) / 2.2), path = "M470 580 Q420 420 260 250";
   s += '<path d="' + path + '" fill="none" stroke="' + ORANGE + '" stroke-width="5" pathLength="1" style="stroke-dasharray:' + f(p) + ' 1"/>';
   s += circle(470, 580, 10, ORANGE) + (p > 0.95 ? circle(260, 250, 10 + 3 * Math.sin(t * 6), OLIVE) : "");
+  if (p > 0) {   // طيارة ماشية على نفس الخط
+    var q = 1 - p, px = q * q * 470 + 2 * q * p * 420 + p * p * 260, py = q * q * 580 + 2 * q * p * 420 + p * p * 250,
+        dx = 2 * q * (420 - 470) + 2 * p * (260 - 420), dy = 2 * q * (420 - 580) + 2 * p * (250 - 420), ang = Math.atan2(dy, dx) * 57.3, bob = Math.sin(t * 5) * 3;
+    s += '<ellipse cx="' + f(px + 14) + '" cy="' + f(py + 26) + '" rx="26" ry="8" fill="' + INK + '" opacity=".15"/>' + G(px, py + bob, 1.1, airplane(), ang);
+  }
   return s + numBox("مئات السنين", 320, 760, (u - 3.2) / 0.6, 26);
 });
 // 23 — شريط الحمل النهارده بيدوّر على hCG
