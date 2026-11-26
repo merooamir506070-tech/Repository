@@ -83,12 +83,16 @@ function globe(x, y, r, t) { var off = (t * 10) % (r * 2), land = ""; for (var i
 //       pose: "idle" | "point" | "wave" | "think" | "alarm" | "ok" | "stop",
 //       mood: "happy" | "neutral" | "worried" | "surprised" (لكل pose مود افتراضي),
 //       dir: 1 (بيشاور يمين) أو -1 (شمال), talk: true (بقه بيتحرك وهو بيتكلم), k: من 0 لـ1 لظهوره بـpop }
-var GUIDE_WHO = "fikri";
+var GUIDE_WHO = "zizo";
 var GUIDES = {
   fikri: { top: BLUE, legs: "#5b574d", shoes: INK, hair: "messy", glasses: "round", pencil: true },          // شاب بنضارة وقلم ورا ودنه
   nour:  { top: OLIVE, legs: "#5b574d", shoes: INK, hair: "hijab", skirt: true, blush: true, badge: true },  // بنت بطرحة برتقالي وكارنيه
   ostaz: { top: BONE, legs: "#5b574d", shoes: "#5a3a26", hair: "bald", glasses: "half", mustache: true, coat: true },   // أستاذ كبير ببالطو أبيض وشنب
-  zizo:  { top: "#b8603a", legs: BLUE, shoes: BONE, hair: "cap", hoodie: true, bag: true }                     // شاب بكاب وهودي وشنطة
+  zizo:  { top: "#b8603a", legs: BLUE, shoes: BONE, hair: "cap", outfit: "hoodie", bag: true },                // زيزو: كاب بالعكس وهودي وشنطة ضهر
+  // ستايلات تانية لزيزو (نفس الوش):
+  zizo_casual: { top: BLUE, legs: "#3b4f66", shoes: BONE, hair: "curly", outfit: "tee", headphones: true },        // شعر كيرلي وسماعات وتيشيرت
+  zizo_sport:  { top: OLIVE, legs: "#3a3a36", shoes: BONE, hair: "cap", cap: BLUE, brim: 1, outfit: "track", stripe: true }, // كاب لقدام وترينج
+  zizo_winter: { top: BLUE, legs: "#5b574d", shoes: "#5a3a26", hair: "beanie", beanie: OLIVE, outfit: "puffer", scarf: true } // طاقية صوف وكوفية وجاكيت منفوخ
 };
 function guide(x, y, s, t, o) {
   o = o || {}; s = s || 1; var C = GUIDES[o.who || GUIDE_WHO] || GUIDES.fikri, pose = o.pose || "idle", dir = o.dir === -1 ? -1 : 1;
@@ -120,19 +124,26 @@ function guide(x, y, s, t, o) {
   if (C.skirt) legs = shape("M-38 -116 L-48 -6 H48 L38 -116 Z", C.legs, true) + shape("M-34 -8 H-6 V6 H-42 Q-44 -6 -34 -8 Z", C.shoes) + shape("M6 -8 H34 Q44 -6 42 6 H6 Z", C.shoes);
   else legs = '<path d="M-20 -116 V-8 M20 -116 V-8" stroke="' + INK + '" stroke-width="21" stroke-linecap="round"/><path d="M-20 -116 V-9 M20 -116 V-9" stroke="' + C.legs + '" stroke-width="16" stroke-linecap="round"/>'
     + shape("M-32 -6 H-8 V6 H-42 Q-44 -4 -32 -6 Z", C.shoes) + shape("M8 -6 H32 Q44 -4 42 6 H8 Z", C.shoes);
+  if (C.stripe) legs += '<path d="M-27 -114 V-14 M27 -114 V-14" stroke="' + BONE + '" stroke-width="3"/>';
   // الجسم
   var body = "";
   if (C.bag) body += shape("M-44 -150 H44 V-80 H-44 Z", "#7a6a4a", true);   // الشنطة ورا ضهره
   body += shape("M-40 -158 Q0 -172 40 -158 Q50 -110 42 -66 H-42 Q-50 -110 -40 -158 Z", C.coat ? BLUE : C.top, !C.coat);
+  if (C.outfit === "track") sleeve = C.top;
   if (C.coat) body += '<path d="M0 -164 L-6 -150 L0 -100 L6 -150 Z" fill="' + ORANGE + '" stroke="' + INK + '" stroke-width="1.6"/>'   // الكرافتة
     + shape("M-42 -160 Q-30 -168 -12 -166 L-6 -112 L-10 -2 H-50 Q-56 -90 -42 -160 Z", BONE, true) + shape("M42 -160 Q30 -168 12 -166 L6 -112 L10 -2 H50 Q56 -90 42 -160 Z", BONE, true)
     + R(22, -120, 18, 20, BONE, 1.6, 2) + '<path d="M27 -118 V-134 M33 -118 V-132" stroke-width="3.5" stroke="' + BLUE + '"/>';
-  else if (C.hoodie) body += shape("M-30 -166 Q0 -150 30 -166 Q20 -150 0 -146 Q-20 -150 -30 -166 Z", C.top, false, 2) + '<path d="M-8 -150 V-124 M8 -150 V-124" stroke="' + BONE + '" stroke-width="2.5"/>' + shape("M-26 -98 H26 L30 -72 H-30 Z", C.top, false, 1.6)
+  else if (C.outfit === "hoodie") body += shape("M-30 -166 Q0 -150 30 -166 Q20 -150 0 -146 Q-20 -150 -30 -166 Z", C.top, false, 2) + '<path d="M-8 -150 V-124 M8 -150 V-124" stroke="' + BONE + '" stroke-width="2.5"/>' + shape("M-26 -98 H26 L30 -72 H-30 Z", C.top, false, 1.6)
     + (C.bag ? '<path d="M-36 -160 L-30 -70 M36 -160 L30 -70" stroke="#5a4a30" stroke-width="5"/>' : "");
+  else if (C.outfit === "tee") body += '<path d="M-16 -164 Q0 -150 16 -164" stroke="' + INK + '" stroke-width="2" fill="none"/>' + shape("M6 -136 L-10 -112 H0 L-6 -90 L14 -118 H4 L12 -136 Z", "#f2c26a", false, 1.8);
+  else if (C.outfit === "track") body += shape("M-18 -168 L0 -156 L18 -168 L20 -158 L0 -146 L-20 -158 Z", C.top, false, 1.8) + '<path d="M0 -150 V-68" stroke="' + INK + '" stroke-width="2"/>' + R(-3, -150, 6, 10, PUTTY, 1.2, 1) + '<path d="M-41 -84 H41" stroke="' + BONE + '" stroke-width="5"/>';
+  else if (C.outfit === "puffer") body += '<path d="M-44 -136 Q0 -128 44 -136 M-46 -110 Q0 -102 46 -110 M-44 -86 Q0 -78 44 -86 M0 -160 V-68" stroke="' + INK + '" stroke-width="1.8" fill="none"/>';
   else if (C.hair === "hijab") body += (C.badge ? R(14, -132, 18, 24, BONE, 1.6, 2) + R(18, -126, 10, 8, BLUE, 0) + '<path d="M17 -112 H29" stroke="' + INK + '" stroke-width="1.5"/>' : "");
   else body += '<path d="M-13 -164 L0 -146 L13 -164 Z" stroke="' + INK + '" stroke-width="2" fill="' + BONE + '" stroke-linejoin="round"/><path d="M0 -146 V-70" stroke="' + INK + '" stroke-width="1.4"/>'
     + '<circle cx="0" cy="-128" r="2" fill="' + INK + '"/><circle cx="0" cy="-104" r="2" fill="' + INK + '"/><circle cx="0" cy="-80" r="2" fill="' + INK + '"/>'
     + '<path d="M-26 -132 V-148" stroke="' + ORANGE + '" stroke-width="3.5"/>' + R(-34, -136, 18, 18, C.top, 1.6, 2);
+  if (C.headphones) body += '<path d="M-30 -156 Q0 -132 30 -156" stroke="' + INK + '" stroke-width="5" fill="none"/>' + R(-42, -170, 18, 22, ORANGE, 2, 6) + R(24, -170, 18, 22, ORANGE, 2, 6);
+  if (C.scarf) body += shape("M-34 -168 Q0 -150 34 -168 L36 -152 Q0 -134 -36 -152 Z", ORANGE, true) + shape("M14 -150 L28 -150 L32 -104 L18 -104 Z", ORANGE, true) + '<path d="M20 -104 V-96 M25 -104 V-96 M30 -104 V-96" stroke="' + ORANGE + '" stroke-width="2.5"/>';
   // الراس
   var tilt = pose === "think" ? -7 : 0, blink = ((t + 0.7) % 3.4) < 0.13, eyeH = blink ? 0.6 : (mood === "surprised" ? 5.5 : 4.2);
   var look = pose === "point" || pose === "stop" ? 3 : Math.sin(t * 0.7) * 1.5, head = '<g transform="rotate(' + tilt + ' 0 -170)">';
@@ -145,7 +156,9 @@ function guide(x, y, s, t, o) {
     head += circle(0, -210, 40, SKIN);
     if (C.hair === "messy") head += shape("M-40 -214 C-50 -258 -12 -270 0 -254 C10 -274 50 -264 42 -220 C38 -232 28 -238 20 -230 C14 -244 -4 -244 -10 -232 C-18 -242 -34 -238 -40 -214 Z", INK);
     if (C.hair === "bald") head += shape("M-41 -200 C-46 -226 -38 -238 -30 -236 C-34 -226 -34 -214 -34 -200 Z", "#a39e92") + shape("M41 -200 C46 -226 38 -238 30 -236 C34 -226 34 -214 34 -200 Z", "#a39e92") + '<path d="M-14 -240 Q-4 -246 6 -242" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/>';
-    if (C.hair === "cap") head += shape("M-38 -222 C-36 -228 -30 -226 -28 -220 C-24 -230 -16 -226 -16 -220 Z", INK) + shape("M-40 -220 C-42 -266 42 -266 40 -220 Z", ORANGE, true) + shape("M-38 -222 L-74 -218 Q-76 -210 -68 -210 L-38 -214 Z", "#9a3f20") + circle(0, -253, 4, ORANGE, false, 1.4);
+    if (C.hair === "cap") { var cc = C.cap || ORANGE, bd = C.brim || -1; head += shape("M-38 -222 C-36 -228 -30 -226 -28 -220 C-24 -230 -16 -226 -16 -220 Z", INK) + shape("M-40 -220 C-42 -266 42 -266 40 -220 Z", cc, true) + '<g transform="scale(' + (-bd) + ' 1)">' + shape("M-38 -222 L-74 -218 Q-76 -210 -68 -210 L-38 -214 Z", INK) + shape("M-38 -222 L-74 -218 Q-76 -210 -68 -210 L-38 -214 Z", cc, false, 2) + '</g>' + circle(0, -253, 4, cc, false, 1.4); }
+    if (C.hair === "curly") { var cu = [[-38, -214], [-36, -232], [-24, -246], [-8, -252], [8, -252], [24, -246], [36, -232], [38, -214], [-20, -234], [0, -240], [20, -234]]; for (var ci = 0; ci < cu.length; ci++) head += circle(cu[ci][0], cu[ci][1], 13, INK, false, 1); }
+    if (C.hair === "beanie") head += shape("M-40 -216 C-42 -268 42 -268 40 -216 Z", C.beanie, true) + R(-43, -226, 86, 16, C.beanie, 2, 6) + '<path d="M-30 -226 V-210 M-15 -226 V-210 M0 -226 V-210 M15 -226 V-210 M30 -226 V-210" stroke="' + INK + '" stroke-width="1.2" opacity=".5"/>' + circle(0, -262, 11, BONE, false, 2);
   }
   if (C.glasses === "round") head += '<circle cx="-15" cy="-206" r="13" fill="' + BONE + '" fill-opacity=".5" stroke="' + INK + '" stroke-width="2.6"/><circle cx="15" cy="-206" r="13" fill="' + BONE + '" fill-opacity=".5" stroke="' + INK + '" stroke-width="2.6"/><path d="M-2 -207 Q0 -210 2 -207" stroke="' + INK + '" stroke-width="2.4" fill="none"/>';
   head += '<ellipse cx="' + f(-15 + look) + '" cy="-206" rx="3.6" ry="' + eyeH + '" fill="' + INK + '"/><ellipse cx="' + f(15 + look) + '" cy="-206" rx="3.6" ry="' + eyeH + '" fill="' + INK + '"/>';
