@@ -139,10 +139,46 @@ shot(1, camPan(260, 380, 420, 1.05), function (u, d, t) {
     numBoxR("أكتر من 3000 سنة", 330, 680, (u - 0.6) / 0.8, 30);
 });
 // 2 — السؤال: الست الفرعونية مرسومة على جدار المعبد
-shot(2, camPush(320, 420, 1, 1.1), function (u, d, t) {
-  var q1 = 1 + 0.1 * Math.sin(t * 5), q2 = 1 + 0.1 * Math.sin(t * 5 + 2);
-  return stoneWall() + '<circle cx="80" cy="200" r="' + f(150 + 14 * Math.sin(t * 9) + 6 * Math.sin(t * 23)) + '" fill="url(#glowO)" opacity=".45"/>' + wallWoman(260, 640, 1.35, t) +
-    glyphRow(80, 720, 3, 1) + G(470, 260, pop(u / 0.5) * q1, T("؟", 0, 40, 130, ORANGE, 900)) + G(530, 470, pop((u - 2.2) / 0.5) * q2, T("؟", 0, 40, 110, BLUE, 900));
+// توقيت كلمة جوه السطر (بنفس حساب إبراز الكلمة في الترجمة): الثواني من أول السطر
+function wordAt(line, idx) { var ws = LN[line].text.split(" "), c = 0, tot = 0, n = ws.map(function (w) { return w.replace(/[^\u0600-\u06FFA-Za-z0-9]/g, "").length + 1.5; }); n.forEach(function (x) { tot += x; }); for (var k = 0; k < idx; k++) c += n[k]; return c / tot * Math.max(0.3, LN[line].end - LN[line].start); }
+// ست فرعونية حامل (من قدام)، إيد على بطنها
+function womanPharaohPreg(t) {
+  var b = Math.sin(t * 1.6) * 2;
+  return P("M-50 -296 C-56 -350 56 -350 50 -296 L54 -222 L-54 -222 Z", WIG) +
+    R(-9, -262, 18, 24, SKIN2, 2) + limbS("M-44 -222 L-60 -130", SKIN2, 16) +
+    P("M-42 -230 L42 -230 C52 -160 58 -60 56 -10 L-56 -10 C-58 -60 -52 -160 -42 -230 Z", WHITE, 2.2, true) +
+    P("M0 -196 C44 -196 64 -160 62 -128 C60 -96 40 -80 0 -80 C-40 -80 -60 -96 -62 -128 C-64 -160 -44 -196 0 -196 Z", "#fbf8ef", 2.4, true) +
+    stroke("M-40 -170 Q-50 -140 -40 -110", "#d8d2c4", 4) + stroke("M-46 -98 Q0 -72 46 -98", GREY, 2) +
+    limbS("M44 -222 L66 " + f(-182 + b) + " L26 " + f(-150 + b), SKIN2, 16) + circle(22, -150 + b, 9, SKIN2) +
+    collar(-232) + feetBare(SKIN2) +
+    faceF({ skin: SKIN2, lash: true, lip: "#8a3a2a" }) + P("M-40 -318 C-30 -336 30 -336 40 -318 L40 -306 C20 -318 -20 -318 -40 -306 Z", WIG, 1.4) + stroke("M-42 -322 Q0 -342 42 -322", "#d9a23a", 5);
+}
+// طفل فرعوني صغير: راس محلوقة وخصلة جنب، ونقبة بيضا
+function kidBoy(t) {
+  var b = Math.abs(Math.sin(t * 4)) * 6;
+  return G(0, -b, 1, limbS("M-10 -70 L-10 -10", SKIN2, 16) + limbS("M10 -70 L10 -10", SKIN2, 16) + feetBare(SKIN2) +
+    P("M-28 -140 L28 -140 L26 -80 L-26 -80 Z", SKIN2) + P("M-32 -86 L32 -86 L36 -50 L-36 -50 Z", WHITE, 2, true) +
+    limbS("M-28 -132 L-40 -86", SKIN2, 14) + limbS("M28 -132 L54 " + f(-168 - b * 2), SKIN2, 14) +
+    G(0, 88, 0.9, faceF({ skin: SKIN2 })) + stroke("M-30 -206 Q-44 -190 -36 -168", WIG, 8));
+}
+// بنت فرعونية صغيرة: ضفيرتين وفستان صغير
+function kidGirl(t) {
+  var b = Math.abs(Math.sin(t * 4 + 1)) * 6;
+  return G(0, -b, 1, limbS("M-10 -70 L-10 -10", SKIN2, 16) + limbS("M10 -70 L10 -10", SKIN2, 16) + feetBare(SKIN2) +
+    P("M-26 -140 L26 -140 L38 -54 L-38 -54 Z", "#e9b9a0", 2, true) + collar(-140).replace(/rx="52" ry="20"/, 'rx="30" ry="11"').replace(/rx="40" ry="13"/, 'rx="22" ry="7"').replace(/rx="26" ry="7"/, 'rx="12" ry="4"') +
+    limbS("M-26 -132 L-42 -88", SKIN2, 14) + limbS("M26 -132 L52 " + f(-166 - b * 2), SKIN2, 14) +
+    P("M-34 -184 C-36 -226 36 -226 34 -184 L34 -170 L-34 -170 Z", WIG, 1.6) + G(0, 88, 0.9, faceF({ skin: SKIN2, lash: true, lip: "#8a3a2a" })) +
+    P("M-36 -182 C-30 -212 30 -212 36 -182 C20 -196 -20 -196 -36 -182 Z", WIG, 1.4) +
+    stroke("M-34 -176 Q-46 -150 -40 -126", WIG, 9) + stroke("M34 -176 Q46 -150 40 -126", WIG, 9) + circle(-40, -122, 6, ORANGE) + circle(40, -122, 6, ORANGE));
+}
+// 2 — السؤال: الست الفرعونية الحامل، وولد صغير وبنت صغيرة بيظهروا مع الكلمتين
+shot(2, camPush(320, 430, 1, 1.06), function (u, d, t) {
+  var q1 = 1 + 0.1 * Math.sin(t * 5), tB = wordAt(2, 11), tG = wordAt(2, 13);
+  return stoneWall() + '<circle cx="80" cy="200" r="' + f(150 + 14 * Math.sin(t * 9) + 6 * Math.sin(t * 23)) + '" fill="url(#glowO)" opacity=".45"/>' + glyphRow(300, 140, 3, 1) +
+    R(-600, 700, 1840, 600, "#b5a274", 2) + '<rect x="-600" y="700" width="1840" height="600" fill="url(#hatch)"/>' +
+    G(210, 720, 1.25, womanPharaohPreg(t)) + G(210, 160, pop(u / 0.5) * q1, T("؟", 0, 40, 110, ORANGE, 900)) +
+    G(450, 440, pop((u - tB) / 0.45) * 1.15, kidBoy(t)) + label(420, 250, 340, 270, "ولد", BLUE, ease((u - tB) / 0.3), 30) +
+    G(560, 700, pop((u - tG) / 0.45) * 1.15, kidGirl(t)) + label(530, 480, 440, 450, "بنت", ORANGE, ease((u - tG) / 0.3), 30);
 });
 // 3 — بردية برلين الطبية
 shot(3, camPush(320, 400, 1, 1.12), function (u, d, t) {
