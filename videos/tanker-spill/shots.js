@@ -271,10 +271,11 @@ shot(9, camMove([180, 350, 1.15], [180, 345, 1.08]), function (u, d, t) {
     distArrow(260, 95, 310, "300 م", ease((u - 0.4) / 1.4), "#ffd23a") + distArrow(260, 25, 240, "800 م", ease((u - 2.6) / 1.4), "#ff7a2e");
 });
 // 10: اقف عكس اتجاه الهوا
-shot(10, camPush(185, 345, 1.12, 1.2), function (u, d, t) {
-  return bgSky("day") + clouds(t, 30, 70, 4, 0.9, 0.6) + groundOnly(400) + windLines(t, 150, 380, 1, 7) +
-    flag(150, 400, t, 1) + hero(70, 440, t, { who: "zizo", mood: "happy", pose: "point", s: 0.75 }) + tanker(290, 430, 0.42, t, true) + puddle(290, 440, 40, 1, t) +
-    creep(290, 400, 430, t, 1, 0.5) + arrow(60, 170, 300, 170, "#fff", 7, ease((u - 0.6) / 1.6)) + tag("الهوا", 180, 130, u, 0.8, -3, 24, "#e8c48e") + check(70, 260, u, 2.4, 1.1);
+shot(10, camPush(185, 350, 1.05, 1.12), function (u, d, t) {
+  return bgSky("day") + clouds(t, 30, 70, 4, 0.9, 0.6) + hillsFar(345) + road2(350, t, 0) + windLines(t, 150, 330, 1, 7) +
+    flag(28, 352, t, 1) + tanker(262, 405, 0.95, t, true) + drips(175, 395, 410, t) + puddle(235, 414, 95, 1, t) + creep(250, 420, 410, t, 1, 0.5) +
+    hero(75, 430, t, { who: "zizo", mood: "happy", pose: "point", s: 0.55 }) +
+    arrow(40, 170, 320, 170, "#fff", 7, ease((u - 0.6) / 1.6)) + tag("الهوا", 180, 130, u, 0.8, -3, 24, "#e8c48e") + check(75, 285, u, 2.4, 1.0);
 });
 // 11: اقف في حتة عالية، البنزين بينزل للواطي
 shot(11, camPush(180, 320, 1.0, 1.1), function (u, d, t) {
