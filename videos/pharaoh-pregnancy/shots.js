@@ -17,9 +17,8 @@ function stoneWall() {   // جدار معبد: حجارة بخطوط
 // ست فرعونية مرسومة على الجدار (بروفايل ناحية اليمين). الأصل عند رجليها، وطولها حوالي 320
 function wallWoman(x, y, s, t) {
   var a = Math.sin(t * 1.6) * 6;
-  var g = limb("M-20 -200 L-30 -110") +
-    shape("M-28 -202 L28 -202 L40 0 L-32 0 Z", BONE, true) +
-    stroke("M-22 -120 L30 -120", GREY, 1.2) +
+  var g = shape("M-28 -202 L22 -202 C38 -180 88 -152 84 -110 C80 -78 48 -74 38 -58 L40 0 L-32 0 Z", BONE, true) +
+    stroke("M26 -176 C72 -160 82 -118 62 -86", GREY, 1.4) + limb("M-20 -200 L-16 -130 L50 -92") +
     '<ellipse cx="-12" cy="2" rx="14" ry="5" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="1.6"/><ellipse cx="20" cy="2" rx="14" ry="5" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="1.6"/>' +
     R(-8, -238, 16, 22, SKIN, 1.8) +
     '<ellipse cx="0" cy="-206" rx="40" ry="15" fill="' + BLUE + '" stroke="' + INK + '" stroke-width="2"/><ellipse cx="0" cy="-206" rx="30" ry="9" fill="' + ORANGE + '" stroke="' + INK + '" stroke-width="1.2"/><ellipse cx="0" cy="-208" rx="18" ry="5" fill="' + OLIVE + '" stroke="' + INK + '" stroke-width="1"/>' +
@@ -405,5 +404,5 @@ shot(23, camPush(320, 400, 1, 1.12), function (u, d, t) {
 // ── كارت الملخص: الست الفرعونية على الجدار وقدامها شريط الحمل
 outro(function (u, t) {
   return stoneWall() + '<rect width="580" height="300" fill="#f3b46a" opacity="' + f(0.25 + 0.08 * Math.sin(t * 1.2)) + '"/>' +
-    wallWoman(170, 290, 0.85, t) + glyphRow(300, 70, 3, 1) + testStrip(420, 175, 0.6, 1, 1, t, 10 * Math.sin(t)) + callout("1", 230, 240, u / 0.5) + callout("2", 470, 230, (u - 0.5) / 0.5);
+    wallWoman(170, 290, 0.85, t) + glyphRow(300, 70, 3, 1) + testStrip(420, 175, 0.6, 1, 1, t, 10 * Math.sin(t)) + callout("1", 110, 110, u / 0.5) + ring(222, 190, 46, t, ease((u - 0.4) / 0.8)) + callout("2", 470, 230, (u - 0.5) / 0.5);
 });
