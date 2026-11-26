@@ -286,14 +286,34 @@ shot(11, camPush(180, 320, 1.0, 1.1), function (u, d, t) {
     arrow(150, 330, 250, 420, "#8fdc6e", 6, ease((u - 0.8) / 1.4)) + check(150, 170, u, 1.4, 1.1) + cross(300, 360, u, 2.6, 1);
 });
 // 12: اطفي الموتور، الموتور السخن والشكمان ممكن يولّعوا البخار
-shot(12, camPush(180, 300, 1.0, 1.08), function (u, d, t) {
-  var turn = ease((u - 0.4) / 0.7), cool = ease((u - 1.2) / 2), needle = lerp(-40 + Math.sin(t * 30) * 4, -130, turn);
-  var heat = ""; for (var i = 0; i < 3; i++) { var p = (t * 0.9 + i / 3) % 1; heat += '<path d="M' + (230 + i * 22) + ' ' + f(430 - p * 50) + ' q6 -8 0 -16 q-6 -8 0 -16" stroke="#ff7a2e" stroke-width="3" fill="none" opacity="' + f((1 - p) * (1 - cool)) + '"/>'; }
-  return bgFill("#2a2f36") + '<path d="M-100 60 H460 V300 Q180 270 -100 300 Z" fill="url(#dash)" stroke="' + INK + '" stroke-width="3"/>' +
-    '<circle cx="110" cy="170" r="70" fill="#14171b" stroke="#6a717a" stroke-width="4"/><path d="M110 170 L' + f(110 + Math.cos(needle * Math.PI / 180) * 58) + ' ' + f(170 + Math.sin(needle * Math.PI / 180) * 58) + '" stroke="#ff4a3a" stroke-width="5" stroke-linecap="round"/><circle cx="110" cy="170" r="8" fill="#6a717a"/>' +
-    '<circle cx="260" cy="190" r="30" fill="#14171b" stroke="#6a717a" stroke-width="4"/>' + keyIcon(260, 205, lerp(0, -90, turn), 1) +
-    '<rect x="160" y="410" width="160" height="26" rx="13" fill="' + (cool < 0.5 ? "#c9502e" : "#6f7d8a") + '" stroke="' + INK + '" stroke-width="3"/><rect x="160" y="410" width="160" height="26" rx="13" fill="#4f8fd0" opacity="' + f(cool) + '"/>' + heat +
-    tag("اطفي الموتور", 180, 330, u, 0.8, -3, 24, "#e8c48e");
+shot(12, camPush(180, 300, 1.0, 1.05), function (u, d, t) {
+  var turn = ease((u - 0.5) / 0.7), shake = (1 - turn) * Math.sin(t * 45) * 0.9;
+  var needle = lerp(-40 + Math.sin(t * 30) * 5, -140, ease((u - 0.9) / 1.2)) * Math.PI / 180;
+  // برّه الزجاج: الطريق واقف وقدامنا العربية المقلوبة
+  var out = '<clipPath id="wsClip"><path d="M30 92 Q180 78 330 92 L362 335 H-2 Z"/></clipPath><g clip-path="url(#wsClip)">' +
+    bgSky("day") + clouds(t, 10, 110, 3, 0.9, 0.5) + hillsFar(220) + '<rect x="-20" y="215" width="400" height="130" fill="url(#sand)"/>' +
+    '<path d="M150 215 H210 L390 340 H-30 Z" fill="url(#asph)"/>' +
+    '<path d="M178 222 h4 l1 10 h-6 Z M175 245 h10 l2 18 h-14 Z M170 285 h20 l3 30 h-26 Z" fill="#f2e6c8"/>' +
+    tanker(215, 285, 0.55, t, true) + puddle(195, 292, 70, 1, t) + vapor(195, 288, 100, 70, t, 0.45) + '</g>';
+  var frame = '<path d="M30 92 Q180 78 330 92 L362 335 H-2 Z" fill="none" stroke="#14171b" stroke-width="14"/>';
+  var dash = '<path d="M-60 322 Q180 300 420 322 V700 H-60 Z" fill="url(#dash)" stroke="' + INK + '" stroke-width="3"/>' +
+    '<circle cx="118" cy="395" r="66" fill="none" stroke="#14171b" stroke-width="16"/><circle cx="118" cy="395" r="66" fill="none" stroke="#3a3f46" stroke-width="5"/>' +
+    '<circle cx="288" cy="362" r="38" fill="#14171b" stroke="#6a717a" stroke-width="4"/><path d="M288 362 L' + f(288 + Math.cos(needle) * 30) + ' ' + f(362 + Math.sin(needle) * 30) + '" stroke="#ff4a3a" stroke-width="4" stroke-linecap="round"/><circle cx="288" cy="362" r="5" fill="#6a717a"/>' +
+    '<text x="288" y="388" text-anchor="middle" style="font:800 9px Noto Sans Arabic;fill:#9aa3ad">RPM</text>' +
+    '<rect x="270" y="410" width="36" height="18" rx="4" fill="' + (turn < 0.5 ? "#ff7a2e" : "#3a3f46") + '" stroke="#14171b" stroke-width="2"/><path d="M279 424 h18 v-8 h-4 v-3 h-10 v3 h-4 Z" fill="#14171b"/>' +
+    '<circle cx="222" cy="400" r="17" fill="#14171b" stroke="#6a717a" stroke-width="3"/>' + keyIcon(222, 404, lerp(0, -90, turn), 0.55);
+  // زيزو من ورا: الكاب بالمقلوب (الحافة ناحيتنا)، والهودي، وإيده على المفتاح
+  var hx = lerp(200, 214, turn), hy = lerp(395, 390, turn);
+  var zz = '<path d="M14 520 Q16 345 92 330 Q168 345 172 520 Z" fill="' + ORANGE + '" stroke="' + INK + '" stroke-width="3"/><path d="M58 334 Q92 352 126 334" stroke="#d66f12" stroke-width="10" fill="none" stroke-linecap="round"/>' +
+    '<path d="M150 360 Q' + f((150 + hx) / 2 + 6) + ' ' + f((360 + hy) / 2 - 18) + ' ' + f(hx) + ' ' + f(hy) + '" stroke="' + INK + '" stroke-width="22" fill="none" stroke-linecap="round"/><path d="M150 360 Q' + f((150 + hx) / 2 + 6) + ' ' + f((360 + hy) / 2 - 18) + ' ' + f(hx) + ' ' + f(hy) + '" stroke="' + ORANGE + '" stroke-width="17" fill="none" stroke-linecap="round"/>' +
+    '<circle cx="' + f(hx + 4) + '" cy="' + f(hy) + '" r="10" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2"/>' +
+    '<circle cx="58" cy="272" r="8" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2"/><circle cx="126" cy="272" r="8" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2"/>' +
+    '<rect x="78" y="292" width="28" height="26" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2.4"/>' +
+    '<circle cx="92" cy="268" r="34" fill="#3b2a1e" stroke="' + INK + '" stroke-width="3"/><path d="M70 286 q6 6 4 12 M86 292 q4 6 2 10 M102 292 q-2 6 0 10 M116 284 q-6 6 -4 12" stroke="#5a4232" stroke-width="2.4" fill="none" stroke-linecap="round"/>' +
+    '<path d="M57 264 C55 222 129 222 127 264 Z" fill="' + ORANGE + '" stroke="' + INK + '" stroke-width="3"/><path d="M76 252 h32 v10 h-32 Z" fill="#fbfbf7" opacity=".0"/>' +
+    '<path d="M68 262 L60 246 Q92 236 124 246 L116 262 Z" fill="#d66f12" stroke="' + INK + '" stroke-width="2.6"/><path d="M84 262 v-6 h16 v6" stroke="#7a3a08" stroke-width="2.2" fill="none"/><circle cx="92" cy="228" r="4" fill="#d66f12" stroke="' + INK + '" stroke-width="1.5"/>';
+  return '<g transform="translate(' + f(shake) + ' ' + f(shake * 0.6) + ')">' + bgFill("#1d2228") + out + frame + dash + zz + '</g>' +
+    tag("اطفي الموتور", 180, 130, u, 0.9, -3, 24, "#e8c48e") + check(300, 460, u, 1.6, 0.9);
 });
 // 13: اقفل الشبابيك والتكييف على الدوران الداخلي
 shot(13, camPush(180, 300, 1.0, 1.06), function (u, d, t) {
