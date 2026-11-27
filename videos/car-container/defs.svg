@@ -1,0 +1,7 @@
+<linearGradient id="ctrShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".35"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient>
+<clipPath id="carWinF"><path d="M4 -75 L36 -75 L58 -56 L4 -56 Z"/></clipPath>
+<clipPath id="aboveDoor"><rect x="-400" y="-300" width="1440" height="518"/><rect x="414" y="-300" width="600" height="700"/></clipPath>
+<clipPath id="roofCut"><rect x="-400" y="-300" width="1440" height="501"/></clipPath>
+<clipPath id="insetClip"><circle r="60"/></clipPath>
+<clipPath id="winOut"><rect x="333" y="150" width="82" height="68"/></clipPath>
+<clipPath id="hatchOut"><rect x="0" y="150" width="298" height="100"/></clipPath>
