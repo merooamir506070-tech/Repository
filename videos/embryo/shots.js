@@ -181,6 +181,38 @@ function babyD(t) {   // جنين متكوّر واقعي جوه دايرة رح
   var inner = '<path d="M-120 -120 C-60 -60 -100 30 -10 40" stroke="' + INK + '" stroke-width="18" fill="none"/><path d="M-120 -120 C-60 -60 -100 30 -10 40" stroke="#e7c9a6" stroke-width="13" fill="none"/>' + fetus(10, 20, 1.05, t, 2);
   return wombView(0, 0, 130, t, inner);
 }
+// ── قلب تشريحي حقيقي (الشريان الأورطي، الشريان الرئوي، الوريد الأجوف، شرايين تاجية) بينبض
+function tube(d, col, w) { return '<path d="' + d + '" stroke="' + INK + '" stroke-width="' + (w + 5) + '" fill="none" stroke-linecap="round"/><path d="' + d + '" stroke="' + col + '" stroke-width="' + w + '" fill="none" stroke-linecap="round"/>'; }
+function realHeart(x, y, s, t) {
+  var beat = Math.max(0, Math.sin(t * 8)), sc = 1 + 0.07 * beat, o = "";
+  o += tube("M-58 -70 L-58 -160", "#5d7fa6", 26) + tube("M-60 40 L-70 120", "#5d7fa6", 22);
+  o += tube("M5 -40 C0 -110 20 -150 60 -150 C100 -150 110 -110 105 -60", "#c25b4e", 30);
+  o += tube("M30 -146 L26 -190 M58 -150 L60 -196 M86 -142 L94 -184", "#c25b4e", 12);
+  o += tube("M30 -40 C20 -80 -10 -100 -40 -110", "#6b8fb8", 24);
+  o += shape("M-62 -30 C-104 -36 -112 -92 -74 -104 C-50 -110 -34 -84 -38 -60 Z", "#9a3a38", true, 2.4);
+  o += shape("M-64 -28 C-96 30 -64 116 18 160 C64 126 108 64 96 0 C90 -44 44 -64 2 -54 C-30 -62 -58 -50 -64 -28 Z", "#b8433c", true, 2.6);
+  o += shape("M50 -50 C80 -64 110 -40 100 -10 C90 -30 70 -36 50 -50 Z", "#9a3a38", false, 2);
+  o += '<path d="M10 -40 C0 20 10 90 18 150" stroke="#f2c26a" stroke-width="7" fill="none" opacity=".8"/><path d="M10 -40 C0 20 10 90 18 150" stroke="#7d2a28" stroke-width="3" fill="none"/>';
+  o += '<path d="M8 10 C-20 20 -40 40 -50 60 M12 60 C40 70 60 60 76 40 M4 -20 C30 -10 60 -10 84 0" stroke="#7d2a28" stroke-width="2.4" fill="none"/>';
+  o += '<path d="M-40 -10 q10 30 0 60 M60 20 q-10 30 -20 60" stroke="#fff" stroke-width="3" fill="none" opacity=".25"/>';
+  return g(x, y, s * sc, '<circle r="150" fill="url(#glowO)" opacity="' + f(0.25 + 0.3 * beat) + '"/>' + o);
+}
+// ── مخ حقيقي من الجنب، وk من 0 لـ1 قد إيه اتكوّن (الحدود بتترسم، والتلافيف بتظهر، والخلايا بتتجمع)
+var GYRI = ["M-110 -10 C-100 -40 -80 -30 -84 -60 C-80 -84 -56 -70 -50 -96", "M-60 -20 C-50 -50 -30 -40 -30 -76 C-20 -100 0 -84 10 -104", "M-20 0 C-10 -30 10 -20 14 -56 C24 -80 40 -66 50 -94", "M30 -10 C40 -40 60 -30 62 -64 C72 -86 90 -70 100 -86", "M70 10 C84 -20 104 -10 112 -40", "M-120 20 C-100 10 -84 30 -64 20 C-44 10 -30 30 -10 24", "M-80 46 C-60 30 -40 50 -20 40 C0 30 20 46 40 34", "M-40 -64 C-30 -50 -10 -60 0 -40", "M20 -80 C30 -60 50 -70 56 -50", "M-96 -40 C-80 -30 -70 -46 -60 -36", "M40 20 C56 10 70 24 90 14", "M-10 -80 C-6 -100 10 -110 20 -100"];
+function realBrain(x, y, s, k, t) {
+  var cer = "M-132 8 C-142 -64 -84 -124 -2 -122 C80 -124 142 -74 132 -2 C128 38 94 58 56 56 C22 70 -40 70 -82 56 C-122 44 -130 30 -132 8 Z", o = "";
+  var ko = clamp(k / 0.45), kf = clamp((k - 0.2) / 0.6), kg = clamp((k - 0.3) / 0.7);
+  o += '<path d="' + cer + '" fill="#e8b4b0" opacity="' + f(kf) + '"/><path d="' + cer + '" fill="url(#hatch)" opacity="' + f(kf) + '"/>';
+  o += '<path d="' + cer + '" pathLength="1" stroke="' + INK + '" stroke-width="2.6" fill="none" stroke-dasharray="' + f(ko) + ' 1"/><path d="' + cer + '" stroke="' + GREY + '" stroke-width="1.2" fill="none" stroke-dasharray="6 7" opacity="' + f(1 - kf) + '"/>';
+  var ce = "M30 60 C40 40 120 38 124 66 C126 92 60 104 36 86 Z";
+  o += op(clamp((k - 0.5) / 0.4), shape(ce, "#d99c98", true, 2.2) + '<path d="M44 66 C70 56 100 58 118 66 M42 78 C70 70 100 72 116 80" stroke="' + INK + '" stroke-width="1.4" fill="none"/>');
+  o += op(clamp((k - 0.4) / 0.4), shape("M18 60 C24 90 26 120 18 150 L44 150 C40 120 44 90 50 62 Z", "#d99c98", true, 2.2));
+  var n = Math.floor(GYRI.length * kg);
+  for (var i = 0; i < GYRI.length; i++) { var kk = clamp(kg * GYRI.length - i); if (kk > 0) o += '<path d="' + GYRI[i] + '" pathLength="1" stroke="#8a4a48" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-dasharray="' + f(kk) + ' 1"/>'; }
+  o += op(kf, '<path d="M-60 30 C-20 6 30 4 70 -20" stroke="' + INK + '" stroke-width="2.4" fill="none"/>');
+  for (var j = 0; j < 22; j++) { var a = hash(j) * 6.283, ph = (t * 0.5 + hash(j + 5)) % 1, r = lerp(220, 60, ph); o += '<circle cx="' + f(Math.cos(a) * r) + '" cy="' + f(Math.sin(a) * r * 0.7 - 20) + '" r="4" fill="' + BLUE + '" opacity="' + f(Math.sin(ph * 3.14) * 0.9) + '"/>'; }
+  return g(x, y, s, o);
+}
 // ── المشاهد ─────────────────────────────────────────────
 
 // 0 — الأم الحامل، ونور بينبض في بطنها، والكاميرا بتقرّب
@@ -350,12 +382,11 @@ shot(14, camPush(320, 380, 1, 1.15), function (u, d, t) {
 });
 
 // 15 — المفاجأة: القلب بيدق قبل ما المخ يكمل
-shot(15, camPush(320, 400, 1.02, 1.1), function (u, d, t) {
-  var k = clamp((u - 0.8) / (d - 0.6)) * 0.6;
-  var brain = "M-90 20 C-110 -40 -70 -90 -20 -84 C0 -110 60 -104 76 -70 C116 -60 118 10 86 30 C70 60 -60 64 -90 20 Z";
-  return paper() + heartS(170, 380, 1.6, t) + T("القلب", 170, 520, 30, RED2, 900)
-    + '<g transform="translate(470 370) scale(1.25)"><path d="' + brain + '" fill="none" stroke="' + INK + '" stroke-width="2.4" stroke-dasharray="' + f(700 * k) + ' 700"/><path d="' + brain + '" fill="none" stroke="' + GREY + '" stroke-width="1.2" stroke-dasharray="6 6"/></g>' + T("المخ", 470, 520, 30, BLUE, 900)
-    + op(ease((u - 1.6) / 0.6), T("لسه بيتكوّن…", 470, 565, 22, GREY, 700)) + op(ease((u - 0.3) / 0.5), numBox("!", 320, 170, 1, 34)) + ring(170, 380, 120, t, ease((u - 2.4) / 0.8));
+shot(15, camPush(320, 400, 1.0, 1.06), function (u, d, t) {
+  var k = 0.08 + 0.6 * clamp((u - 0.6) / (d - 0.8));
+  return paper() + realHeart(165, 400, 0.85, t) + T("القلب", 165, 610, 30, RED2, 900) + op(ease((u - 1) / 0.5), T("بيدق ✓", 165, 650, 22, RED2, 700))
+    + realBrain(475, 380, 0.82, k, t) + T("المخ", 475, 610, 30, BLUE, 900) + op(ease((u - 1.4) / 0.6), T("لسه بيتكوّن…", 475, 650, 22, GREY, 700))
+    + op(ease((u - 0.3) / 0.5), numBox("!", 320, 170, 1, 34)) + op(ease((u - 2) / 0.5), ecg(70, 720, 200, t));
 });
 
 // 16 — الأسبوع التامن: قد حبة التوت، وفيه إيدين ورجلين
