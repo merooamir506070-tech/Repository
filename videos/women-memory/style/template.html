@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>video</title>
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #eee5d0; }
+  .canvas { position: relative; width: 360px; height: 640px; background: #eee5d0; overflow: hidden; font-family: "Noto Sans Arabic", sans-serif; color: #2b2b2b; }
+  .panel { position: absolute; inset: 0; }
+  .panel svg { display: block; width: 100%; height: 100%; }
+  .cap { position: absolute; left: 16px; right: 16px; top: 34px; padding: 8px 12px 10px; text-align: center; font: 800 19px/1.75 "Noto Sans Arabic", sans-serif;
+         background: rgba(244,239,224,.93); border: 1.6px solid #2b2b2b; border-radius: 12px; box-shadow: 3px 3px 0 rgba(43,43,43,.85); }
+  .cap span { padding: 0 3px; border-radius: 6px; }
+  .cap .o { color: #c4532c; } .cap .b { color: #46698a; } .cap .g { color: #6b7d3c; }
+  .cap .now { background: #c4532c; color: #fff; }
+  .cap .now.b { background: #46698a; } .cap .now.g { background: #6b7d3c; }
+  .cap .past { opacity: 1; } .cap .fut { opacity: .55; }
+</style></head>
+<body>
+<div class="canvas">
+  <div class="panel"><svg id="panel" viewBox="0 0 360 640"></svg></div>
+  <div class="cap" id="cap"></div>
+</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V6" stroke="#2b2b2b" stroke-width=".9" opacity=".16"/></pattern>
+  <pattern id="hatchW" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V6" stroke="#fff" stroke-width=".9" opacity=".25"/></pattern>
+  <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0 H0 V30" stroke="#dccfb2" stroke-width="1" fill="none"/></pattern>
+  <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6"/></filter>
+  <filter id="soft2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+  <filter id="paperN"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7"/><feColorMatrix values="0 0 0 0 .4  0 0 0 0 .35  0 0 0 0 .3  0 0 0 .06 0"/></filter>
+  <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e4e6e2"/><stop offset=".5" stop-color="#d3d6d1"/><stop offset="1" stop-color="#c7cbc5"/></linearGradient>
+  <radialGradient id="glowO" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff8a3a" stop-opacity=".85"/><stop offset="1" stop-color="#ff8a3a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="glowW" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff3c8" stop-opacity=".95"/><stop offset="1" stop-color="#fff3c8" stop-opacity="0"/></radialGradient>
+  <radialGradient id="glowB" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7fb0d8" stop-opacity=".8"/><stop offset="1" stop-color="#7fb0d8" stop-opacity="0"/></radialGradient>
+  <radialGradient id="glowG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#a9c46a" stop-opacity=".85"/><stop offset="1" stop-color="#a9c46a" stop-opacity="0"/></radialGradient>
+  <!--DEFS-->
+</defs></svg>
+<script src="timing.js"></script>
+<script>/*DATA*/</script>
+<script src="scenes.js"></script>
+<script>
+  (function () {
+    var LN = TIMING.lines, cap = document.getElementById("cap"), panel = document.getElementById("panel"), key = "";
+    window.VIDEO_END = TIMING.duration;
+    // الجملة بتتقسم لمقاطع (6 كلمات بالكتير) عشان تفضل سطرين فوق
+    function chunks(n) { var k = Math.ceil(n / 6), size = Math.ceil(n / k), out = []; for (var a = 0; a < n; a += size) out.push([a, Math.min(n, a + size)]); return out; }
+    window.renderAt = function (t) {
+      window.__panel(panel, t);
+      var i = 0; while (i < LN.length - 1 && LN[i + 1].start - 0.05 <= t) i++;
+      var c = CAPS[i], l = LN[i], tot = c.w.join("").length, acc = 0, now = -1;
+      for (var k = 0; k < c.w.length; k++) { if (t >= l.start + (l.end - l.start) * (acc / tot) - 0.05) now = k; acc += c.w[k].length; }
+      if (t > l.end + 0.15) now = c.w.length;
+      var ch = chunks(c.w.length), ci = 0; for (var j = 0; j < ch.length; j++) if (Math.max(now, 0) >= ch[j][0]) ci = j;
+      var kk = i + ":" + ci + ":" + now;
+      if (kk !== key) {
+        key = kk; var s = [];
+        for (var w = ch[ci][0]; w < ch[ci][1]; w++) s.push('<span class="' + (c.k[w] || "") + (w === now ? " now" : w > now ? " fut" : "") + '">' + c.w[w] + '</span>');
+        cap.innerHTML = s.join(" ");
+      }
+      var a = Math.min(1, (t - l.start + 0.1) / 0.2); cap.style.opacity = (0.4 + 0.6 * a).toFixed(2);
+    };
+    var q = location.hash.match(/t=([\d.]+)/); renderAt(q ? +q[1] : 0.5);
+  })();
+</script>
+</body></html>

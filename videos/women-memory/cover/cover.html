@@ -1,0 +1,46 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><link href="fonts/fonts.css" rel="stylesheet">
+<style>html,body{margin:0;background:#1d2740}.c{position:relative;width:360px;height:640px;overflow:hidden}
+svg{position:absolute;inset:0}
+.h{position:absolute;left:14px;right:14px;top:34px;text-align:center;font-family:"Noto Sans Arabic";color:#fff}
+.h1{font:900 34px/1.25 "Noto Sans Arabic";text-shadow:0 3px 0 #0e1424}
+.h2{display:inline-block;margin-top:6px;padding:0 14px 6px;background:#c4532c;border:2.5px solid #2b2b2b;border-radius:12px;box-shadow:4px 4px 0 #0e1424;font:900 38px/1.4 "Noto Sans Arabic";transform:rotate(-2deg)}
+.sub{position:absolute;left:0;right:0;bottom:30px;text-align:center}
+.sub span{display:inline-block;background:#f4efe0;color:#2b2b2b;border:2px solid #2b2b2b;border-radius:30px;padding:4px 18px 8px;font:800 19px "Noto Sans Arabic";box-shadow:3px 3px 0 #0e1424}
+</style></head><body><div class="c">
+<svg id="s" viewBox="0 0 360 640"><defs>
+<pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V6" stroke="#2b2b2b" stroke-width=".9" opacity=".16"/></pattern>
+<pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0 H0 V30" stroke="#2a3656" stroke-width="1" fill="none"/></pattern>
+<radialGradient id="glowO" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff8a3a" stop-opacity=".85"/><stop offset="1" stop-color="#ff8a3a" stop-opacity="0"/></radialGradient>
+<radialGradient id="glowW" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff3c8" stop-opacity=".95"/><stop offset="1" stop-color="#fff3c8" stop-opacity="0"/></radialGradient>
+<radialGradient id="glowG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#a9c46a" stop-opacity=".85"/><stop offset="1" stop-color="#a9c46a" stop-opacity="0"/></radialGradient>
+</defs></svg>
+<div class="h"><div class="h1">ليه الست بتفتكر</div><div class="h2">كل حاجة؟</div></div>
+<div class="sub"><span>حتى اللي حصل من ١٠ سنين!</span></div>
+</div>
+<script>window.TIMING={duration:1,lines:[{start:0,end:1}]};</script>
+<script src="../style/helpers.js"></script>
+<script>
+var t=1.3,s='<rect width="360" height="640" fill="#1d2740"/><rect width="360" height="640" fill="url(#grid)"/>';
+// rays behind her
+for(var i=0;i<14;i++){var a=i/14*6.283;s+='<path d="M210 300 L'+(210+Math.cos(a)*420)+' '+(300+Math.sin(a)*420)+' L'+(210+Math.cos(a+.18)*420)+' '+(300+Math.sin(a+.18)*420)+'Z" fill="#26335a"/>';}
+s+='<circle cx="210" cy="300" r="150" fill="url(#glowO)" opacity=".55"/>';
+function pol(x,y,r,inner,w,h){w=w||74;h=h||62;var id='p'+(++CLIPN);return '<g transform="translate('+x+' '+y+') rotate('+r+')"><rect x="'+(-w/2-6)+'" y="'+(-h/2-6)+'" width="'+(w+12)+'" height="'+(h+24)+'" fill="#f4efe0" stroke="#2b2b2b" stroke-width="2"/><clipPath id="'+id+'"><rect x="'+(-w/2)+'" y="'+(-h/2)+'" width="'+w+'" height="'+h+'"/></clipPath><g clip-path="url(#'+id+')">'+inner+'</g><rect x="'+(-w/2)+'" y="'+(-h/2)+'" width="'+w+'" height="'+h+'" fill="none" stroke="#2b2b2b" stroke-width="1.4"/></g>';}
+function clk(r){return c2(0,0,r,BONE)+ln2("M0 0 L"+(r*.5)+" "+(-r*.55),2.4,ORANGE)+ln2("M0 0 L0 "+(-r*.75),2.4)+c2(0,0,2,INK,0);}
+var bg='<rect x="-60" y="-60" width="120" height="120" fill="#f0e6c8"/>';
+// memory cords
+var P=[[86,205,-12],[300,200,10],[60,330,-6],[315,335,8]];
+for(var i=0;i<P.length;i++)s+=ln2("M210 330 Q"+((210+P[i][0])/2)+" "+(P[i][1]+40)+" "+P[i][0]+" "+P[i][1],1.6,"#f2c26a").replace('stroke-linecap','stroke-dasharray="4 5" stroke-linecap');
+s+=pol(86,205,-12,bg+zizo(0,66,.2,t,{mood:"sad",shirt:true}));
+s+=pol(300,200,10,bg+clk(22));
+s+=pol(60,330,-6,bg+'<rect x="-30" y="-24" width="60" height="50" rx="3" fill="#f4efe0" stroke="#2b2b2b" stroke-width="2"/><rect x="-30" y="-24" width="60" height="15" fill="#c4532c" stroke="#2b2b2b" stroke-width="2"/>'+T("2016",0,18,15,INK,900));
+s+=pol(315,335,8,bg+'<circle cx="0" cy="0" r="26" fill="#e8c7d8" opacity=".7"/>'+'<g transform="translate(0 6) scale(.45)">'+sh2("M-30 -60 h60 q10 0 10 10 v90 q0 10 -10 10 h-60 q-10 0 -10 -10 v-90 q0 -10 10 -10z","#e8c7d8",1)+R(-16,-90,32,26,"#c4a35a",2.2,4)+'</g>');
+// woman big, smug, pointing at temple
+s+=woman(210,640,.78,t,{mood:"smug",arms:[[-70,-168],[66,-420]]});
+// sparkles
+function spk(x,y,r){return '<path transform="translate('+x+' '+y+')" d="M0 '+(-r)+' Q2 -2 '+r+' 0 Q2 2 0 '+r+' Q-2 2 '+(-r)+' 0 Q-2 -2 0 '+(-r)+'Z" fill="#f2c26a"/>';}
+s+=spk(262,250,9)+spk(150,262,6)+spk(330,420,7);
+// zizo small confused bottom-left with sweat
+s+=zizo(62,640,.42,t,{mood:"confused",arms:[[-70,-200],[40,-420]]})+'<path d="M92 455 q-6 10 0 14 q6 -4 0 -14z" fill="#7fb0d8" stroke="#2b2b2b" stroke-width="1.4"/>';
+s+='<g transform="translate(38 430) rotate(-12)">'+T("؟",0,0,40,"#f2c26a",900)+'</g>';
+document.getElementById('s').innerHTML+=s;
+</script></body></html>
