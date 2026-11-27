@@ -142,6 +142,45 @@ function lung(x, y, s, t, side) {
 // ── توتة (للمقارنة بالحجم)
 function berry(x, y, s, t) { var out = ""; for (var i = 0; i < 14; i++) { var a = i * 2.39996, rr = 8 + Math.sqrt(i) * 11; out += circle(Math.cos(a) * rr * 0.8, Math.sin(a) * rr, 13, "#b5485a", true, 1.6); } out += shape("M-14 -48 L0 -36 L14 -48 L8 -34 L-8 -34 Z", OLIVE, false, 1.6); return g(x, y + Math.sin(t * 2) * 2, s, out); }
 
+// ── اختيارات البيبي للمشهد 1 (window.V1 = "A" | "B" | "C" | "D")، كلهم مرسومين حوالين (0,0) وعرضهم حوالي 260
+function eyeC(x, y, w) { return '<path d="M' + f(x - w) + ' ' + f(y) + ' q' + f(w) + ' ' + f(w * 0.8) + ' ' + f(w * 2) + ' 0" stroke="' + INK + '" stroke-width="2.6" fill="none" stroke-linecap="round"/>'; }
+function babyA(t) {   // ملفوف في بطانية ونايم
+  var br = 1 + 0.015 * Math.sin(t * 2.2), s = "";
+  s += g(0, 30, br, shape("M-70 -90 C-120 -40 -110 90 -40 130 C10 150 70 130 95 80 C120 20 100 -80 50 -110 C10 -130 -40 -120 -70 -90 Z", "#9fb8d6", true, 2.4));
+  s += '<path d="M-90 10 C-40 40 40 40 100 0 M-80 70 C-30 95 30 95 80 70" stroke="' + INK + '" stroke-width="1.8" fill="none"/>';
+  s += circle(-5, -55, 62, SKIN, false, 2.4) + shape("M-70 -70 C-60 -140 50 -140 60 -70 C30 -100 -40 -100 -70 -70 Z", "#e8a0a8", true, 2.2);
+  s += eyeC(-28, -50, 11) + eyeC(18, -50, 11) + '<path d="M-14 -18 q9 7 18 0" stroke="' + INK + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>' + circle(-40, -30, 8, "#e8a0a8", false, 0) + circle(32, -30, 8, "#e8a0a8", false, 0);
+  return s + T("z", 80 + Math.sin(t * 2) * 4, -120 - (t * 20 % 30), 26, BLUE, 800);
+}
+function babyB(t) {   // نايم على ضهره ورافع إيديه ورجليه
+  var w = Math.sin(t * 3) * 6, s = "";
+  s += '<path d="M-40 40 C-70 ' + f(0 + w) + ' -100 ' + f(-20 + w) + ' -110 ' + f(-50 + w) + '" stroke="' + INK + '" stroke-width="26" fill="none" stroke-linecap="round"/><path d="M-40 40 C-70 ' + f(0 + w) + ' -100 ' + f(-20 + w) + ' -110 ' + f(-50 + w) + '" stroke="' + SKIN + '" stroke-width="21" fill="none" stroke-linecap="round"/>';
+  s += '<path d="M40 40 C70 ' + f(0 - w) + ' 100 ' + f(-20 - w) + ' 110 ' + f(-50 - w) + '" stroke="' + INK + '" stroke-width="26" fill="none" stroke-linecap="round"/><path d="M40 40 C70 ' + f(0 - w) + ' 100 ' + f(-20 - w) + ' 110 ' + f(-50 - w) + '" stroke="' + SKIN + '" stroke-width="21" fill="none" stroke-linecap="round"/>';
+  s += '<path d="M-30 150 C-60 170 -80 140 -90 ' + f(110 - w) + ' M30 150 C60 170 80 140 90 ' + f(110 + w) + '" stroke="' + INK + '" stroke-width="30" fill="none" stroke-linecap="round"/><path d="M-30 150 C-60 170 -80 140 -90 ' + f(110 - w) + ' M30 150 C60 170 80 140 90 ' + f(110 + w) + '" stroke="' + SKIN + '" stroke-width="25" fill="none" stroke-linecap="round"/>';
+  s += shape("M-55 30 C-62 90 -50 150 0 158 C50 150 62 90 55 30 C30 14 -30 14 -55 30 Z", SKIN, false, 2.4) + shape("M-52 110 C-50 150 -20 162 0 162 C20 162 50 150 52 110 C20 124 -20 124 -52 110 Z", BONE, true, 2.2);
+  s += circle(0, -45, 72, SKIN, false, 2.4) + circle(-72, -40, 13, SKIN, false, 2) + circle(72, -40, 13, SKIN, false, 2) + '<path d="M-10 -116 q10 -18 20 -4" stroke="' + INK + '" stroke-width="2.4" fill="none"/>';
+  s += eyeC(-30, -48, 12) + eyeC(30, -48, 12) + '<path d="M-20 -10 q20 18 40 0" stroke="' + INK + '" stroke-width="2.6" fill="' + "#c4532c" + '"/>' + circle(-46, -22, 9, "#e8a0a8", false, 0) + circle(46, -22, 9, "#e8a0a8", false, 0);
+  return g(0, Math.sin(t * 1.6) * 2, 0.95, s);
+}
+function babyFace(x, y, mood, t) {   // وش بيبي: "cry" بيعيط أو "laugh" بيضحك
+  var s = circle(0, 0, 70, SKIN, false, 2.4) + circle(-70, 6, 12, SKIN, false, 2) + circle(70, 6, 12, SKIN, false, 2) + '<path d="M-10 -70 q10 -18 20 -4" stroke="' + INK + '" stroke-width="2.4" fill="none"/>';
+  if (mood === "cry") {
+    s += '<path d="M-42 -8 q12 -10 24 0 M18 -8 q12 -10 24 0" stroke="' + INK + '" stroke-width="2.8" fill="none" stroke-linecap="round"/>';
+    s += '<ellipse cx="0" cy="34" rx="' + f(16 + 3 * Math.sin(t * 12)) + '" ry="' + f(18 + 4 * Math.sin(t * 12)) + '" fill="#8a3a2c" stroke="' + INK + '" stroke-width="2.4"/>';
+    for (var i = 0; i < 2; i++) { var ph = (t * 1.2 + i * 0.5) % 1; s += shape("M" + f(-30 + i * 60) + " " + f(4 + ph * 50) + " q-6 10 0 14 q6 -4 0 -14 Z", "#9fb8d6", false, 1.4); }
+  } else {
+    s += '<path d="M-42 -4 q12 -14 24 0 M18 -4 q12 -14 24 0" stroke="' + INK + '" stroke-width="2.8" fill="none" stroke-linecap="round"/>';
+    s += shape("M-28 18 Q0 " + f(62 + 4 * Math.sin(t * 10)) + " 28 18 Z", "#8a3a2c", false, 2.4) + circle(-44, 16, 10, "#e8a0a8", false, 0) + circle(44, 16, 10, "#e8a0a8", false, 0);
+  }
+  return g(x, y + Math.sin(t * 6) * (mood === "cry" ? 2 : 3), 1, s);
+}
+function babyC(t, u) {   // وشين: بيعيط وبعدين بيضحك
+  return g(0, 0, 0.85, babyFace(-80, -10, "cry", t) + babyFace(80, -10, "laugh", t)) + T("بيعيط", -68, 110, 24, BLUE, 800) + T("بيضحك", 68, 110, 24, ORANGE, 800);
+}
+function babyD(t) {   // جنين متكوّر واقعي جوه دايرة رحم، والحبل السري
+  var inner = '<path d="M-120 -120 C-60 -60 -100 30 -10 40" stroke="' + INK + '" stroke-width="18" fill="none"/><path d="M-120 -120 C-60 -60 -100 30 -10 40" stroke="#e7c9a6" stroke-width="13" fill="none"/>' + fetus(10, 20, 1.05, t, 2);
+  return wombView(0, 0, 130, t, inner);
+}
 // ── المشاهد ─────────────────────────────────────────────
 
 // 0 — الأم الحامل، ونور بينبض في بطنها، والكاميرا بتقرّب
@@ -193,7 +232,7 @@ shot(1, camPan(260, 380, 420, 1.02), function (u, d, t) {
   return paper() + pen + (dotK > 0 ? circle(150, 346, 3 + 2 * dotK, INK, false, 1) : "") + ring(150, 346, 26, t, ease((u - 0.7) / 0.7))
     + label(150, 372, 90, 470, "نقطة القلم", OLIVE, ease((u - 0.9) / 0.8))
     + arrow(210, 400, 330, 400, ORANGE, 4, ease((u - 1.6) / 0.8))
-    + op(ease((u - 2.2) / 0.8), g(470, 420, pop((u - 2.2) / 0.9), fetus(0, 0, 0.9, t, 2)));
+    + op(ease((u - 2.2) / 0.8), g(470, 420, pop((u - 2.2) / 0.9), (function (v) { return v === "B" ? babyB(t) : v === "C" ? babyC(t, u) : v === "D" ? babyD(t) : babyA(t); })(window.V1 || "A")));
 });
 
 // 2 — البويضة أكبر خلية، وتحتها مسطرة
