@@ -213,6 +213,29 @@ function realBrain(x, y, s, k, t) {
   for (var j = 0; j < 22; j++) { var a = hash(j) * 6.283, ph = (t * 0.5 + hash(j + 5)) % 1, r = lerp(220, 60, ph); o += '<circle cx="' + f(Math.cos(a) * r) + '" cy="' + f(Math.sin(a) * r * 0.7 - 20) + '" r="4" fill="' + BLUE + '" opacity="' + f(Math.sin(ph * 3.14) * 0.9) + '"/>'; }
   return g(x, y, s, o);
 }
+// ── رئتين حقيقيين: قصبة هوائية بحلقات، شُعب بتتفرع، فصوص، وأكياس هوائية، وبيتنفّسوا
+function bronchi(x, y, a, len, w, dep) {
+  if (dep <= 0 || len < 8) return "";
+  var x2 = x + Math.cos(a) * len, y2 = y + Math.sin(a) * len;
+  var s = '<path d="M' + f(x) + ' ' + f(y) + ' L' + f(x2) + ' ' + f(y2) + '" stroke="#f4efe0" stroke-width="' + f(w) + '" stroke-linecap="round"/>';
+  return s + bronchi(x2, y2, a - 0.45, len * 0.72, w * 0.7, dep - 1) + bronchi(x2, y2, a + 0.4, len * 0.68, w * 0.7, dep - 1);
+}
+function realLungs(x, y, sc, t) {
+  var br = 1 + 0.06 * Math.sin(t * 2.2), id = "lg" + (++CLIPN), o = "";
+  var R_ = "M-22 -112 C-62 -150 -124 -122 -146 -40 C-166 40 -168 122 -146 154 C-104 166 -52 156 -24 136 C-34 62 -24 -36 -22 -112 Z";
+  var L_ = "M22 -112 C62 -150 124 -122 146 -40 C166 40 168 122 146 154 C114 166 74 156 52 144 C74 112 62 84 30 82 C26 30 22 -36 22 -112 Z";
+  o += '<clipPath id="' + id + '"><path d="' + R_ + '"/><path d="' + L_ + '"/></clipPath>';
+  o += '<path d="' + R_ + '" fill="#e3a3a0" stroke="' + INK + '" stroke-width="2.6"/><path d="' + L_ + '" fill="#e3a3a0" stroke="' + INK + '" stroke-width="2.6"/>';
+  var al = ""; for (var i = 0; i < 90; i++) { var ax = (hash(i) - 0.5) * 320, ay = -130 + hash(i + 11) * 290; al += '<circle cx="' + f(ax) + '" cy="' + f(ay) + '" r="' + f(5 + hash(i + 4) * 5) + '" fill="#f0bfb9" stroke="#b86b68" stroke-width="1"/>'; }
+  o += '<g clip-path="url(#' + id + ')">' + al + '<rect x="-200" y="-200" width="400" height="400" fill="url(#hatch)"/>';
+  o += '<g stroke="' + INK + '" fill="none">' + bronchi(-14, -90, 1.95, 50, 13, 5).replace(/#f4efe0/g, INK) + bronchi(14, -90, 1.19, 50, 13, 5).replace(/#f4efe0/g, INK) + '</g>';
+  o += bronchi(-14, -90, 1.95, 50, 9, 5) + bronchi(14, -90, 1.19, 50, 9, 5) + '</g>';
+  o += '<path d="M-24 -6 C-60 -18 -110 -28 -150 -10 M-28 128 C-60 60 -100 0 -140 -64 M32 104 C62 52 100 0 142 -64" stroke="' + INK + '" stroke-width="2" fill="none"/>';
+  o += '<path d="M-12 -210 L-12 -100 L12 -100 L12 -210 Z" fill="#f4efe0" stroke="' + INK + '" stroke-width="2.4"/>';
+  for (var r = 0; r < 7; r++) o += '<path d="M-12 ' + (-202 + r * 15) + ' h24" stroke="' + INK + '" stroke-width="1.6"/>';
+  o += '<path d="M-12 -100 L-34 -78 M12 -100 L34 -78" stroke="' + INK + '" stroke-width="12" stroke-linecap="round"/><path d="M-12 -100 L-34 -78 M12 -100 L34 -78" stroke="#f4efe0" stroke-width="8" stroke-linecap="round"/>';
+  return '<g transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + f(sc) + ') translate(0 30) scale(' + f(br) + ' ' + f(1 + 0.04 * Math.sin(t * 2.2)) + ') translate(0 -30)">' + o + '</g>';
+}
 // ── المشاهد ─────────────────────────────────────────────
 
 // 0 — الأم الحامل، ونور بينبض في بطنها، والكاميرا بتقرّب
@@ -430,9 +453,9 @@ shot(20, camPush(320, 440, 1, 1.12), function (u, d, t) {
 
 // 21 — الشهور الأخيرة: الرئتين بتجهز والوزن بيزيد
 shot(21, camPush(320, 400, 1, 1.08), function (u, d, t) {
-  var w = clamp((u - 1.4) / (d - 1.6)), s = paper() + lung(255, 330, 1.25, t, -1) + lung(385, 330, 1.25, t, 1) + '<path d="M320 160 V250 M320 250 L270 280 M320 250 L370 280" stroke="' + INK + '" stroke-width="8" stroke-linecap="round"/>';
+  var w = clamp((u - 1.4) / (d - 1.6)), s = paper() + realLungs(320, 330, 1.15, t);
   s += R(140, 560, 360, 34, PAPER, 2, 6) + R(142, 562, 356 * w, 30, ORANGE, 0, 5) + T("الوزن", 320, 640, 26, ORANGE, 800);
-  return s + label(200, 330, 90, 220, "الرئتين", BLUE, ease((u - 0.4) / 0.8)) + arrows(t, 520, 520, 520, 300, 3, OLIVE, 24);
+  return s + label(190, 330, 120, 150, "الرئتين", BLUE, ease((u - 0.4) / 0.8)) + arrows(t, 520, 520, 520, 300, 3, OLIVE, 24);
 });
 
 // 22 — تسع شهور: من خلية واحدة لتريليونات، وحوالي 3 كيلو
