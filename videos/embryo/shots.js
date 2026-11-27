@@ -94,10 +94,10 @@ function mom(x, y, s, t, glow) {
   return g(x, y + Math.sin(t * 1.4) * 2, s, out);
 }
 // ── ست حامل بخطوط كريمي على أسود (من الجنب، راسها لتحت، وإيديها شايلة البطن)
-var CREAMLN = "#e2cfa8";
+var CREAMLN = "#e2cfa8", LNCOL = CREAMLN;
 function flow(d, k, w, n, spread, o) {   // خط رئيسي + خطوط موازية رفيعة زي ضربات الفرشاة، وk بيرسمه
   var s = ""; n = n || 4; spread = spread || 5;
-  for (var i = 0; i < n; i++) { var off = (i - (n - 1) / 2) * spread; s += '<path d="' + d + '" transform="translate(' + f(off * 0.6) + ' ' + f(off * 0.3) + ')" pathLength="1" stroke-dasharray="' + f(clamp(k - i * 0.05)) + ' 1" stroke="' + CREAMLN + '" stroke-width="' + f((w || 3) * (i === 0 ? 1 : 0.45)) + '" fill="none" stroke-linecap="round" opacity="' + f((o || 1) * (i === 0 ? 1 : 0.55)) + '"/>'; }
+  for (var i = 0; i < n; i++) { var off = (i - (n - 1) / 2) * spread; s += '<path d="' + d + '" transform="translate(' + f(off * 0.6) + ' ' + f(off * 0.3) + ')" pathLength="1" stroke-dasharray="' + f(clamp(k - i * 0.05)) + ' 1" stroke="' + LNCOL + '" stroke-width="' + f((w || 3) * (i === 0 ? 1 : 0.45)) + '" fill="none" stroke-linecap="round" opacity="' + f((o || 1) * (i === 0 ? 1 : 0.55)) + '"/>'; }
   return s;
 }
 function momLine(t, k, kb) {
@@ -145,8 +145,45 @@ function berry(x, y, s, t) { var out = ""; for (var i = 0; i < 14; i++) { var a 
 // ── المشاهد ─────────────────────────────────────────────
 
 // 0 — الأم الحامل، ونور بينبض في بطنها، والكاميرا بتقرّب
-shot(0, camMove([340, 470, 0.88], [380, 480, 1.0]), function (u, d, t) {
-  return dark("#0e0c0a") + momLine(t, ease(u / 1.6), ease((u - 0.9) / 0.8));
+// المشهد 0 ليه 4 اختيارات (window.V0 = "A" | "B" | "C" | "D")
+function v0A(u, d, t) {   // سكتش على الورق: الست بالحبر، والبطن مقطوعة وباين الجنين جوه الرحم
+  var k = ease(u / 1.4), kb = ease((u - 0.8) / 0.8);
+  LNCOL = INK;
+  var belly = "M360 404 C440 404 520 450 528 530 C536 610 480 650 420 650 C380 650 352 600 352 530 C352 470 352 430 360 404 Z";
+  var s = paper() + op(k, shape(belly, WOMB, true, 0)) + momLine(t, k, 0).replace(/<circle[^>]*glowW[^>]*\/>/, "");
+  s += op(kb, wombView(440, 525, 82, t, fetus(0, 6, 0.55, t, 2)));
+  LNCOL = CREAMLN;
+  return s + label(470, 450, 560, 330, "الرحم", OLIVE, ease((u - 1.2) / 0.6)) + label(440, 540, 560, 720, "الجنين", ORANGE, ease((u - 1.6) / 0.6));
+}
+function v0B(u, d, t) {   // جوه الرحم على طول: الجنين متكوّر والحبل السري والمشيمة
+  var cord = [210, 250, 300, 300, 230, 420, 330, 470], s = paper() + '<circle cx="320" cy="430" r="' + f(330 + Math.sin(t * 2) * 6) + '" fill="url(#glowO)" opacity=".35"/>';
+  var inner = shape("M-200 -110 C-200 -200 -110 -240 -40 -235 C-90 -190 -150 -140 -200 -110 Z", "#b85a5a", true, 2.4);
+  inner += '<path d="M-120 -170 C-60 -120 -110 0 10 40" stroke="' + INK + '" stroke-width="24" fill="none"/><path d="M-120 -170 C-60 -120 -110 0 10 40" stroke="#e7c9a6" stroke-width="18" fill="none"/>';
+  inner += fetus(50, 40, 1.35, t, 2);
+  s += wombView(320, 440, 250, t, inner);
+  return s + label(170, 300, 120, 130, "المشيمة", OLIVE, ease((u - 0.6) / 0.6)) + label(470, 470, 560, 740, "الجنين", ORANGE, ease((u - 1.1) / 0.6)) + label(120, 560, 90, 760, "الرحم", BLUE, ease((u - 1.6) / 0.6));
+}
+function v0C(u, d, t) {   // شاشة سونار: مروحة رمادي، والجنين بيبان من الحبوب، وخط المسح بيلف
+  var s = dark("#070707"), fan = "M320 120 L80 560 C180 720 460 720 560 560 Z";
+  s += '<path d="' + fan + '" fill="#1d1d1d" stroke="#555" stroke-width="2"/>';
+  for (var i = 0; i < 260; i++) { var a = -0.5 + hash(i) * 1.0, r = 60 + hash(i + 7) * 520, x = 320 + Math.sin(a) * r, y = 120 + Math.cos(a) * r, fl = 0.15 + 0.35 * hash(i + Math.floor(t * 8)); if (y < 690) s += '<circle cx="' + f(x) + '" cy="' + f(y) + '" r="' + f(1.5 + hash(i + 3) * 2.5) + '" fill="#cfcfcf" opacity="' + f(fl) + '"/>'; }
+  s += '<ellipse cx="330" cy="470" rx="170" ry="140" fill="#000" opacity=".75"/>';
+  var k = ease((u - 0.4) / 1.4);
+  s += op(k, fetus(330, 470, 1.15, t, 2, "#9a9a9a").replace(/stroke="#2b2b2b"/g, 'stroke="#e8e8e8"').replace(/fill="url\(#hatch\)"/g, 'fill="none"'));
+  var sa = Math.sin(t * 1.4) * 0.48; s += '<path d="M320 120 L' + f(320 + Math.sin(sa) * 600) + ' ' + f(120 + Math.cos(sa) * 600) + '" stroke="#fff" stroke-width="2" opacity=".35"/>';
+  s += T("12w 3d", 200, 110, 22, "#9adf9a", 700) + T("FHR 150 bpm", 200, 140, 20, "#9adf9a", 700) + ecg(380, 740, 220, t, "#9adf9a");
+  return s;
+}
+function v0D(u, d, t) {   // لقطة قريبة: بطن كبيرة وإيدين شايلينها، ودايرة تكبير بتوري الجنين
+  var s = paper() + shape("M60 120 C300 100 560 260 580 470 C600 680 420 800 200 820 L60 820 Z", "#e6c3ab", true, 2.6);
+  s += shape("M120 700 C200 650 330 640 420 670 C460 684 470 706 440 716 C380 730 300 720 230 740 C180 752 140 760 120 760 Z", SKIN, false, 2.4);
+  for (var i = 0; i < 3; i++) s += '<path d="M' + (300 + i * 40) + ' 676 q8 22 0 44" stroke="' + INK + '" stroke-width="1.6" fill="none"/>';
+  s += op(ease((u - 0.5) / 0.6), inset(330, 470, 150, '<rect x="-200" y="-200" width="400" height="400" fill="#f6e6da"/>' + fetus(10, 10, 0.95, t, 2), 1));
+  return s + ring(330, 470, 162, t, ease((u - 0.9) / 0.8)) + label(440, 400, 560, 160, "الجنين", ORANGE, ease((u - 1.4) / 0.6));
+}
+shot(0, camMove([320, 430, 1.0], [325, 440, 1.08]), function (u, d, t) {
+  var v = window.V0 || "A";
+  return v === "B" ? v0B(u, d, t) : v === "C" ? v0C(u, d, t) : v === "D" ? v0D(u, d, t) : v0A(u, d, t);
 });
 
 // 1 — نقطة قلم صغيرة بتتحوّل لطفل
