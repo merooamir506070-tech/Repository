@@ -12,7 +12,7 @@ function room(t) {   // الصالة: حيطة، شباك، أباجورة، ك�
 function sofa(x, y) { return sh2("M" + (x - 110) + " " + (y - 40) + " h220 v50 h-220z", OLIVE, 1) + sh2("M" + (x - 110) + " " + (y - 110) + " h220 v74 h-220z", "#7d8f48", 1) + sh2("M" + (x - 128) + " " + (y - 70) + " h22 v80 h-22z", "#5d6d32") + sh2("M" + (x + 106) + " " + (y - 70) + " h22 v80 h-22z", "#5d6d32") + ln2("M" + (x - 100) + " " + (y + 10) + " v14 M" + (x + 100) + " " + (y + 10) + " v14", 4); }
 function clock(x, y, r, t, sp) { var a = t * (sp || 1) * 6, b = t * (sp || 1) * 0.5; return '<g transform="translate(' + f(x) + ' ' + f(y) + ')">' + c2(0, 0, r, BONE) + ln2("M0 0 L" + f(Math.sin(a) * r * 0.8) + " " + f(-Math.cos(a) * r * 0.8), 2.2, ORANGE) + ln2("M0 0 L" + f(Math.sin(b) * r * 0.55) + " " + f(-Math.cos(b) * r * 0.55), 3) + c2(0, 0, 2.5, INK, 0) + '</g>'; }
 function memory(t, wr) {   // جوه الفقاعة: زيزو صغير بقميص مكرمش، وساعة
-  return '<rect x="-200" y="-200" width="400" height="400" fill="#f0e6c8"/>' + zizo(-16, 70, 0.3, t, { mood: "sad", wrinkled: true, arms: [[-80, -200], [84, -170]] }) + clock(50, -20, 20, t, 8) + (wr ? ln2("M-40 -14 l8 6 l-6 6 M-24 0 l6 -8 l6 8", 2, HOOD2) : "");
+  return '<rect x="-200" y="-200" width="400" height="400" fill="#f0e6c8"/>' + zizo(-20, 84, 0.25, t, { mood: "sad", shirt: true, arms: [[-80, -200], [84, -170]] }) + clock(50, -20, 20, t, 8);
 }
 function sparkle(x, y, r, t, col) { var k = 0.6 + 0.4 * Math.sin(t * 6 + x); return '<path transform="translate(' + f(x) + ' ' + f(y) + ') scale(' + f(k) + ')" d="M0 ' + (-r) + ' Q2 -2 ' + r + ' 0 Q2 2 0 ' + r + ' Q-2 2 ' + (-r) + ' 0 Q-2 -2 0 ' + (-r) + 'Z" fill="' + (col || ORANGE) + '"/>'; }
 function qmark(x, y, s, t) { return '<g transform="translate(' + f(x) + ' ' + f(y + Math.sin(t * 5) * 4) + ') rotate(' + f(Math.sin(t * 3) * 10) + ') scale(' + f(s) + ')">' + T("؟", 0, 18, 56, ORANGE, 900) + '</g>'; }
@@ -233,7 +233,7 @@ shot(23, camPush(180, 380, 1.0, 1.08), function (u, d, t) {
 shot(24, camPush(180, 400, 1.08, 1.0), function (u, d, t) {
   var s = room(t) + sofa(110, 540) + zizo(96, 548, 0.42, t, { sit: true, mood: u > 2 ? "laugh" : "confused", look: 1, wrinkled: u > 2, arms: [[-60, -240], [60, -150]] });
   s += woman(262, 600, 0.5, t, { mood: "laugh", arms: [[-80, -168], [80, -168]] });
-  var w = clamp(u / 3), inner = '<rect x="-200" y="-200" width="400" height="400" fill="#f0e6c8"/>' + zizo(-10, 70, 0.3, t, { mood: "sad", wrinkled: true }) + ln2("M-46 " + f(-20) + " l" + f(10 * w) + " 6 l-6 6 l" + f(10 * w) + " 6 M-20 -4 l6 -8 l6 8 l6 -8 M-30 14 l8 -6 l8 6", 2, HOOD2) + sparkle(50, -30, 7, t);
+  var w = clamp(u / 3), inner = '<rect x="-200" y="-200" width="400" height="400" fill="#f0e6c8"/>' + zizo(-14, 84, 0.25, t, { mood: "sad", shirt: true }) + ln2("M-46 " + f(-20) + " l" + f(10 * w) + " 6 l-6 6 l" + f(10 * w) + " 6 M-20 -4 l6 -8 l6 8 l6 -8 M-30 14 l8 -6 l8 6", 2, "#9fb2c0") + sparkle(50, -30, 7, t);
   s += bubble(232, 262, 150, 120, 255, 362, inner, 1, true);
   return s;
 });
