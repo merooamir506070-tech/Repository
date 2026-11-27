@@ -1,0 +1,68 @@
+<!doctype html><html><head><meta charset="utf-8"><link href="fonts/fonts.css" rel="stylesheet">
+<style>body{margin:0;background:#eee5d0}</style></head><body>
+<svg id="s" xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760"></svg>
+<script>
+var INK="#2b2b2b",PAPER="#eee5d0",ORANGE="#c4532c",BLUE="#46698a",OLIVE="#6b7d3c",PUTTY="#cdc9bb",SKIN="#d9a184",BONE="#f4efe0",GREY="#8a8070";
+function sh(d,fill,h,sw){return '<path d="'+d+'" fill="'+fill+'" stroke="'+INK+'" stroke-width="'+(sw||2.4)+'" stroke-linejoin="round" stroke-linecap="round"/>'+(h?'<path d="'+d+'" fill="url(#hatch)"/>':'');}
+function c(x,y,r,fill,h,sw){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+fill+'" stroke="'+INK+'" stroke-width="'+(sw||2.4)+'"/>'+(h?'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="url(#hatch)"/>':'');}
+function ln(d,w,col){return '<path d="'+d+'" fill="none" stroke="'+(col||INK)+'" stroke-width="'+(w||2.4)+'" stroke-linecap="round" stroke-linejoin="round"/>';}
+function T(t,x,y,sz,col,w){return '<text x="'+x+'" y="'+y+'" text-anchor="middle" style="font:'+(w||700)+' '+sz+'px Noto Sans Arabic;fill:'+(col||INK)+'">'+t+'</text>';}
+function face(y,lash){ // eyes, brows, smile, cheeks around (0,y)
+ var s=c(-17,y,4.5,INK,0,0)+c(17,y,4.5,INK,0,0)+'<circle cx="-15.5" cy="'+(y-1.5)+'" r="1.4" fill="#fff"/><circle cx="18.5" cy="'+(y-1.5)+'" r="1.4" fill="#fff"/>';
+ s+=ln('M-26 '+(y-13)+' Q-17 '+(y-18)+' -8 '+(y-13),2.6)+ln('M8 '+(y-13)+' Q17 '+(y-18)+' 26 '+(y-13),2.6);
+ if(lash) s+=ln('M-23 '+(y-4)+' l-5 -3 M23 '+(y-4)+' l5 -3',2);
+ s+=ln('M-11 '+(y+20)+' Q0 '+(y+29)+' 11 '+(y+20),2.6)+'<ellipse cx="-29" cy="'+(y+15)+'" rx="8" ry="5" fill="'+ORANGE+'" opacity=".28"/><ellipse cx="29" cy="'+(y+15)+'" rx="8" ry="5" fill="'+ORANGE+'" opacity=".28"/>';
+ return s+ln('M0 '+(y+4)+' q-4 8 0 9',2);
+}
+function shoes(){return sh('M-58 -6 q0 -18 20 -18 h22 q6 0 6 10 v14 h-48z',BONE)+sh('M58 -6 q0 -18 -20 -18 h-22 q-6 0 -6 10 v14 h48z',BONE)+ln('M-58 -4 h48 M58 -4 h-48',3,GREY);}
+function zizo(){
+ var s='<ellipse cx="0" cy="2" rx="80" ry="10" fill="'+INK+'" opacity=".1"/>';
+ s+=sh('M-48 -170 L-50 -22 L-12 -22 L-4 -150 L4 -150 L12 -22 L50 -22 L48 -170Z',BLUE,1)+ln('M0 -168 V-150',2)+ln('M-30 -60 h14 M16 -60 h14',1.6,'#2f4a63');
+ s+=shoes();
+ s+=sh('M-72 -312 L-92 -186 L-72 -180 L-60 -262',ORANGE,1)+sh('M72 -312 L92 -186 L72 -180 L60 -262',ORANGE,1);
+ s+=c(-83,-170,12,SKIN)+c(83,-170,12,SKIN);
+ s+=sh('M-60 -330 Q0 -350 60 -330 L72 -312 L62 -160 Q0 -150 -62 -160 L-72 -312Z',ORANGE,1);
+ s+=sh('M-36 -330 Q0 -300 36 -330 Q0 -318 -36 -330Z','#a9431f')+ln('M-10 -318 v40 M10 -318 v38',2)+c(-10,-277,3,BONE,0,1.5)+c(10,-279,3,BONE,0,1.5);
+ s+=sh('M-34 -232 h68 l8 52 h-84z','#b84a25')+ln('M-60 -300 L-44 -175 M60 -300 L44 -175',5,'#5a4a3a');
+ s+=sh('M-14 -334 v-18 h28 v18',SKIN);
+ s+=c(0,-400,54,SKIN)+c(-54,-398,10,SKIN)+c(54,-398,10,SKIN);
+ // hair under cap
+ s+=sh('M-48 -404 q6 -14 18 -6 q8 -12 20 -4 q10 -10 20 -2 q10 -8 22 4 l-4 12 q-36 -14 -72 0z','#3a2a22');
+ // backwards cap
+ s+=sh('M-56 -410 Q-58 -466 0 -470 Q58 -466 56 -410 Q0 -428 -56 -410Z',ORANGE,1)+sh('M-56 -410 Q0 -428 56 -410 L54 -402 Q0 -420 -54 -402Z','#a9431f')+ln('M-12 -418 Q0 -428 12 -418',2.2,BONE)+c(0,-470,4,'#a9431f',0,1.5);
+ s+=face(-392);
+ return s;
+}
+function womanA(){ // hijab
+ var s='<ellipse cx="0" cy="2" rx="80" ry="10" fill="'+INK+'" opacity=".1"/>';
+ s+=sh('M-36 -120 L-40 -22 L-8 -22 L0 -110 L8 -22 L40 -22 L36 -120Z','#4b4642',1)+shoes();
+ s+=sh('M-66 -300 L-86 -180 L-68 -174 L-56 -250',BONE,1)+sh('M66 -300 L86 -180 L68 -174 L56 -250',BONE,1)+c(-78,-164,11,SKIN)+c(78,-164,11,SKIN);
+ s+=sh('M-56 -318 Q0 -334 56 -318 L68 -300 L74 -112 Q0 -100 -74 -112 L-68 -300Z',BONE,1)+ln('M0 -300 V-108',2,GREY)+c(0,-250,3.5,PUTTY,0,1.4)+c(0,-210,3.5,PUTTY,0,1.4)+c(0,-170,3.5,PUTTY,0,1.4);
+ s+=sh('M-64 -345 Q-74 -300 -46 -296 Q0 -284 46 -296 Q74 -300 64 -345 Q60 -470 0 -470 Q-60 -470 -64 -345Z',OLIVE,1);
+ s+=sh('M-40 -415 Q0 -440 40 -415 Q50 -380 38 -356 Q0 -330 -38 -356 Q-50 -380 -40 -415Z',SKIN);
+ s+=ln('M-42 -414 Q0 -446 42 -414',4,'#56652f');
+ var f2=face(-392,1); s+='<g transform="translate(0 0) scale(.82) translate(0 -86)">'+f2+'</g>';
+ return s;
+}
+function womanB(){ // hair bun + dress
+ var s='<ellipse cx="0" cy="2" rx="80" ry="10" fill="'+INK+'" opacity=".1"/>';
+ s+=sh('M-30 -112 L-30 -22 L-10 -22 L-10 -112Z M30 -112 L30 -22 L10 -22 L10 -112Z',SKIN)+shoes();
+ s+=sh('M-62 -306 L-84 -184 L-66 -178 L-52 -258',BLUE,1)+sh('M62 -306 L84 -184 L66 -178 L52 -258',BLUE,1)+c(-76,-168,11,SKIN)+c(76,-168,11,SKIN);
+ s+=sh('M-52 -322 Q0 -336 52 -322 L64 -304 L54 -200 L86 -104 Q0 -90 -86 -104 L-54 -200 L-64 -304Z','#c9a23a',1)+ln('M-54 -200 Q0 -190 54 -200',3,INK);
+ s+=sh('M-14 -334 v-16 h28 v16',SKIN)+sh('M-24 -326 Q0 -306 24 -326',SKIN,0,2);
+ s+=c(0,-478,22,'#3a2a22')+c(0,-400,54,SKIN)+c(-54,-396,9,SKIN)+c(54,-396,9,SKIN)+c(-54,-382,3,ORANGE,0,1.2)+c(54,-382,3,ORANGE,0,1.2);
+ s+=sh('M-58 -390 Q-66 -462 0 -460 Q66 -462 58 -390 Q50 -420 20 -426 Q-10 -410 -40 -418 Q-54 -408 -58 -390Z','#3a2a22');
+ s+=face(-388,1);
+ return s;
+}
+function card(x,label,sub,body){return '<g transform="translate('+x+' 640)">'+body+'</g>'+T(label,x,700,30,INK,800)+T(sub,x,736,19,GREY,600);}
+var s='<defs><pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V7" stroke="#2b2b2b" stroke-width="1" opacity=".16"/></pattern><pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0 H0 V48" stroke="#dccfb2" stroke-width="1.2" fill="none"/></pattern></defs>';
+s+='<rect width="1200" height="760" fill="'+PAPER+'"/><rect width="1200" height="760" fill="url(#grid)"/>';
+s+='<rect x="12" y="12" width="1176" height="736" fill="none" stroke="'+INK+'" stroke-width="2"/><rect x="20" y="20" width="1160" height="720" fill="none" stroke="'+INK+'" stroke-width="1"/>';
+s+=card(250,'زيزو','الشكل الأصلي',zizo());
+s+='<line x1="450" y1="80" x2="450" y2="720" stroke="'+GREY+'" stroke-width="1.5" stroke-dasharray="6 8"/>';
+s+=card(680,'الست ١','بطرحة',womanA());
+s+=card(960,'الست ٢','شعر مربوط',womanB());
+s+=card(1040,'','',''); // spacer
+document.getElementById('s').innerHTML=s;
+</script></body></html>
