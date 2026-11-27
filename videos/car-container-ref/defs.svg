@@ -1,0 +1,9 @@
+<radialGradient id="zSkin" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#f1b994"/><stop offset=".7" stop-color="#e8a77f"/><stop offset="1" stop-color="#d48f68"/></radialGradient>
+<linearGradient id="carBody" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#dfe3e8"/><stop offset=".3" stop-color="#ffffff"/><stop offset=".7" stop-color="#f7f8fa"/><stop offset="1" stop-color="#d6dbe1"/></linearGradient>
+<linearGradient id="carSideBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#eef0f3"/><stop offset="1" stop-color="#cfd5dc"/></linearGradient>
+<linearGradient id="carGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#28476a"/><stop offset="1" stop-color="#9db8cf"/></linearGradient>
+<linearGradient id="ctrIn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3b4a" stop-opacity=".35"/><stop offset=".4" stop-color="#2b3b4a" stop-opacity="0"/><stop offset="1" stop-color="#2b3b4a" stop-opacity=".2"/></linearGradient>
+<clipPath id="sideWin"><path d="M4 -75 L36 -75 L58 -56 L4 -56 Z"/></clipPath>
+<clipPath id="winOut"><rect x="204" y="300" width="106" height="48"/></clipPath>
+<clipPath id="roofCut"><rect x="-400" y="-400" width="1200" height="721"/></clipPath>
+<clipPath id="hatchOut"><rect x="-200" y="300" width="318" height="100"/></clipPath>
