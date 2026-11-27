@@ -108,8 +108,8 @@ shot(7, camPush(180, 400, 1.0, 1.08), function (u, d, t) {
   return s;
 });
 // ── 8: طب ليه الستات بالذات؟ ───────────────────────────────
-shot(8, camPush(180, 420, 1.0, 1.1), function (u, d, t) {
-  return paper() + woman(180, 600, 0.6, t, { mood: "smug", arms: [[-70, -260], [80, -168]] }) + qmark(180, 250, 1.6 + 0.1 * Math.sin(t * 6), t) + zizo(60, 610, 0.4, t, { mood: "confused", arms: [[-120, -300], [120, -300]] });
+shot(8, camMove([180, 420, 1.0], [235, 380, 1.5]), function (u, d, t) {
+  return paper() + zizo(95, 600, 0.6, t, { mood: "confused", arms: [[-110, -290], [110, -290]] }) + woman(240, 600, 0.6, t, { mood: "smug", arms: [[-70, -260], [80, -168]] }) + qmark(305, 300, 1.3 + 0.1 * Math.sin(t * 6), t);
 });
 // ── 9: تجربة ألفين واتنين: صور مؤثرة وجهاز رنين ───────────────
 shot(9, camPush(180, 400, 1.0, 1.08), function (u, d, t) {
