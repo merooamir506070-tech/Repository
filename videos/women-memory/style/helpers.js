@@ -189,3 +189,30 @@ function brain(x, y, s, t, o) {
 }
 // نقط الأماكن في المخ (للـlabel): بترجع [x,y] في إحداثيات المشهد
 function brainPt(x, y, s, which) { var p = which === "amy" ? [-14, 18] : [36, 12]; return [x + p[0] * s, y + p[1] * s]; }
+
+// ── ناس عاديين (كومبارس) بجسم كامل وإيدين ──────────────────────
+// person(x, y, s, t, o): o = { g: "m"|"f", top, bottom, skin, hair: "short"|"bun"|"long"|"hijab"|"bald", hairCol, mood, arms, seed, flip }
+function person(x, y, s, t, o) {
+  o = o || {}; var g = o.g || "m", sk = o.skin || SKIN, top = o.top || "#9fb8cc", bot = o.bottom || "#4b4642", hc = o.hairCol || HAIR, b = "";
+  var A = o.arms || (g === "m" ? [[-84, -170], [84, -170]] : [[-78, -164], [78, -164]]);
+  if (g === "m") b += sh2("M-46 -170 L-48 -22 L-12 -22 L-4 -150 L4 -150 L12 -22 L48 -22 L46 -170Z", bot, 1);
+  else b += sh2("M-30 -112 L-30 -22 L-10 -22 L-10 -112Z M30 -112 L30 -22 L10 -22 L10 -112Z", o.hair === "hijab" ? bot : sk);
+  b += shoes();
+  b += limb(-60, -305, A[0][0], A[0][1], -14, top, 21).replace(/fill="#d9a184"/g, 'fill="' + sk + '"');
+  if (g === "m") b += sh2("M-58 -330 Q0 -346 58 -330 L70 -312 L60 -160 Q0 -152 -60 -160 L-70 -312Z", top, 1) + ln2("M-16 -330 L0 -312 L16 -330", 2.2);
+  else if (o.hair === "hijab") b += sh2("M-52 -322 Q0 -336 52 -322 L64 -304 L72 -40 Q0 -28 -72 -40 L-64 -304Z", top, 1);
+  else b += sh2("M-52 -322 Q0 -336 52 -322 L64 -304 L56 -200 L80 -104 Q0 -92 -80 -104 L-56 -200 L-64 -304Z", top, 1) + sh2("M-56 -200 L56 -200 L80 -104 Q0 -92 -80 -104Z", bot, 1);
+  b += limb(60, -305, A[1][0], A[1][1], 14, top, 21).replace(/fill="#d9a184"/g, 'fill="' + sk + '"');
+  b += sh2("M-14 -334 v-18 h28 v18", sk);
+  if (o.hair === "long") b += sh2("M-58 -400 Q-70 -300 -48 -300 L48 -300 Q70 -300 58 -400Z", hc);
+  if (o.hair === "bun") b += c2(0, -476, 20, hc);
+  b += c2(0, -400, 54, sk) + (o.hair === "hijab" ? "" : c2(-54, -398, 10, sk) + c2(54, -398, 10, sk));
+  if (o.hair === "hijab") b += sh2("M-64 -345 Q-74 -300 -46 -296 Q0 -284 46 -296 Q74 -300 64 -345 Q60 -470 0 -470 Q-60 -470 -64 -345Z", hc, 1) + sh2("M-40 -415 Q0 -440 40 -415 Q50 -380 38 -356 Q0 -330 -38 -356 Q-50 -380 -40 -415Z", sk);
+  else if (o.hair === "bald") b += ln2("M-40 -436 q40 -20 80 0", 2, "#b07a6a");
+  else if (g === "m") b += sh2("M-56 -396 Q-62 -464 0 -462 Q62 -464 56 -396 Q46 -430 0 -428 Q-46 -430 -56 -396Z", hc);
+  else b += sh2("M-58 -390 Q-66 -462 0 -460 Q66 -462 58 -390 Q50 -420 20 -426 Q-10 -410 -40 -418 Q-54 -408 -58 -390Z", hc);
+  if (g === "m" && o.beard) b += sh2("M-48 -392 Q-46 -336 0 -334 Q46 -336 48 -392 Q40 -360 0 -362 Q-40 -360 -48 -392Z", hc);
+  var fc = face(o.hair === "hijab" ? -392 : -390, t, o, g === "f", o.seed || 0.5);
+  b += o.hair === "hijab" ? '<g transform="scale(.82) translate(0 -86)">' + fc + '</g>' : fc;
+  return wrap(x, y, s, t, o, b);
+}

@@ -113,10 +113,17 @@ shot(8, camMove([180, 420, 1.0], [235, 380, 1.5]), function (u, d, t) {
 });
 // ── 9: تجربة ألفين واتنين: صور مؤثرة وجهاز رنين ───────────────
 shot(9, camPush(180, 400, 1.0, 1.08), function (u, d, t) {
-  var s = paper() + mri(200, 460, t) + '<g transform="translate(110 455)">' + c2(-32, 0, 13, SKIN) + R(-20, -10, 70, 22, "#9fb8cc", 2, 8) + '</g>';
+  var s = paper() + mri(200, 460, t);
+  s += '<g transform="translate(52 452) rotate(90) translate(0 0)">' + person(0, 0, 0.28, 0, { g: "f", top: "#e9e6dc", bottom: "#e9e6dc", hair: "long", hairCol: "#5a3a2a", mood: "happy", arms: [[-60, -200], [60, -200]] }) + '</g>';
   var em = ["happy", "sad", "shock"][Math.floor(t * 1.4) % 3];
   s += screen(180, 270, 140, 90, emo(0, 0, 30, em, 1)) + numBox("2002", 70, 200, k_(u, 0.3, 0.4), 18);
-  s += figure(320, 600, 0.45, t, "#9fb8cc") + figure(40, 600, 0.45, t, DRESS);
+  var P = [
+    [52, { g: "m", top: "#7d8f48", bottom: "#4b4642", hair: "short", skin: "#c98f6e", mood: "happy", seed: 0.1 }],
+    [122, { g: "f", top: "#b86a8a", bottom: "#4b4642", hair: "hijab", hairCol: "#46698a", mood: "happy", seed: 0.4 }],
+    [240, { g: "m", top: "#e8c77a", bottom: BLUE, hair: "bald", beard: true, skin: "#b97a5a", mood: "confused", seed: 0.7 }],
+    [310, { g: "f", top: "#9fb8cc", bottom: "#6b7d3c", hair: "long", hairCol: "#2a1d18", skin: "#e3b393", mood: "surprised", seed: 0.9 }]
+  ];
+  for (var i = 0; i < P.length; i++) s += person(P[i][0], 628, 0.29, t, P[i][1]);
   return s;
 });
 // ── 10: بعد تلات أسابيع، الستات افتكروا صور أكتر ──────────────
