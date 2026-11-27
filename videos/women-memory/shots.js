@@ -145,11 +145,12 @@ shot(11, camPush(180, 390, 1.0, 1.1), function (u, d, t) {
 // ── 12: أكتر من ستمية دراسة: الستات أحسن شوية في المتوسط ───────
 shot(12, camPush(180, 400, 1.0, 1.06), function (u, d, t) {
   var s = paper(), n = Math.floor(clamp(u / 2) * 14);
-  for (var i = 0; i < n; i++) s += R(40 + hash(i) * 40, 470 - i * 9, 90, 12, i % 2 ? BONE : "#e9e1cc", 1.6, 2);
+  for (var i = 0; i < n; i++) s += R(22 + hash(i) * 18, 520 - i * 9, 78, 12, i % 2 ? BONE : "#e9e1cc", 1.6, 2);
   var kn = pop(k_(u, 0.5, 0.4)); if (kn > 0) s += '<g transform="translate(90 230) scale(' + f(kn) + ')">' + R(-62, -22, 124, 40, INK, 0, 6) + T("ستمية دراسة", 0, 6, 17, "#fff", 800) + '</g>';
-  var tilt = 6 * k_(u, 2.2, 1) + Math.sin(t * 2) * 1;
-  s += '<g transform="translate(260 420)">' + ln2("M0 0 v120 M-40 120 h80", 4) + '<g transform="rotate(' + f(-tilt) + ')">' + ln2("M-70 0 H70", 4) + ln2("M-60 0 v40 M60 0 v40", 1.6) + sh2("M-84 40 h48 l-6 12 h-36z", "#9fb8cc") + sh2("M36 40 h48 l-6 12 h-36z", DRESS) + T("رجالة", -60, 76, 12, INK, 800) + T("ستات", 60, 76, 12, INK, 800) + '</g>' + c2(0, 0, 6, INK, 0) + '</g>';
-  s += label(260, 470, 260, 580, "فرق صغير", BLUE, k_(u, 3.0, 0.6), 15);
+  var A = 8 * Math.PI / 180, ex = 70 * Math.cos(A), ey = 70 * Math.sin(A);   // ميزان ثابت، وكفة الستات (يمين) أتقل وتحت
+  function pan(px, py, col, lab) { return ln2("M" + f(px) + " " + f(py) + " l-22 40 M" + f(px) + " " + f(py) + " l22 40", 1.6) + sh2("M" + f(px - 26) + " " + f(py + 40) + " h52 l-6 12 h-40z", col) + T(lab, px, py + 76, 12, INK, 800); }
+  s += '<g transform="translate(232 420)">' + ln2("M0 0 v120 M-40 120 h80", 4) + ln2("M" + f(-ex) + " " + f(-ey) + " L" + f(ex) + " " + f(ey), 4) + pan(-ex, -ey, "#9fb8cc", "رجالة") + pan(ex, ey, DRESS, "ستات") + c2(0, 0, 6, INK, 0) + '</g>';
+  s += label(232, 540, 232, 590, "فرق صغير", BLUE, k_(u, 3.0, 0.6), 15);
   return s;
 });
 // ── 13: الإستروجين بيساعد الهيبوكامبس يبني وصلات ──────────────
