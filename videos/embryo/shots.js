@@ -409,11 +409,16 @@ shot(18, camPush(320, 400, 1, 1.08), function (u, d, t) {
 });
 
 // 19 — الشهر الخامس: أول ركلة
-shot(19, camPush(330, 420, 1.05, 1.2), function (u, d, t) {
-  var kick = Math.max(0, Math.sin((u - 1) * 3.2)), on = u > 1;
-  var s = paper() + mom(260, 470, 1.3, t, 0.5) + wombView(330, 470, 80, t, fetus(0, 0, 0.55, t, 2));
-  if (on) s += '<circle cx="' + f(400 + 6 * kick) + '" cy="430" r="' + f(14 + 26 * kick) + '" fill="none" stroke="' + ORANGE + '" stroke-width="4" opacity="' + f(kick) + '"/><circle cx="406" cy="430" r="' + f(40 + 36 * kick) + '" fill="none" stroke="' + ORANGE + '" stroke-width="2.4" opacity="' + f(kick * 0.6) + '"/>';
-  return s + numBox("الشهر 5", 320, 140, (u - 0.2) / 0.6) + label(420, 420, 470, 300, "ركلة!", ORANGE, ease((u - 1.4) / 0.8));
+shot(19, camPush(330, 440, 1.0, 1.08), function (u, d, t) {   // نفس بطن المشهد 0، والجنين بيرفس جوه
+  var kick = u > 1 ? Math.pow(Math.max(0, Math.sin((u - 1) * 2.4)), 2) : 0, bx = 560 + 55 * kick;
+  var s = paper() + shape("M60 120 C300 100 560 260 " + f(bx - 10) + " 470 C" + f(bx + 8) + " 680 420 800 200 820 L60 820 Z", "#e6c3ab", true, 2.6);
+  s += shape("M120 700 C200 650 330 640 420 670 C460 684 470 706 440 716 C380 730 300 720 230 740 C180 752 140 760 120 760 Z", SKIN, false, 2.4);
+  for (var i = 0; i < 3; i++) s += '<path d="M' + (300 + i * 40) + ' 676 q8 22 0 44" stroke="' + INK + '" stroke-width="1.6" fill="none"/>';
+  var inner = '<rect x="-200" y="-200" width="400" height="400" fill="#f6e6da"/>' + fetus(-10, 10, 0.95, t, 2)
+    + '<path d="M48 ' + f(100) + ' C80 ' + f(90 - 30 * kick) + ' ' + f(110 + 30 * kick) + ' ' + f(60 - 20 * kick) + ' ' + f(120 + 34 * kick) + ' ' + f(30 - 10 * kick) + '" stroke="' + INK + '" stroke-width="22" fill="none" stroke-linecap="round"/><path d="M48 100 C80 ' + f(90 - 30 * kick) + ' ' + f(110 + 30 * kick) + ' ' + f(60 - 20 * kick) + ' ' + f(120 + 34 * kick) + ' ' + f(30 - 10 * kick) + '" stroke="' + FLESH + '" stroke-width="17" fill="none" stroke-linecap="round"/>';
+  s += op(ease(u / 0.5), inset(330, 470, 150, inner, 1));
+  if (kick > 0.05) for (var r = 0; r < 3; r++) s += '<circle cx="' + f(bx + 10) + '" cy="440" r="' + f(20 + r * 22 + 20 * kick) + '" fill="none" stroke="' + ORANGE + '" stroke-width="' + (4 - r) + '" opacity="' + f(kick * (1 - r * 0.3)) + '"/>';
+  return s + numBox("الشهر 5", 480, 120, (u - 0.2) / 0.6) + label(bx, 440, 480, 260, "ركلة!", ORANGE, ease((u - 1.3) / 0.6));
 });
 
 // 20 — الشهر السادس: بيسمع دقات قلب أمه وصوتها
