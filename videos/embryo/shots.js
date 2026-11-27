@@ -175,7 +175,7 @@ function babyFace(x, y, mood, t) {   // وش بيبي: "cry" بيعيط أو "la
   return g(x, y + Math.sin(t * 6) * (mood === "cry" ? 2 : 3), 1, s);
 }
 function babyC(t, u) {   // وشين: بيعيط وبعدين بيضحك
-  return g(0, 0, 0.85, babyFace(-80, -10, "cry", t) + babyFace(80, -10, "laugh", t)) + T("بيعيط", -68, 110, 24, BLUE, 800) + T("بيضحك", 68, 110, 24, ORANGE, 800);
+  return g(0, -70, 0.95, babyFace(0, 0, "cry", t)) + T("بيعيط", 0, 40, 26, BLUE, 800) + g(0, 140, 0.95, babyFace(0, 0, "laugh", t)) + T("بيضحك", 0, 250, 26, ORANGE, 800);
 }
 function babyD(t) {   // جنين متكوّر واقعي جوه دايرة رحم، والحبل السري
   var inner = '<path d="M-120 -120 C-60 -60 -100 30 -10 40" stroke="' + INK + '" stroke-width="18" fill="none"/><path d="M-120 -120 C-60 -60 -100 30 -10 40" stroke="#e7c9a6" stroke-width="13" fill="none"/>' + fetus(10, 20, 1.05, t, 2);
@@ -232,7 +232,7 @@ shot(1, camPan(260, 380, 420, 1.02), function (u, d, t) {
   return paper() + pen + (dotK > 0 ? circle(150, 346, 3 + 2 * dotK, INK, false, 1) : "") + ring(150, 346, 26, t, ease((u - 0.7) / 0.7))
     + label(150, 372, 90, 470, "نقطة القلم", OLIVE, ease((u - 0.9) / 0.8))
     + arrow(210, 400, 330, 400, ORANGE, 4, ease((u - 1.6) / 0.8))
-    + op(ease((u - 2.2) / 0.8), g(470, 420, pop((u - 2.2) / 0.9), (function (v) { return v === "B" ? babyB(t) : v === "C" ? babyC(t, u) : v === "D" ? babyD(t) : babyA(t); })(window.V1 || "A")));
+    + op(ease((u - 2.2) / 0.8), g(470, 420, pop((u - 2.2) / 0.9), (function (v) { return v === "B" ? babyB(t) : v === "C" ? babyC(t, u) : v === "D" ? babyD(t) : babyA(t); })(window.V1 || "C")));
 });
 
 // 2 — البويضة أكبر خلية، وتحتها مسطرة
