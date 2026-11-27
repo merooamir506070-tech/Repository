@@ -182,7 +182,7 @@ function v0D(u, d, t) {   // لقطة قريبة: بطن كبيرة وإيدين
   return s + ring(330, 470, 162, t, ease((u - 0.9) / 0.8)) + label(440, 400, 560, 160, "الجنين", ORANGE, ease((u - 1.4) / 0.6));
 }
 shot(0, camMove([320, 430, 1.0], [325, 440, 1.08]), function (u, d, t) {
-  var v = window.V0 || "A";
+  var v = window.V0 || "D";
   return v === "B" ? v0B(u, d, t) : v === "C" ? v0C(u, d, t) : v === "D" ? v0D(u, d, t) : v0A(u, d, t);
 });
 
