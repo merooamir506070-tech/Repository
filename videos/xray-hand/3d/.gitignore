@@ -1,4 +1,4 @@
-node_modules/
-fonts/
+node_modules
+fonts
 fr/
 *.png
