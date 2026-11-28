@@ -14,6 +14,7 @@ canvas{display:block}
 .bub{position:absolute;transform:translate(-50%,-50%);background:#f4efe0;border:3px solid #2b2b2b;border-radius:22px;padding:4px 26px 10px;font:900 54px "Noto Sans Arabic";color:#c4532c}
 </style>
 <script src="../build/timing.js"></script>
+<script src="../style/helpers.js"></script>
 <script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
 </head><body><div id="wrap"><div id="ov"></div><div class="cap" id="cap"></div></div>
 <script>
@@ -154,6 +155,8 @@ function lbl(v,dx,dy,text,col,k){if(k<=0)return;const [x,y]=proj(v),e=Math.min(1
  if(k>.55)ovH+='<div class="t" style="left:'+(x+dx)+'px;top:'+(y+dy+(dy>0?20:-20))+'px;font-size:27px;color:'+col+';opacity:'+clamp((k-.55)/.3)+'">'+text+'</div>'}
 function qm(x,y,s,t){ovH+='<div class="t" style="left:'+x+'px;top:'+(y+Math.sin(t*5+x)*6)+'px;font-size:'+(80*s)+'px;color:#c4532c;transform:translate(-50%,-50%) rotate('+Math.sin(t*3+x)*10+'deg)">؟</div>'}
 function pill(x,y,text,k,sz=30){k=pop(k);if(k<=0)return;ovH+='<div class="pill" style="left:'+x+'px;top:'+y+'px;font-size:'+sz+'px;transform:translate(-50%,-50%) scale('+k+')">'+text+'</div>'}
+const SKDEFS='<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0 V6" stroke="#2b2b2b" stroke-width=".9" opacity=".16"/></pattern></defs>';
+function sketchChar(svg){return '<svg viewBox="0 0 360 640" width="540" height="960" style="position:absolute;left:0;top:0">'+SKDEFS+svg+'</svg>'}
 function txt(x,y,text,sz,col,op=1){if(op<=0)return;ovH+='<div class="t" style="left:'+x+'px;top:'+y+'px;font-size:'+sz+'px;color:'+col+';opacity:'+op+'">'+text+'</div>'}
 
 // ── المشاهد ──────────────────────────────────────────
@@ -298,7 +301,7 @@ scene(17,g=>{lab(g);const A=new THREE.Group(),B=new THREE.Group();g.add(A,B);
  const gb=mesh(new THREE.SphereGeometry(1.2,48,32),M('#ffffff',{map:gt.t,roughness:.6}),[0,2.6,0],B);
  const icons=[];for(let i=0;i<6;i++){const f=filmBox(B,{w:.5,h:.65});drawXray(f.T,{});icons.push(f.g)}
  return {update(u,d,t){S.background.set('#d9c6a0');const a=u<2.4;A.visible=a;B.visible=!a;
-  if(a){md.scale.setScalar(pop(k_(u,.1,.5)));md.rotation.y=Math.sin(t*1.5)*.6;r.mood('happy');r.idle(t);r.armR.rotation.z=1.3;const kp=k_(u,1.3,.4);px.scale.setScalar(pop(kp));pt.rotation.z=.15+.1*kp;
+  if(a){md.scale.setScalar(pop(k_(u,.1,.5)));md.rotation.y=Math.sin(t*1.5)*.6;r.g.visible=false;ovH+=sketchChar(person(92,620,.5,t,{g:'m',beard:true,hairCol:'#6b625a',top:'#3e3a36',bottom:'#2b2b2b',seed:.2,mood:'happy',arms:[[-84,-170],[130,-250]]}));const kp=k_(u,1.3,.4);px.scale.setScalar(pop(kp));pt.rotation.z=.15+.1*kp;
    const p=proj(md.position);pill(p[0],p[1]+150,'1901',k_(u,.5,.4),34);txt(p[0],p[1]+4,'نوبل',28,'#2b2b2b',k_(u,.2,.4));const q=proj(pt.position);txt(q[0],q[1]-8,'براءة',22,'#2b2b2b');txt(q[0],q[1]+22,'اختراع',22,'#2b2b2b')}
   else{const v=u-2.4;gb.rotation.y=t*.5;icons.forEach((ic,i)=>{const an=i/6*6.283+t*.4,k=pop(k_(v,.2+i*.15,.4));ic.position.set(Math.cos(an)*2,2.6+Math.sin(an*2)*.4,Math.sin(an)*2);ic.scale.setScalar(k);ic.lookAt(cam.position)})}},
   cam(u,d){return u<2.4?mix(orbit(.1,12.5,3,2.3),orbit(.02,11.6,3,2.4),ease(u/2.4)):mix(orbit(.2,10,3.4,2.6),orbit(.5,11,3.6,2.6),ease((u-2.4)/2))}}});
