@@ -1,0 +1,107 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><link href="fonts/fonts.css" rel="stylesheet">
+<style>
+html,body{margin:0;background:#eee5d0}
+#wrap{position:relative;width:540px;height:960px;overflow:hidden}
+canvas{display:block}
+.cap{position:absolute;left:24px;right:24px;top:52px;padding:12px 16px 15px;text-align:center;font:800 29px/1.75 "Noto Sans Arabic",sans-serif;color:#2b2b2b;
+ background:rgba(244,239,224,.93);border:2.4px solid #2b2b2b;border-radius:18px;box-shadow:4px 4px 0 rgba(43,43,43,.85)}
+.cap span{padding:0 4px;border-radius:8px}.cap .b{color:#46698a}.cap .now{background:#c4532c;color:#fff}.cap .now.b{background:#46698a}.cap .fut{opacity:.55}
+.lab{position:absolute;font:800 26px "Noto Sans Arabic";color:#46698a;white-space:nowrap;transform:translate(-50%,-50%);opacity:0}
+.lab i{position:absolute;left:50%;top:100%;width:2.5px;background:#2b2b2b;transform-origin:top}
+</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body><div id="wrap"><div class="cap" id="cap"></div><svg id="ld" width="540" height="960" style="position:absolute;left:0;top:0;pointer-events:none"><circle id="ldc" r="6" fill="#46698a" stroke="#2b2b2b" stroke-width="2"/><path id="ldp" stroke="#2b2b2b" stroke-width="2.5" fill="none"/></svg><div class="lab" id="lab">لوح حساس</div></div>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+const W=540,H=960, wrap=document.getElementById('wrap');
+const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true}); R.setPixelRatio(2); R.setSize(W,H);
+R.shadowMap.enabled=true; R.shadowMap.type=THREE.PCFSoftShadowMap; R.toneMapping=THREE.ACESFilmicToneMapping; R.toneMappingExposure=1.05; R.outputColorSpace=THREE.SRGBColorSpace;
+wrap.insertBefore(R.domElement,wrap.firstChild);
+const S=new THREE.Scene(); S.background=new THREE.Color('#e9dfc8'); S.fog=new THREE.Fog('#e9dfc8',9,20);
+S.environment=new THREE.PMREMGenerator(R).fromScene(new RoomEnvironment(),0.04).texture; S.environmentIntensity=0.55;
+const cam=new THREE.PerspectiveCamera(32,W/H,0.1,60);
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));
+const add=(g,m,p=[0,0,0],sh=true)=>{const x=new THREE.Mesh(g,m);x.position.set(...p);x.castShadow=sh;x.receiveShadow=true;S.add(x);return x};
+// أرضية وأوضة
+add(new THREE.PlaneGeometry(40,40),M('#d8c9a6',{roughness:.9}),[0,0,0],false).rotation.x=-Math.PI/2;
+const wall=add(new THREE.PlaneGeometry(40,20),M('#e4dcc4',{roughness:.95}),[0,10,-4],false);
+// ترابيزة الأشعة
+add(new RoundedBoxGeometry(4.2,0.9,2.2,4,.12),M('#b8bcb6',{roughness:.4,metalness:.3}),[0,.45,0]);
+add(new RoundedBoxGeometry(4.4,0.14,2.4,4,.06),M('#8d9399',{roughness:.35,metalness:.5}),[0,.97,0]);
+// اللوح الحساس
+const plateMat=M('#3c4d5c',{roughness:.3,metalness:.2,emissive:new THREE.Color('#5fa8e8'),emissiveIntensity:0});
+const plate=add(new RoundedBoxGeometry(2.6,0.12,1.9,4,.05),plateMat,[0,1.1,0]);
+const frame=add(new RoundedBoxGeometry(2.8,0.08,2.1,4,.03),M('#2b2b2b',{roughness:.5}),[0,1.05,0]);
+// الإيد: من هندسة الرسم (x يمين، الصوابع ناحية -z)
+const F=[[-30,-26,-60,-66,-42,[30,24],12,26],[-18,-44,-30,-116,-7,[40,25,19],11,24],[-5,-46,-8,-122,-1,[44,28,20],11.5,25],[8,-44,14,-116,6,[40,26,19],11,24],[20,-40,34,-104,15,[31,21,16],10,21]];
+const SC=0.0095, Y0=1.16+.09, OX=0.05, OZ=0.55;
+const P=(x,y,h=0)=>new THREE.Vector3(OX+x*SC,Y0+h,OZ+y*SC);
+const skin=M('#e0a888',{roughness:.6,transparent:true,opacity:1,emissive:new THREE.Color('#6aa6dc'),emissiveIntensity:0});
+const boneM=M('#f6f2e6',{roughness:.45,emissive:new THREE.Color('#ffffff'),emissiveIntensity:0});
+const hand=new THREE.Group(); S.add(hand); const bones=new THREE.Group(); S.add(bones);
+function caps(a,b,r,mat,grp,squash=1){const d=b.clone().sub(a),L=d.length();const m=new THREE.Mesh(new THREE.CapsuleGeometry(r,L,6,14),mat);
+ m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());m.scale.set(1,1,1);if(squash!==1){m.scale.x=1;}
+ m.castShadow=true;m.receiveShadow=true;grp.add(m);return m;}
+F.forEach((q,fi)=>{let x=q[2],y=q[3],a=q[4]*Math.PI/180;const pts=[[x,y]];
+ caps(P(q[0],q[1]),P(q[2],q[3]),q[6]*.5*SC*1.05,boneM,bones);
+ q[5].forEach((L,j)=>{const nx=x+Math.sin(a)*L,ny=y-Math.cos(a)*L;caps(P(x,y),P(nx,ny),q[6]*.5*SC*(1-j*.12),boneM,bones);x=nx;y=ny;pts.push([x,y]);});
+ const base=fi===0?[-34,-20]:pts[0];const all=fi===0?[base].concat(pts):pts;
+ for(let i=0;i<all.length-1;i++)caps(P(...all[i]),P(...all[i+1]),q[7]*.5*SC,skin,hand);});
+[[-24,-14],[-8,-12],[8,-12],[22,-14],[-26,-34],[-10,-36],[6,-36],[21,-34]].forEach(p=>{const s=new THREE.Mesh(new THREE.SphereGeometry(8.2*SC,14,10),boneM);s.position.copy(P(...p));bones.add(s)});
+caps(P(-17,-2),P(-21,170),15*.5*SC,boneM,bones);caps(P(16,-2),P(20,170),12*.5*SC,boneM,bones);
+const palm=new THREE.Mesh(new THREE.SphereGeometry(1,32,20),skin);palm.scale.set(46*SC,13*SC,62*SC);palm.position.copy(P(0,-60));palm.castShadow=true;hand.add(palm);
+caps(P(0,-10),P(0,175),40*SC,skin,hand);
+// كم الهودي البرتقالي بتاع زيزو
+const sleeve=caps(P(0,125),P(0,520),44*SC,M('#c4532c',{roughness:.85}),S);
+// جهاز الأشعة
+const grey=M('#cfd3cd',{roughness:.35,metalness:.25}),dark=M('#3e4448',{roughness:.4,metalness:.4});
+add(new THREE.CylinderGeometry(.09,.09,4,20),grey,[0,7.2,0]);
+add(new RoundedBoxGeometry(1.5,.75,1.05,6,.16),grey,[0,4.9,0]);
+add(new RoundedBoxGeometry(1.52,.12,1.07,4,.05),M('#c4532c',{roughness:.5}),[0,4.62,0]);
+add(new THREE.CylinderGeometry(.34,.48,.42,32),dark,[0,4.33,0]);
+add(new THREE.CylinderGeometry(.44,.44,.05,32),M('#111',{roughness:.2,metalness:.6}),[0,4.1,0]);
+const led=add(new THREE.SphereGeometry(.06,16,12),M('#e0452c',{emissive:new THREE.Color('#ff3a1a'),emissiveIntensity:2}),[.58,5.05,.53],false);
+add(new RoundedBoxGeometry(.6,.2,.02,2,.02),M('#f4efe0',{emissive:new THREE.Color('#9fe0ff'),emissiveIntensity:.4}),[-.25,5.05,.53],false);
+// شعاع الأشعة: مخروط شفاف بخطوط ماشية + جزيئات
+const cv=document.createElement('canvas');cv.width=8;cv.height=128;const cx=cv.getContext('2d');for(let i=0;i<8;i++){cx.fillStyle=i%2?'rgba(255,255,255,.35)':'rgba(255,255,255,.9)';cx.fillRect(0,i*16,8,16);}
+const stripes=new THREE.CanvasTexture(cv);stripes.wrapS=stripes.wrapT=THREE.RepeatWrapping;stripes.repeat.set(24,2);
+const beamMat=new THREE.MeshBasicMaterial({color:'#4aa3f0',map:stripes,transparent:true,opacity:0,blending:THREE.NormalBlending,depthWrite:false,side:THREE.DoubleSide});
+const beam=new THREE.Mesh(new THREE.CylinderGeometry(.42,1.45,2.9,48,1,true),beamMat);beam.position.set(0,2.62,0);S.add(beam);
+const coreMat=beamMat.clone();coreMat.map=null;const core=new THREE.Mesh(new THREE.CylinderGeometry(.4,1.4,2.9,48,1,true),coreMat);core.position.copy(beam.position);S.add(core);
+const NP=140,pg=new THREE.BufferGeometry(),pp=new Float32Array(NP*3);pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:'#bfe6ff',size:.06,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));S.add(pts);
+const rnd=i=>{const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)};
+// إضاءة
+S.add(new THREE.HemisphereLight('#fff6e6','#b9a88a',.9));
+const key=new THREE.DirectionalLight('#fff2dc',1.6);key.position.set(5,9,6);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-5,right:5,top:6,bottom:-3});key.shadow.radius=4;key.shadow.bias=-.0005;S.add(key);
+const xl=new THREE.SpotLight('#9fd4ff',0,6,.42,.35,1);xl.position.set(0,4.1,0);xl.target.position.set(0,1,0);xl.castShadow=true;xl.shadow.mapSize.set(1024,1024);xl.shadow.bias=-.0008;S.add(xl,xl.target);
+// الترجمة
+const TXT="الأشعة بتطلع على إيدك، ووراها لوح حساس بيستقبلها.",KEY={"لوح":"b","حساس":"b"},WD=TXT.split(' ');
+const LS=0.02,LE=3.15,cap=document.getElementById('cap'),lab=document.getElementById('lab');
+const ease=x=>{x=Math.min(1,Math.max(0,x));return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+window.renderAt=t=>{
+ const k=ease(t/3.6); const ang=lerp(-.55,-.18,k), rad=lerp(13,11,k), hgt=lerp(8.2,7.6,k);
+ cam.position.set(Math.sin(ang)*rad,hgt,Math.cos(ang)*rad); cam.lookAt(0,lerp(2.95,2.6,k),0);
+ const on=ease((t-.25)/.45), hit=ease((t-.9)/.5), pulse=.85+.15*Math.sin(t*14);
+ beamMat.opacity=.32*on*pulse; coreMat.opacity=.07*on; stripes.offset.y=-t*1.6;
+ xl.intensity=60*on; led.material.emissiveIntensity=Math.sin(t*9)>0?3:.3;
+ plateMat.emissiveIntensity=1.1*hit*pulse;
+ skin.opacity=1-.62*hit; skin.depthWrite=hit<.05; skin.emissiveIntensity=.35*hit; boneM.emissiveIntensity=.35*hit;
+ pts.material.opacity=on;
+ for(let i=0;i<NP;i++){const u=(t*.9+rnd(i))%1,a=rnd(i+9)*6.283,rr=Math.sqrt(rnd(i+3)),r0=.35*rr,r1=1.35*rr;
+  pp[i*3]=Math.cos(a)*lerp(r0,r1,u);pp[i*3+1]=lerp(4.05,1.2,u);pp[i*3+2]=Math.sin(a)*lerp(r0,r1,u);} pg.attributes.position.needsUpdate=true;
+ R.render(S,cam);
+ // اسم اللوح
+ const v=new THREE.Vector3(-1.25,1.17,.85).project(cam),lx=(v.x+1)/2*W,ly=(1-v.y)/2*H, kl=ease((t-1.4)/.5), tx=lx-20, ty=ly+120;
+ document.getElementById('ldc').setAttribute('cx',lx);document.getElementById('ldc').setAttribute('cy',ly);document.getElementById('ldc').style.opacity=kl>0?1:0;
+ document.getElementById('ldp').setAttribute('d','M'+lx+' '+ly+' L'+(lx+(tx-lx)*Math.min(1,kl*1.6))+' '+(ly+(ty-22-ly)*Math.min(1,kl*1.6)));
+ lab.style.left=tx+'px';lab.style.top=ty+'px';lab.style.opacity=Math.max(0,(kl-.5)*2);
+ // ترجمة بكلمة منطوقة
+ const tot=WD.join('').length;let acc=0,now=-1;for(let j=0;j<WD.length;j++){if(t>=LS+(LE-LS)*(acc/tot)-.05)now=j;acc+=WD[j].length;} if(t>LE+.15)now=WD.length;
+ cap.innerHTML=WD.map((w,j)=>'<span class="'+(KEY[w]||'')+(j===now?' now':j>now?' fut':'')+'">'+w+'</span>').join(' ');
+};
+function lerp(a,b,k){return a+(b-a)*k}
+window.READY=true; renderAt(2.0);
+</script></body></html>
