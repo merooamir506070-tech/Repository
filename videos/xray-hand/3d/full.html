@@ -1,0 +1,322 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><link href="fonts/fonts.css" rel="stylesheet">
+<!-- فيديو الأشعة كله 3D (three.js). renderAt(t) بيرسم الفريم عند الثانية t. التوقيت من ../build/timing.js -->
+<style>
+html,body{margin:0;background:#e9dfc8}
+#wrap{position:relative;width:540px;height:960px;overflow:hidden;font-family:"Noto Sans Arabic",sans-serif}
+canvas{display:block}
+.cap{position:absolute;left:24px;right:24px;top:52px;padding:12px 16px 15px;text-align:center;font:800 29px/1.75 "Noto Sans Arabic",sans-serif;color:#2b2b2b;
+ background:rgba(244,239,224,.93);border:2.4px solid #2b2b2b;border-radius:18px;box-shadow:4px 4px 0 rgba(43,43,43,.85);z-index:5}
+.cap span{padding:0 4px;border-radius:8px}.cap .o{color:#c4532c}.cap .b{color:#46698a}.cap .g{color:#6b7d3c}
+.cap .now{background:#c4532c;color:#fff}.cap .now.b{background:#46698a}.cap .now.g{background:#6b7d3c}.cap .fut{opacity:.55}
+#ov{position:absolute;inset:0;pointer-events:none}
+.t{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;font-weight:900}
+.pill{position:absolute;transform:translate(-50%,-50%);background:#2b2b2b;color:#fff;font:800 30px "Noto Sans Arabic";padding:2px 18px 6px;border-radius:9px;direction:ltr}
+.bub{position:absolute;transform:translate(-50%,-50%);background:#f4efe0;border:3px solid #2b2b2b;border-radius:22px;padding:4px 26px 10px;font:900 54px "Noto Sans Arabic";color:#c4532c}
+</style>
+<script src="../build/timing.js"></script>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body><div id="wrap"><div id="ov"></div><div class="cap" id="cap"></div></div>
+<script>
+// الكلمات الملونة في الترجمة (زي config.json)
+window.KEYS={"0":{"ثانية":"o","جرح.":"o"},"1":{"تعدّي":"b"},"2":{"السينية،":"b","راي.":"o"},"3":{"الضوء،":"o","تشوفه":"b"},"4":{"بتعدّي":"o"},"5":{"لوح":"b","حساس":"b"},"6":{"مية،":"b","بسهولة.":"o"},"7":{"كالسيوم،":"g","بيمسك":"o"},"8":{"بيسوّد":"o"},"9":{"بيضا.":"o"},"10":{"ضل":"o","العضم.":"o"},"11":{"كسر،":"o","أسود":"b"},"12":{"سبعة":"o","وعشرين":"o"},"13":{"وأول":"o","صورة":"o"},"14":{"تمنمية":"b","رونتجن":"o"},"15":{"وخاتم":"o","موتي.":"o"},"16":{"إكس":"o"},"17":{"نوبل":"o","الناس":"g"},"18":{"رصاص،":"o","الرصاص.":"o"}};
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+const W=540,H=960,wrap=document.getElementById('wrap'),OV=document.getElementById('ov'),CAP=document.getElementById('cap');
+const LN=TIMING.lines, L=i=>i>=LN.length?TIMING.duration+1.5:(i===0?0:LN[i].start);
+const clamp=x=>x<0?0:x>1?1:x, ease=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}, lerp=(a,b,k)=>a+(b-a)*k, k_=(u,a,d)=>ease((u-a)/(d||.6));
+const pop=u=>{if(u<=0)return 0;if(u<.22)return 1.12*ease(u/.22);if(u<.36)return lerp(1.12,1,(u-.22)/.14);return 1};
+const rnd=i=>{const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)};
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+
+// ── المحرك ─────────────────────────────────────────
+const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});R.setPixelRatio(2);R.setSize(W,H);
+R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.05;R.outputColorSpace=THREE.SRGBColorSpace;
+wrap.insertBefore(R.domElement,wrap.firstChild);
+const S=new THREE.Scene(),BG=new THREE.Color('#e9dfc8');S.background=BG.clone();S.fog=new THREE.Fog('#e9dfc8',14,34);
+S.environment=new THREE.PMREMGenerator(R).fromScene(new RoomEnvironment(),0.04).texture;S.environmentIntensity=.55;
+const cam=new THREE.PerspectiveCamera(32,W/H,.1,80);
+const hemi=new THREE.HemisphereLight('#fff6e6','#b9a88a',.9);S.add(hemi);
+const key=new THREE.DirectionalLight('#fff2dc',1.6);key.position.set(5,9,6);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+Object.assign(key.shadow.camera,{left:-6,right:6,top:7,bottom:-3,far:30});key.shadow.radius=4;key.shadow.bias=-.0005;S.add(key);
+
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));
+const glow=(c,op=1)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false,blending:THREE.AdditiveBlending});
+function mesh(g,m,p=[0,0,0],par,sh=true){const x=new THREE.Mesh(g,m);x.position.set(...p);x.castShadow=sh;x.receiveShadow=true;par.add(x);return x}
+const RB=(w,h,d,r=.08)=>new RoundedBoxGeometry(w,h,d,4,Math.min(r,w/2-.001,h/2-.001,d/2-.001));
+function caps(a,b,r,mat,par){const d=b.clone().sub(a),len=d.length();const m=new THREE.Mesh(new THREE.CapsuleGeometry(r,Math.max(.001,len),6,14),mat);
+ m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(V3(0,1,0),d.normalize());m.castShadow=true;m.receiveShadow=true;par.add(m);return m}
+function room(par,wall,floor,z=-4){mesh(new THREE.PlaneGeometry(60,60),M(floor,{roughness:.9}),[0,0,0],par,false).rotation.x=-Math.PI/2;mesh(new THREE.PlaneGeometry(60,30),M(wall,{roughness:.95}),[0,15,z],par,false)}
+function canvasTex(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return {c,x:c.getContext('2d'),t}}
+
+// ── هندسة الإيد ────────────────────────────────────
+const F=[[-30,-26,-60,-66,-42,[30,24],12,26],[-18,-44,-30,-116,-7,[40,25,19],11,24],[-5,-46,-8,-122,-1,[44,28,20],11.5,25],[8,-44,14,-116,6,[40,26,19],11,24],[20,-40,34,-104,15,[31,21,16],10,21]];
+const CARP=[[-24,-14],[-8,-12],[8,-12],[22,-14],[-26,-34],[-10,-36],[6,-36],[21,-34]];
+const HG=(()=>{const meta=[],phal=[],fing=[];F.forEach((q,fi)=>{meta.push({a:[q[0],q[1]],b:[q[2],q[3]],w:q[6]*1.05});let x=q[2],y=q[3];const a=q[4]*Math.PI/180,pts=[[x,y]];
+ q[5].forEach((Ln,j)=>{const nx=x+Math.sin(a)*Ln,ny=y-Math.cos(a)*Ln;phal.push({a:[x,y],b:[nx,ny],w:q[6]*(1-j*.12)});x=nx;y=ny;pts.push([x,y])});fing.push({pts:fi===0?[[-34,-20]].concat(pts):pts,w:q[7]})});
+ const carp=CARP.map(c=>({c,r:8.2}));return {meta,phal,fing,carp,count:carp.concat(meta,phal),arm:[{a:[-17,-2],b:[-21,170],w:15},{a:[16,-2],b:[20,170],w:12}]}})();
+// إيد 3D: o={sleeve, sc}. بترجع {g, skin, bone}
+function makeHand(o={}){const g=new THREE.Group(),SC=o.sc||.0095,P=(x,y,h=0)=>V3(x*SC,h,y*SC);
+ const skin=M('#e0a888',{roughness:.6,transparent:true,opacity:1,emissive:new THREE.Color('#6aa6dc'),emissiveIntensity:0});
+ const bone=M('#f6f2e6',{roughness:.45,emissive:new THREE.Color('#ffffff'),emissiveIntensity:0});
+ const bg=new THREE.Group();g.add(bg);
+ HG.meta.concat(HG.phal).forEach(b=>caps(P(...b.a),P(...b.b),b.w*.5*SC,bone,bg));HG.carp.forEach(c=>mesh(new THREE.SphereGeometry(8.2*SC,14,10),bone,P(...c.c).toArray(),bg));
+ HG.arm.forEach(b=>caps(P(...b.a),P(...b.b),b.w*.5*SC,bone,bg));
+ HG.fing.forEach(fg=>{for(let i=0;i<fg.pts.length-1;i++)caps(P(...fg.pts[i]),P(...fg.pts[i+1]),fg.w*.5*SC,skin,g)});
+ const palm=mesh(new THREE.SphereGeometry(1,32,20),skin,P(0,-60).toArray(),g);palm.scale.set(46*SC,13*SC,62*SC);
+ caps(P(0,-10),P(0,175),40*SC,skin,g);
+ if(o.sleeve!==false)caps(P(0,125),P(0,o.sleeveLen||520),44*SC,M(o.sleeveCol||'#c4532c',{roughness:.85}),g);
+ return {g,skin,bone,bones:bg,set(k){skin.opacity=1-.62*k;skin.depthWrite=k<.05;skin.emissiveIntensity=.35*k;bone.emissiveIntensity=.35*k}}}
+// صورة أشعة مرسومة على canvas: o={n (عدد العضم المنور)، crack، ring، sepia، dark (0..1 سواد اللوح من فوق لتحت)، bonesCol، flesh}
+function drawXray(T,o={}){const {c,x}=T,w=c.width,h=c.height,s=w/300*(o.zoom||1),cx=w/2,cy=h*.62;x.save();
+ x.fillStyle=o.base||'#1f2b36';x.fillRect(0,0,w,h);
+ const P=(p)=>[cx+p[0]*s,cy+p[1]*s];
+ const fl=document.createElement('canvas');fl.width=w;fl.height=h;const fx=fl.getContext('2d');fx.strokeStyle=fx.fillStyle='#8fb0c8';fx.lineCap=fx.lineJoin='round';
+ HG.fing.forEach(fg=>{fx.lineWidth=fg.w*s;fx.beginPath();fg.pts.forEach((p,i)=>{const q=P(p);i?fx.lineTo(...q):fx.moveTo(...q)});fx.stroke()});
+ fx.beginPath();fx.ellipse(cx,cy-60*s,46*s,64*s,0,0,6.3);fx.fill();fx.fillRect(cx-45*s,cy-14*s,90*s,h);
+ const bone=(b,col)=>{x.strokeStyle=x.fillStyle=col;x.lineCap='round';x.lineWidth=b.w*s;const A=P(b.a),B=P(b.b);x.beginPath();x.moveTo(...A);x.lineTo(...B);x.stroke();
+  x.beginPath();x.arc(...A,b.w*.62*s,0,6.3);x.fill();x.beginPath();x.arc(...B,b.w*.62*s,0,6.3);x.fill()};
+ const all=(col,lit)=>{HG.arm.forEach(b=>bone(b,col));HG.count.forEach((b,i)=>{const on=o.n==null||i<o.n;const cc=lit&&!on?'rgba(246,242,230,.18)':col;if(b.c){x.fillStyle=cc;x.beginPath();x.arc(...P(b.c),b.r*s,0,6.3);x.fill()}else bone(b,cc)})};
+ const dk=o.dark==null?1:o.dark;
+ if(dk<1){x.fillStyle='#eae3cc';x.fillRect(0,0,w,h);x.save();x.beginPath();x.rect(0,0,w,h*dk);x.clip();x.fillStyle='#1f2b36';x.fillRect(0,0,w,h)}
+ x.globalAlpha=o.flesh==null?.3:o.flesh;x.drawImage(fl,0,0);x.globalAlpha=1;
+ if(dk<1)x.restore();
+ x.shadowColor='rgba(255,255,255,.8)';x.shadowBlur=(o.glow==null?14:o.glow)*s/1.6;all(o.bonesCol||'#f6f2e6',o.n!=null);x.shadowBlur=0;
+ if(o.crack){const b=HG.meta[2],m=[(b.a[0]+b.b[0])/2,(b.a[1]+b.b[1])/2],q=P(m),k=clamp(o.crack);x.strokeStyle='#1f2b36';x.lineWidth=2.6*s;x.lineCap='round';x.beginPath();
+  x.moveTo(q[0]-9*s*k,q[1]-2*s);x.lineTo(q[0]-5*s,q[1]+1*s);x.lineTo(q[0]-2*s,q[1]-3*s);x.lineTo(q[0]+2*s,q[1]+1*s);x.lineTo(q[0]+(2+4*k)*s,q[1]-1*s);x.stroke()}
+ if(o.ring){const b=HG.phal[7],q=P([lerp(b.a[0],b.b[0],.55),lerp(b.a[1],b.b[1],.55)]);x.save();x.translate(...q);x.rotate(Math.atan2(b.b[1]-b.a[1],b.b[0]-b.a[0])+Math.PI/2);x.shadowColor='#fff';x.shadowBlur=10*s;x.fillStyle='#fff';x.fillRect(-13*s,-3.5*s,26*s,7*s);x.restore()}
+ if(o.sepia){x.globalCompositeOperation='multiply';x.fillStyle='rgba(196,150,90,'+o.sepia+')';x.fillRect(0,0,w,h);x.globalCompositeOperation='source-over'}
+ x.restore();T.t.needsUpdate=true}
+function crackUV(){const b=HG.meta[2];return [(b.a[0]+b.b[0])/2,(b.a[1]+b.b[1])/2]}
+// لوح/فيلم أشعة 3D بإطار. o={w,h,frame,light}
+function filmBox(par,o){const g=new THREE.Group();par.add(g);const T=canvasTex(512,Math.round(512*o.h/o.w));
+ mesh(RB(o.w+.3,o.h+.3,.16,.06),M(o.frame||'#b8bcb6',{roughness:.4,metalness:.3}),[0,0,-.06],g);
+ const scr=mesh(new THREE.PlaneGeometry(o.w,o.h),new THREE.MeshBasicMaterial({map:T.t,toneMapped:false}),[0,0,.03],g,false);scr.castShadow=false;
+ return {g,T,uv:(p)=>{const s=o.w/300,cy=o.h*(.62-.5);return V3(p[0]*s,-(p[1]*s)-cy,.04)}}}
+
+// ── الشخصيات (3D كرتون مدوّر) ─────────────────────────────
+// o={top,bottom,hair,coat,beard,glasses,bun,dress,skin}. بترجع {g, armL, armR, head, mouth(m)}
+function makeChar(o={}){const g=new THREE.Group(),sk=M(o.skin||'#e0a888',{roughness:.6}),top=M(o.top||'#c4532c',{roughness:.85}),bot=M(o.bottom||'#46698a',{roughness:.8}),hair=M(o.hair||'#3a2a22',{roughness:.7});
+ const body=new THREE.Group();g.add(body);
+ if(o.dress){mesh(new THREE.CylinderGeometry(.26,.46,.75,28),top,[0,.62,0],body);[-.11,.11].forEach(x=>caps(V3(x,.05,0),V3(x,.3,0),.075,sk,body))}
+ else [-.13,.13].forEach(x=>caps(V3(x,.12,0),V3(x,.62,0),.095,bot,body));
+ [-.13,.13].forEach(x=>mesh(RB(.2,.12,.32,.05),M('#f4f1ea',{roughness:.5}),[x,.06,.06],body));
+ caps(V3(0,.78,0),V3(0,1.12,0),.27,top,body);
+ if(o.coat)mesh(new THREE.CylinderGeometry(.3,.4,.95,28,1,true),M('#f7f5ee',{roughness:.6,side:THREE.DoubleSide}),[0,.82,0],body);
+ if(o.apron){const a=mesh(RB(.6,.82,.12,.05),M('#8d9399',{roughness:.35,metalness:.6}),[0,.9,.26],body)}
+ const arm=(sx)=>{const p=new THREE.Group();p.position.set(sx*.3,1.22,0);body.add(p);caps(V3(0,0,0),V3(0,-.5,0),.085,o.coat?M('#f7f5ee',{roughness:.6}):top,p);mesh(new THREE.SphereGeometry(.1,16,12),sk,[0,-.58,0],p);return p};
+ const armL=arm(-1),armR=arm(1);
+ const head=new THREE.Group();head.position.set(0,1.62,0);body.add(head);
+ mesh(new THREE.SphereGeometry(.36,32,24),sk,[0,0,0],head);[-1,1].forEach(s=>mesh(new THREE.SphereGeometry(.08,12,10),sk,[s*.35,0,0],head));
+ const hh=mesh(new THREE.SphereGeometry(.375,32,16,0,Math.PI*2,0,Math.PI*.42),hair,[0,.02,-.02],head);hh.rotation.x=-.25;
+ if(o.messy)for(let i=0;i<9;i++){const c=mesh(new THREE.ConeGeometry(.07,.2,8),hair,[Math.cos(i*.7)*.25,.33+rnd(i)*.04,Math.sin(i*.7)*.2-.05],head);c.rotation.z=Math.cos(i*.7)*-.6;c.rotation.x=Math.sin(i*.7)*.4}
+ if(o.bun)mesh(new THREE.SphereGeometry(.15,16,12),hair,[0,.38,-.12],head);
+ if(o.beard){const b=mesh(new THREE.SphereGeometry(.3,24,16),hair,[0,-.2,.08],head);b.scale.set(1,.75,.8)}
+ const eyeM=M('#2b2b2b',{roughness:.2}),wM=new THREE.MeshBasicMaterial({color:'#fff'});
+ [-1,1].forEach(s=>{mesh(new THREE.SphereGeometry(.05,14,10),eyeM,[s*.13,.04,.33],head);mesh(new THREE.SphereGeometry(.016,8,6),wM,[s*.13+.015,.06,.375],head);
+  const ch=mesh(new THREE.SphereGeometry(.06,12,8),new THREE.MeshBasicMaterial({color:'#e8907a',transparent:true,opacity:.5}),[s*.21,-.08,.3],head,false);ch.scale.z=.3});
+ if(o.glasses)[-1,1].forEach(s=>mesh(new THREE.TorusGeometry(.09,.012,8,24),M('#2b2b2b'),[s*.13,.04,.36],head));
+ const smile=mesh(new THREE.TorusGeometry(.07,.016,8,20,Math.PI),M('#7a2e22'),[0,-.1,.34],head);smile.rotation.z=Math.PI;
+ const oh=mesh(new THREE.SphereGeometry(.055,14,10),M('#7a2e22'),[0,-.12,.33],head);oh.scale.set(.8,1.1,.5);
+ const brow=[-1,1].map(s=>{const b=mesh(new THREE.CapsuleGeometry(.012,.07,4,6),M('#2b2b2b'),[s*.13,.15,.33],head);b.rotation.z=Math.PI/2;return b});
+ return {g,body,armL,armR,head,mood(m,t=0){smile.visible=m!=='surprised';oh.visible=m==='surprised'||m==='talk';if(m==='talk')oh.scale.y=.5+.6*Math.abs(Math.sin(t*13));else oh.scale.y=1.1;
+   brow[0].rotation.z=Math.PI/2+(m==='confused'?.4:m==='surprised'?-.1:0);brow[1].rotation.z=Math.PI/2+(m==='confused'?.1:m==='surprised'?.1:0);brow.forEach(b=>b.position.y=m==='surprised'?.19:.15)},
+  idle(t,s=0){body.position.y=Math.abs(Math.sin(t*2.2+s))*.02;head.rotation.z=Math.sin(t*1.3+s)*.05}}}
+
+// ── أجهزة ────────────────────────────────────────────
+function makeMachine(par){const g=new THREE.Group();par.add(g);const grey=M('#cfd3cd',{roughness:.35,metalness:.25}),dark=M('#3e4448',{roughness:.4,metalness:.4});
+ mesh(new THREE.CylinderGeometry(.09,.09,6,20),grey,[0,8.2,0],g);mesh(RB(1.5,.75,1.05,.16),grey,[0,4.9,0],g);mesh(RB(1.52,.12,1.07,.05),M('#c4532c'),[0,4.62,0],g);
+ mesh(new THREE.CylinderGeometry(.34,.48,.42,32),dark,[0,4.33,0],g);mesh(new THREE.CylinderGeometry(.44,.44,.05,32),M('#111',{roughness:.2,metalness:.6}),[0,4.1,0],g);
+ const led=mesh(new THREE.SphereGeometry(.06,16,12),M('#e0452c',{emissive:new THREE.Color('#ff3a1a'),emissiveIntensity:2}),[.58,5.05,.53],g,false);
+ mesh(RB(.6,.2,.02,.02),M('#f4efe0',{emissive:new THREE.Color('#9fe0ff'),emissiveIntensity:.4}),[-.25,5.05,.53],g,false);
+ const cv=document.createElement('canvas');cv.width=8;cv.height=128;const cx=cv.getContext('2d');for(let i=0;i<8;i++){cx.fillStyle=i%2?'rgba(255,255,255,.35)':'rgba(255,255,255,.9)';cx.fillRect(0,i*16,8,16)}
+ const st=new THREE.CanvasTexture(cv);st.wrapS=st.wrapT=THREE.RepeatWrapping;st.repeat.set(24,2);
+ const bm=new THREE.MeshBasicMaterial({color:'#4aa3f0',map:st,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide});
+ const beam=mesh(new THREE.CylinderGeometry(.42,1.45,2.9,48,1,true),bm,[0,2.62,0],g,false);beam.castShadow=false;
+ const NP=120,pg=new THREE.BufferGeometry(),pp=new Float32Array(NP*3);pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+ const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:'#bfe6ff',size:.06,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));g.add(pts);
+ return {g,beam,update(t,on,y1=1.2,stop){led.material.emissiveIntensity=Math.sin(t*9)>0?3:.3;bm.opacity=.32*on*(.85+.15*Math.sin(t*14));st.offset.y=-t*1.6;pts.material.opacity=on;
+  for(let i=0;i<NP;i++){const u=(t*.9+rnd(i))%1,a=rnd(i+9)*6.283,rr=Math.sqrt(rnd(i+3));let X=Math.cos(a)*lerp(.35*rr,1.35*rr,u),Y=lerp(4.05,y1,u),Z=Math.sin(a)*lerp(.35*rr,1.35*rr,u);
+   if(stop){const r=stop(X,Y,Z,u,i);if(r){X=r[0];Y=r[1];Z=r[2]}}pp[i*3]=X;pp[i*3+1]=Y;pp[i*3+2]=Z}pg.attributes.position.needsUpdate=true}}}
+function makeTable(par,w=4.2,d=2.2){mesh(RB(w,.9,d,.12),M('#b8bcb6',{roughness:.4,metalness:.3}),[0,.45,0],par);mesh(RB(w+.2,.14,d+.2,.06),M('#8d9399',{roughness:.35,metalness:.5}),[0,.97,0],par)}
+function arrow3(par,col){const g=new THREE.Group();const m=M(col,{roughness:.4,emissive:new THREE.Color(col),emissiveIntensity:.3});mesh(new THREE.CylinderGeometry(.05,.05,.8,12),m,[0,0,0],g).rotation.z=Math.PI/2;
+ const c=mesh(new THREE.ConeGeometry(.13,.3,16),m,[.5,0,0],g);c.rotation.z=-Math.PI/2;par.add(g);return g}
+function waveTube(par,mat){const m=new THREE.Mesh(new THREE.BufferGeometry(),mat);par.add(m);return {m,set(x0,x1,y,z,t,amp=.18,wl=.7){const pts=[];for(let x=x0;x<=x1;x+=.05)pts.push(V3(x,y+Math.sin(x/wl*6.283-t*9)*amp,z));if(pts.length<2)pts.push(V3(x0+.01,y,z),V3(x0+.02,y,z));
+ m.geometry.dispose();m.geometry=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),Math.max(8,pts.length*2),.045,8,false)}}}
+function flash(par,col='#bfe6ff'){const m=mesh(new THREE.SphereGeometry(.12,12,10),glow(col,0),[0,0,0],par,false);m.castShadow=false;return m}
+
+// ── overlay (أسماء وعلامات استفهام وأرقام) ─────────────────────
+let ovH='';const proj=v=>{const p=v.clone().project(cam);return [(p.x+1)/2*W,(1-p.y)/2*H]};
+function lbl(v,dx,dy,text,col,k){if(k<=0)return;const [x,y]=proj(v),e=Math.min(1,k*1.6);
+ ovH+='<svg width="540" height="960" style="position:absolute;left:0;top:0"><circle cx="'+x+'" cy="'+y+'" r="6" fill="'+col+'" stroke="#2b2b2b" stroke-width="2"/><path d="M'+x+' '+y+' L'+(x+dx*e)+' '+(y+dy*e)+'" stroke="#2b2b2b" stroke-width="2.5"/></svg>';
+ if(k>.55)ovH+='<div class="t" style="left:'+(x+dx)+'px;top:'+(y+dy+(dy>0?20:-20))+'px;font-size:27px;color:'+col+';opacity:'+clamp((k-.55)/.3)+'">'+text+'</div>'}
+function qm(x,y,s,t){ovH+='<div class="t" style="left:'+x+'px;top:'+(y+Math.sin(t*5+x)*6)+'px;font-size:'+(80*s)+'px;color:#c4532c;transform:translate(-50%,-50%) rotate('+Math.sin(t*3+x)*10+'deg)">؟</div>'}
+function pill(x,y,text,k,sz=30){k=pop(k);if(k<=0)return;ovH+='<div class="pill" style="left:'+x+'px;top:'+y+'px;font-size:'+sz+'px;transform:translate(-50%,-50%) scale('+k+')">'+text+'</div>'}
+function txt(x,y,text,sz,col,op=1){if(op<=0)return;ovH+='<div class="t" style="left:'+x+'px;top:'+y+'px;font-size:'+sz+'px;color:'+col+';opacity:'+op+'">'+text+'</div>'}
+
+// ── المشاهد ──────────────────────────────────────────
+const SCN=[];function scene(i,def){const g=new THREE.Group();g.visible=false;S.add(g);const o=def(g)||{};o.g=g;SCN[i]=o}
+const camAt=(p,l)=>{cam.position.set(...p);cam.lookAt(...l);cam.updateMatrixWorld(true)};
+const orbit=(ang,rad,h,ly,lx=0,lz=0)=>[[lx+Math.sin(ang)*rad,h,lz+Math.cos(ang)*rad],[lx,ly,lz]];
+const mix=(a,b,k)=>[a[0].map((v,i)=>lerp(v,b[0][i],k)),a[1].map((v,i)=>lerp(v,b[1][i],k))];
+
+// 0: زيزو بيتزحلق ويقع، وبعدين المستشفى: فكري جنب صورة الأشعة
+scene(0,g=>{const A=new THREE.Group(),B=new THREE.Group();g.add(A,B);room(A,'#e4dcc4','#d8c9a6');
+ const peel=mesh(new THREE.TorusGeometry(.18,.06,10,20,Math.PI*1.4),M('#e8c77a'),[.9,.06,.4],A);peel.rotation.x=-Math.PI/2;
+ const z=makeChar();z.g.position.set(.2,0,0);A.add(z.g);
+ room(B,'#dfe7e2','#c9d6d0');const fb=filmBox(B,{w:1.5,h:2.0});fb.g.position.set(-1.2,2.3,-3.6);drawXray(fb.T,{});
+ const lt=new THREE.PointLight('#dff2ff',3,4);lt.position.set(-1.2,2.3,-2.8);B.add(lt);
+ const fk=makeChar({top:'#7fa6c9',bottom:'#4b4642',coat:true,glasses:true,messy:true,hair:'#4a3a30'});fk.g.position.set(.9,0,-1.6);fk.g.rotation.y=-.5;B.add(fk.g);
+ const zz=makeChar();zz.g.position.set(-.6,0,-.6);zz.g.scale.setScalar(.9);zz.g.rotation.y=.5;B.add(zz.g);
+ [zz].forEach(c=>{c.body.children.slice(0,4).forEach(()=>{})});
+ return {update(u,d,t){const a=u<1.9;A.visible=a;B.visible=!a;
+  if(a){const kf=k_(u,.25,.55);z.g.rotation.z=kf*1.35;z.g.position.x=.2-kf*.15;z.mood(kf>.4?'surprised':'happy');z.armL.rotation.z=-kf*1.4;z.armR.rotation.z=kf*2.4;z.idle(t);
+   if(u>.85){const ks=k_(u,.85,.3);txt(170,560,'آه!',54,'#c4532c',ks)}}
+  else{const v=u-1.9;fk.mood('talk',t);fk.armR.rotation.z=-1.9+Math.sin(t*3)*.1;fk.armR.rotation.x=-.3;fk.idle(t);zz.mood('surprised');zz.idle(t,1);zz.armL.rotation.z=-.4;
+   if(v<.25)txt(270,480,'',10,'#fff');drawXray(fb.T,{flesh:.3,glow:14*k_(v,.2,.6)})}},
+  cam(u){return u<1.9?mix(orbit(-.3,9,3.4,1.2),orbit(-.15,8,3,1.0),ease(u/1.9)):mix(orbit(.25,11,3.4,1.7,.1,-1.4),orbit(.12,10,3.2,1.7,.1,-1.4),ease((u-1.9)/2.4))}}});
+// 1: إيد كبيرة وأسهم بتخبط في الجلد
+scene(1,g=>{room(g,'#e4dcc4','#d8c9a6');const h=makeHand({sc:.016,sleeveLen:300});h.g.rotation.x=Math.PI/2*0.92;h.g.position.set(0,3.2,0);g.add(h.g);
+ const ar=[0,1,2].map(i=>arrow3(g,'#c4532c'));const fl=[0,1,2].map(()=>flash(g,'#ffb070'));
+ return {update(u,d,t){h.g.rotation.y=Math.sin(t*.8)*.25;ar.forEach((a,i)=>{const p=(t*.8+i*.33)%1;a.position.set(lerp(-4.2,-1.55,ease(p)),3.6+i*.6,.3);fl[i].position.set(-1.1,3.6+i*.6,.3);fl[i].material.opacity=p>.85?(1-p)*6:0;fl[i].scale.setScalar(1+p*2)});qm(440,360,1.1,t);qm(100,760,.9,t)},
+  cam(u,d){return mix(orbit(.25,15,4,3.6),orbit(.1,13.5,3.8,3.6),ease(u/d))}}});
+// 2 و5: جهاز الأشعة فوق الإيد على اللوح
+function xrayRig(g){room(g,'#e4dcc4','#d8c9a6');makeTable(g);const pm=M('#3c4d5c',{roughness:.3,metalness:.2,emissive:new THREE.Color('#5fa8e8'),emissiveIntensity:0});
+ mesh(RB(2.6,.12,1.9,.05),pm,[0,1.1,0],g);mesh(RB(2.8,.08,2.1,.03),M('#2b2b2b'),[0,1.05,0],g);
+ const h=makeHand();h.g.position.set(.05,1.25,.55);g.add(h.g);const mc=makeMachine(g);
+ const xl=new THREE.SpotLight('#9fd4ff',0,6,.42,.35,1);xl.position.set(0,4.1,0);xl.target.position.set(0,1,0);xl.castShadow=true;xl.shadow.mapSize.set(1024,1024);xl.shadow.bias=-.0008;g.add(xl,xl.target);
+ return {pm,h,mc,xl}}
+scene(2,g=>{const r=xrayRig(g);return {update(u,d,t){const on=k_(u,.3,.45);r.mc.update(t,on);r.xl.intensity=50*on;r.pm.emissiveIntensity=.8*k_(u,.8,.5);
+  lbl(V3(.75,2.8,.4),40,-90,'إكس راي','#c4532c',k_(u,1.6,.8))},cam(u,d){return mix(orbit(.45,13.5,8.2,3.0),orbit(.3,12,7.6,2.8),ease(u/d))}}});
+// 3: ألوان الضوء والإكس راي اللي العين مش شايفاه
+scene(3,g=>{room(g,'#e4dcc4','#d8c9a6');const C=['#c0392b','#e67e22','#e8c77a','#6b9d3c','#46698a','#6a4c93'],bx=C.map((c,i)=>mesh(RB(.62,.62,.62,.1),M(c,{roughness:.35}),[1.9-i*.66,3.6,0],g));
+ const xb=mesh(RB(1.1,.62,.62,.1),new THREE.MeshStandardMaterial({color:'#9fd4ff',transparent:true,opacity:.18,roughness:.1}),[-2.5,3.6,0],g);
+ const xe=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.1,.62,.62)),new THREE.LineDashedMaterial({color:'#46698a',dashSize:.08,gapSize:.06}));xe.computeLineDistances();xe.position.copy(xb.position);g.add(xe);
+ const wv=waveTube(g,M('#2b2b2b'));const eye=new THREE.Group();eye.position.set(-.3,1.7,.6);eye.scale.setScalar(1.5);g.add(eye);
+ mesh(new THREE.SphereGeometry(.55,32,24),M('#f6f2e6',{roughness:.25}),[0,0,0],eye);const ir=new THREE.Group();eye.add(ir);
+ mesh(new THREE.CylinderGeometry(.24,.24,.04,32),M('#46698a',{roughness:.3}),[0,0,.53],ir).rotation.x=Math.PI/2;mesh(new THREE.CylinderGeometry(.11,.11,.05,24),M('#111'),[0,0,.55],ir).rotation.x=Math.PI/2;
+ const lid=mesh(new THREE.SphereGeometry(.57,32,16,0,Math.PI*2,0,Math.PI/2),M('#e0a888'),[0,0,0],eye);
+ const xm=new THREE.Group();g.add(xm);xm.position.set(-1.5,2.6,.5);[1,-1].forEach(s=>{const b=mesh(RB(.9,.14,.14,.06),M('#c4532c'),[0,0,0],xm);b.rotation.z=s*.78});
+ return {update(u,d,t){const k=k_(u,.2,.8);bx.forEach((b,i)=>{b.scale.setScalar(pop(clamp(k*6-i)));b.rotation.y=t*.6+i});xb.visible=xe.visible=k>.9;
+  wv.set(2.3,lerp(2.3,-3.2,k),4.4,0,t,.16,.45+0.0);ir.rotation.y=Math.sin(t*1.5)*.3;ir.rotation.x=-.25;eye.rotation.x=-.2;
+  const bl=((t*.4)%1)<.05;lid.rotation.x=bl?Math.PI*.5:-Math.PI*.25;lid.visible=true;xm.scale.setScalar(pop(k_(u,1.8,.4)));xm.rotation.y=t;
+  txt(360,455,'الضوء اللي بنشوفه',26,'#2b2b2b',k);if(k>.9){const p=proj(V3(-2.5,3.6,.4));txt(p[0],p[1]-50,'إكس راي',24,'#46698a')}},
+  cam(u,d){return mix(orbit(.1,17.5,3.6,2.9,-.45),orbit(-.04,16.5,3.5,2.9,-.45),ease(u/d))}}});
+// 4: حيطة: الضوء بيقف والإكس راي بيعدّي
+scene(4,g=>{room(g,'#e4dcc4','#d8c9a6');const T=canvasTex(256,512);const x=T.x;x.fillStyle='#c98a64';x.fillRect(0,0,256,512);x.strokeStyle='#8a5a40';x.lineWidth=4;
+ for(let r=0;r<16;r++){x.beginPath();x.moveTo(0,r*32);x.lineTo(256,r*32);x.stroke();for(let c=(r%2)*32;c<256;c+=64){x.beginPath();x.moveTo(c,r*32);x.lineTo(c,r*32+32);x.stroke()}}T.t.needsUpdate=true;
+ mesh(RB(.7,5,3,.05),M('#ffffff',{map:T.t,roughness:.9}),[0,2.5,0],g);
+ const ar=[0,1,2].map(()=>arrow3(g,'#e8a63a')),fl=[0,1,2].map(()=>flash(g,'#ffd27a'));const wv=waveTube(g,M('#46698a',{emissive:new THREE.Color('#4aa3f0'),emissiveIntensity:.6}));const hl=flash(g,'#7fc4ff');
+ return {update(u,d,t){ar.forEach((a,i)=>{const p=(t*.9+i/3)%1;a.position.set(lerp(-4.2,-.95,ease(p)),3.7+i*.35,.3);fl[i].position.set(-.4,3.7+i*.35,.3);fl[i].material.opacity=p>.85?(1-p)*6:0;fl[i].scale.setScalar(1+p*2)});
+  wv.set(-4.5,lerp(-.4,4.5,clamp(.15+k_(u,.3,1.4))),1.6,.3,t,.2,.6);hl.position.set(0,1.6,.4);hl.material.opacity=.5+.3*Math.sin(t*6);hl.scale.setScalar(2.2);
+  const a=proj(V3(-2.6,4.6,0));txt(a[0],a[1],'ضوء عادي',27,'#a9741a');const b=proj(V3(3.3,2.45,.3));txt(b[0],b[1],'إكس راي',28,'#46698a',k_(u,.8,.5))},
+  cam(u,d){return mix(orbit(.3,16,3.8,2.7),orbit(.18,15,3.6,2.7),ease(u/d))}}});
+scene(5,g=>{const r=xrayRig(g);return {update(u,d,t){const on=k_(u,.25,.45),hit=k_(u,.9,.5);r.mc.update(t,on);r.xl.intensity=60*on;r.pm.emissiveIntensity=1.1*hit*(.85+.15*Math.sin(t*14));r.h.set(hit);
+  lbl(V3(-1.25,1.17,.85),-20,120,'لوح حساس','#46698a',k_(u,1.4,.5))},cam(u){const k=ease(u/3.6),ang=lerp(-.55,-.18,k),rad=lerp(13,11,k);return [[Math.sin(ang)*rad,lerp(8.2,7.6,k),Math.cos(ang)*rad],[0,lerp(2.95,2.6,k),0]]}}});
+// 6 و7: قطاع في الإيد: لحم (مية) وعضم (كالسيوم)
+function slab(g,stop){room(g,'#e4dcc4','#d8c9a6');const fm=M('#e0a888',{roughness:.5,transparent:true,opacity:.55,depthWrite:false});mesh(RB(3.2,1.8,1.8,.6),fm,[0,2.2,0],g).castShadow=false;
+ const bm=M('#f6f2e6',{roughness:.4,transparent:true,opacity:1});const bone=caps(V3(-1.15,2.2,0),V3(1.15,2.2,0),.32,bm,g);
+ const NP=90,pg=new THREE.BufferGeometry(),pp=new Float32Array(NP*3);pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+ g.add(new THREE.Points(pg,new THREE.PointsMaterial({color:'#2f7fd0',size:.09})));const fls=[0,1,2,3,4,5].map(()=>flash(g,'#9fd4ff'));
+ const lines=new THREE.Group();g.add(lines);for(let i=0;i<9;i++){const x=-1.5+i*.375;const ln=mesh(new THREE.CylinderGeometry(.012,.012,4.6,6),new THREE.MeshBasicMaterial({color:'#46698a',transparent:true,opacity:.35}),[x,2.4,0],lines,false);ln.userData.x=x}
+ return {bm,bone,lines,upd(t,stopOn){let fi=0;for(let i=0;i<NP;i++){const x=-1.5+(i%9)*.375,u=(t*.7+rnd(i))%1,z=(rnd(i+5)-.5)*.8;let y=lerp(4.6,0.1,u);const on=Math.abs(x)<1.3;
+  if(stopOn&&on&&y<2.55){y=2.55;if(fi<6&&u<.62){fls[fi].position.set(x,2.55,z);fls[fi].material.opacity=.8;fi++}}pp[i*3]=x;pp[i*3+1]=y;pp[i*3+2]=z}for(;fi<6;fi++)fls[fi].material.opacity=0;
+  lines.children.forEach(l=>{const on=Math.abs(l.userData.x)<1.3;if(stopOn&&on){l.scale.y=.45;l.position.y=3.6}else{l.scale.y=1;l.position.y=2.4}});pg.attributes.position.needsUpdate=true}}}
+scene(6,g=>{const s=slab(g);s.bm.opacity=.22;const dr=[];for(let i=0;i<12;i++){const d=new THREE.Group();mesh(new THREE.SphereGeometry(.1,14,10),M('#5fa8e8',{roughness:.1,metalness:.1}),[0,0,0],d);const c=mesh(new THREE.ConeGeometry(.085,.16,14),M('#5fa8e8',{roughness:.1}),[0,.12,0],d);
+ d.position.set(-1.3+rnd(i)*2.6,rnd(i+4)>.5?2.75:1.65,(rnd(i+8)-.5)*1.1);g.add(d);dr.push(d)}
+ return {update(u,d,t){s.upd(t,false);dr.forEach((x,i)=>{x.scale.setScalar(pop(k_(u,.3+i*.07,.4)));x.position.y+=Math.sin(t*3+i)*.002});pill(270,800,'مية',k_(u,.6,.4));lbl(V3(1.2,2.9,.9),50,-90,'لحم','#2b2b2b',k_(u,1.6,.6))},
+  cam(u,d){return mix(orbit(.3,14,4.4,2.4),orbit(.15,13,4.1,2.4),ease(u/d))}}});
+scene(7,g=>{const s=slab(g);const ca=[0,1,2,3,4,5].map(i=>mesh(new THREE.SphereGeometry(.13,16,12),M('#a9c46a',{roughness:.3,emissive:new THREE.Color('#6b7d3c'),emissiveIntensity:.3}),[-1+i*.4,2.2,.33],g));
+ return {update(u,d,t){s.upd(t,true);s.bm.emissive=new THREE.Color('#fff');s.bm.emissiveIntensity=.15+.1*Math.sin(t*5);ca.forEach((c,i)=>{c.scale.setScalar(pop(k_(u,.4+i*.12,.3)));c.position.z=.33+Math.sin(t*4+i)*.03});
+  ca.forEach((c,i)=>{if(c.scale.x>.5){const p=proj(c.position);txt(p[0],p[1]+2,'Ca',15,'#2b2b2b')}});pill(360,800,'كالسيوم',k_(u,.6,.4),26);lbl(V3(-.8,2.0,.35),-40,150,'عضم','#2b2b2b',k_(u,1.2,.6))},
+  cam(u,d){return mix(orbit(.2,13.5,4.1,2.4),orbit(.05,12.5,3.8,2.4),ease(u/d))}}});
+// 8 و9: اللوح من فوق بيسوّد والعضم يفضل أبيض
+function plateTop(g){room(g,'#e4dcc4','#d8c9a6');makeTable(g,4.6,3.6);const T=canvasTex(512,720);const pl=mesh(new THREE.PlaneGeometry(2.6,3.65),new THREE.MeshBasicMaterial({map:T.t,toneMapped:false}),[0,1.06,0],g,false);pl.rotation.x=-Math.PI/2;
+ mesh(RB(2.8,.06,3.85,.03),M('#2b2b2b'),[0,1.02,0],g);const NP=60,pg=new THREE.BufferGeometry(),pp=new Float32Array(NP*3);pg.setAttribute('position',new THREE.BufferAttribute(pp,3));g.add(new THREE.Points(pg,new THREE.PointsMaterial({color:'#4aa3f0',size:.08})));
+ return {T,pp,pg}}
+scene(8,g=>{const p=plateTop(g);return {update(u,d,t){const dk=clamp(k_(u,.2,2.0)+.02);drawXray(p.T,{dark:dk,bonesCol:'#eae3cc',glow:0,flesh:.32});
+  for(let i=0;i<60;i++){const x=-1.2+(i%12)*.22,z=-1.8+3.6*dk+((t*1.2+rnd(i))%1)*-.3,y=1.1+((t*2+rnd(i+2))%1)*1.4;p.pp[i*3]=x;p.pp[i*3+1]=y;p.pp[i*3+2]=z}p.pg.attributes.position.needsUpdate=true;
+  lbl(V3(-1,1.1,-1.6),40,-80,'أشعة وصلت','#46698a',k_(u,1.6,.6))},cam(u,d){return mix([[0,7.6,3.8],[0,1,-.2]],[[0,7.0,3.2],[0,1,-.2]],ease(u/d))}}});
+scene(9,g=>{const p=plateTop(g);return {update(u,d,t){const w=k_(u,.6,1);drawXray(p.T,{dark:1,bonesCol:'#eae3cc',glow:w*(18+6*Math.sin(t*5)),flesh:.32});
+  const b=HG.meta[2],q=V3(((b.a[0]+b.b[0])/2*.4)*2.6/300*2.5,1.07,0);lbl(V3(.02,1.07,-.45),90,140,'بيضا','#c4532c',k_(u,1.4,.6))},cam(u,d){return mix([[0,6.2,2.8],[0,1,-.1]],[[0,5.4,2.4],[0,1,-.2]],ease(u/d))}}});
+// 10: كشاف قدام الإيد، والضل بيقع على الحيطة اللي وراها، وبعدين الضل يبقى صورة أشعة
+scene(10,g=>{room(g,'#e4dcc4','#d8c9a6',-1.6);
+ const h=makeHand({sc:.0075,sleeveLen:260});const hp=new THREE.Group();hp.add(h.g);g.add(hp);h.g.rotation.set(Math.PI/2,0,0);hp.position.set(0,2.1,.6);
+ const fl=new THREE.Group();g.add(fl);fl.position.set(1.6,2.75,3.6);fl.rotation.y=.4;mesh(new THREE.CylinderGeometry(.16,.16,.8,24),M('#46698a',{roughness:.4}),[0,0,0],fl).rotation.x=Math.PI/2;
+ mesh(new THREE.CylinderGeometry(.18,.28,.28,24),M('#b8bcb6',{metalness:.6,roughness:.3}),[0,0,-.5],fl).rotation.x=Math.PI/2;const lens=mesh(new THREE.CircleGeometry(.26,24),new THREE.MeshBasicMaterial({color:'#fff6d8'}),[0,0,-.65],fl,false);lens.rotation.y=Math.PI;
+ const sp=new THREE.SpotLight('#fff3d0',0,14,.42,.45,1);sp.position.set(1.5,2.7,3.0);sp.target.position.set(-1.3,2.5,-1.6);sp.castShadow=true;sp.shadow.mapSize.set(1024,1024);sp.shadow.bias=-.0006;g.add(sp,sp.target);
+ const fb=filmBox(g,{w:2.6,h:3.9});fb.g.position.set(-1.35,2.6,-1.5);drawXray(fb.T,{});const fm=[];fb.g.traverse(o=>{if(o.material){o.material=o.material.clone();o.material.transparent=true;fm.push(o.material)}});
+ return {update(u,d,t){const m=k_(u,1.8,.8);sp.intensity=70;hemi.intensity=.35;key.intensity=.25;fm.forEach(x=>x.opacity=m);fb.g.visible=m>0;hp.rotation.z=Math.sin(t*1.6)*.05;
+  if(m>.5){const p=proj(V3(-1.35,4.8,-1.5));txt(p[0],p[1],'ضل العضم',32,'#c4532c',k_(u,2.2,.6))}},
+  cam(u,d){return mix(orbit(-.5,13.5,3.8,2.6,-.8,-.4),orbit(-.4,12.5,3.6,2.6,-.8,-.4),ease(u/d))}}});
+// 11 و12: صورة الأشعة على الشاشة: كسر، وبعدين العد لـ27
+function screenScene(g){room(g,'#dfe7e2','#c9d6d0',-1);const fb=filmBox(g,{w:3,h:4.2});fb.g.position.set(0,2.7,-.8);const lt=new THREE.PointLight('#dff2ff',2,3);lt.position.set(0,2.7,.4);g.add(lt);return fb}
+scene(11,g=>{const fb=screenScene(g);const rg=mesh(new THREE.TorusGeometry(.2,.025,10,40),M('#c4532c',{emissive:new THREE.Color('#c4532c'),emissiveIntensity:.5}),[0,0,0],g,false);
+ const c=crackUV(),cp=fb.uv(c).add(fb.g.position).add(V3(0,0,0));
+ return {update(u,d,t){drawXray(fb.T,{crack:k_(u,1.6,.8)});const kr=k_(u,2.6,.6);rg.position.copy(cp).add(V3(0,0,.08));rg.scale.setScalar(pop(kr)*(1+.06*Math.sin(t*5)));rg.visible=kr>0},
+  cam(u,d){const k=ease(clamp((u-.6)/1.6));return [[lerp(0,cp.x,k)+Math.sin(u*.8)*.15,lerp(2.7,cp.y,k),lerp(9,2.1,k)],[lerp(0,cp.x,k),lerp(2.7,cp.y,k),-.8]]}}});
+scene(12,g=>{const fb=screenScene(g);return {update(u,d,t){const n=Math.floor(27*clamp((u-.3)/2.4));drawXray(fb.T,{n});pill(400,850,String(n),n>0?1:0,40)},
+  cam(u,d){return mix(orbit(.18,9.4,2.9,2.7),orbit(.06,8.6,2.8,2.7),ease(u/d))}}});
+// 13: صورة قديمة بإطار خشب وساعة بترجع لورا
+scene(13,g=>{room(g,'#e4dcc4','#d8c9a6',-1);const fb=filmBox(g,{w:2.4,h:3.2,frame:'#8a5a3a'});fb.g.position.set(-.3,2.6,-.85);
+ const ck=new THREE.Group();ck.position.set(.9,4.75,-.6);g.add(ck);mesh(new THREE.CylinderGeometry(.55,.55,.14,40),M('#f4efe0',{roughness:.4}),[0,0,0],ck).rotation.x=Math.PI/2;
+ mesh(new THREE.TorusGeometry(.56,.06,12,40),M('#b98a5a',{metalness:.5,roughness:.3}),[0,0,.03],ck);const hm=new THREE.Group(),hh=new THREE.Group();ck.add(hm,hh);
+ mesh(RB(.04,.45,.03,.01),M('#c4532c'),[0,.2,.1],hm);mesh(RB(.06,.3,.03,.01),M('#2b2b2b'),[0,.13,.1],hh);
+ return {update(u,d,t){drawXray(fb.T,{ring:true,sepia:k_(u,.2,1.4)*.8});hm.rotation.z=t*8;hh.rotation.z=t*.7;pill(270,860,'أول صورة أشعة',k_(u,1.2,.4),30)},
+  cam(u,d){return mix(orbit(.2,11,3.2,3.1,0),orbit(.08,12,3.3,3.1,0),ease(u/d))}}});
+// 14 و15 و16 و17: معمل رونتجن سنة 1895
+const RONT={top:'#3e3a36',bottom:'#2b2b2b',hair:'#6b625a',beard:true},BERTHA={top:'#6d4a5e',hair:'#4a3326',bun:true,dress:true};
+function lab(g){room(g,'#d9c6a0','#b98a5a');}
+function crookes(par){const g=new THREE.Group();par.add(g);const gl=mesh(new THREE.SphereGeometry(.5,32,24),new THREE.MeshPhysicalMaterial({color:'#dfeac4',roughness:.05,transparent:true,opacity:.45,emissive:new THREE.Color('#a9c46a'),emissiveIntensity:.6}),[0,0,0],g,false);gl.scale.set(1.4,.9,.9);
+ [-1,1].forEach(s=>mesh(new THREE.CylinderGeometry(.08,.08,.4,12),M('#cdc9bb',{metalness:.6}),[s*.85,0,0],g).rotation.z=Math.PI/2);const pl=new THREE.PointLight('#b9e07a',2,4);g.add(pl);return {g,gl,pl}}
+scene(14,g=>{lab(g);mesh(RB(2.6,.12,1.2,.04),M('#8a5a3a',{roughness:.6}),[.6,1.1,0],g);[-.5,1.7].forEach(x=>mesh(new THREE.CylinderGeometry(.05,.05,1.1,10),M('#5d3d2a'),[x,.55,0],g));
+ mesh(RB(1,.06,.8,.02),M('#5c6b78'),[.9,1.19,0],g);const cr=crookes(g);cr.g.position.set(.9,2.7,0);mesh(new THREE.CylinderGeometry(.03,.03,1.4,8),M('#5d3d2a'),[.9,3.4,0],g);
+ const bm=new THREE.MeshBasicMaterial({color:'#a9c46a',transparent:true,opacity:.18,depthWrite:false});mesh(new THREE.CylinderGeometry(.2,.55,1.4,32,1,true),bm,[.9,1.95,0],g,false);
+ const h=makeHand({sc:.0045,sleeveCol:'#6d4a5e',sleeveLen:300});h.g.position.set(.95,1.26,.05);h.g.rotation.y=-Math.PI/2;g.add(h.g);
+ const r=makeChar(RONT);r.g.position.set(-.9,0,.4);r.g.rotation.y=.7;g.add(r.g);const b=makeChar(BERTHA);b.g.position.set(2.2,0,-.3);b.g.rotation.y=-1.2;g.add(b.g);
+ return {update(u,d,t){S.background.set('#d9c6a0');cr.pl.intensity=2+Math.sin(t*8);cr.gl.material.emissiveIntensity=.5+.3*Math.sin(t*8);r.mood('happy');r.idle(t);r.armR.rotation.z=1.2;b.mood('happy');b.idle(t,1);b.armL.rotation.z=-1.1;
+  pill(120,280,'1895',k_(u,.3,.4),40)},cam(u,d){return mix(orbit(.1,13,3,2.0,.6),orbit(.02,12,2.9,2.0,.6),ease(u/d))}}});
+scene(15,g=>{lab(g);const fb=filmBox(g,{w:1.7,h:2.4,frame:'#8a5a3a'});fb.g.position.set(-1,2.5,-.6);drawXray(fb.T,{ring:true,sepia:.6});
+ const b=makeChar(BERTHA);b.g.position.set(.9,0,.2);b.g.rotation.y=-.6;g.add(b.g);
+ return {update(u,d,t){S.background.set('#d9c6a0');b.mood('surprised');b.idle(t);b.armL.rotation.z=-2.6;b.armR.rotation.z=2.6;const rp=HG.phal[7];
+  lbl(fb.uv([lerp(rp.a[0],rp.b[0],.55),lerp(rp.a[1],rp.b[1],.55)]).add(fb.g.position),-70,170,'خاتم','#c4532c',k_(u,.6,.6));
+  const k=pop(k_(u,1.5,.4));if(k>0)ovH+='<div class="bub" style="left:410px;top:420px;transform:translate(-50%,-50%) scale('+k+')">!!</div>'},
+  cam(u,d){return mix(orbit(.15,11.5,2.7,2.1,-.1),orbit(.05,10.5,2.6,2.1,-.1),ease(u/d))}}});
+scene(16,g=>{lab(g);const X=new THREE.Group();X.position.set(.5,3.0,0);g.add(X);[1,-1].forEach(s=>{const b=mesh(RB(2.1,.42,.42,.16),M('#46698a',{roughness:.3,metalness:.2}),[0,0,0],X);b.rotation.z=s*.85});
+ const r=makeChar(RONT);r.g.position.set(-.9,0,.8);r.g.rotation.y=.4;g.add(r.g);
+ return {update(u,d,t){S.background.set('#d9c6a0');X.scale.setScalar(pop(k_(u,.2,.5)));X.rotation.y=t*1.2;r.mood('confused');r.idle(t);r.armL.rotation.z=-2.6;r.armL.rotation.x=-.4;qm(130,370,1,t);qm(450,330,.8,t);qm(460,640,.9,t)},
+  cam(u,d){return mix(orbit(.1,12.5,3,2.3),orbit(.02,11.5,2.9,2.3),ease(u/d))}}});
+scene(17,g=>{lab(g);const A=new THREE.Group(),B=new THREE.Group();g.add(A,B);
+ const md=new THREE.Group();md.position.set(0,3.1,0);A.add(md);mesh(new THREE.CylinderGeometry(.75,.75,.14,48),M('#d9b24a',{metalness:.9,roughness:.25}),[0,0,0],md).rotation.x=Math.PI/2;
+ mesh(new THREE.CylinderGeometry(.58,.58,.16,48),M('#e8c77a',{metalness:.8,roughness:.3}),[0,0,0],md).rotation.x=Math.PI/2;[-1,1].forEach(s=>{const rb=mesh(RB(.28,1.1,.04,.02),M(s<0?'#46698a':'#c4532c'),[s*.2,.85,-.05],md);rb.rotation.z=s*.25});
+ const sh=new THREE.PointLight('#fff0c0',3,5);sh.position.set(1,3.6,1.5);A.add(sh);
+ const pt=new THREE.Group();pt.position.set(1.4,1.4,.8);A.add(pt);mesh(RB(.9,1.15,.03,.01),M('#f4efe0'),[0,0,0],pt);const px=new THREE.Group();pt.add(px);[1,-1].forEach(s=>{const b=mesh(RB(1.2,.12,.08,.04),M('#c4532c'),[0,0,.06],px);b.rotation.z=s*.78});
+ const r=makeChar(RONT);r.g.position.set(-1.3,0,.5);r.g.rotation.y=.5;A.add(r.g);
+ const gt=canvasTex(512,256);gt.x.fillStyle='#5fa8d8';gt.x.fillRect(0,0,512,256);gt.x.fillStyle='#7fae5a';for(let i=0;i<14;i++){gt.x.beginPath();gt.x.ellipse(rnd(i)*512,40+rnd(i+3)*176,30+rnd(i+6)*50,20+rnd(i+9)*30,rnd(i)*3,0,6.3);gt.x.fill()}gt.t.needsUpdate=true;
+ const gb=mesh(new THREE.SphereGeometry(1.2,48,32),M('#ffffff',{map:gt.t,roughness:.6}),[0,2.6,0],B);
+ const icons=[];for(let i=0;i<6;i++){const f=filmBox(B,{w:.5,h:.65});drawXray(f.T,{});icons.push(f.g)}
+ return {update(u,d,t){S.background.set('#d9c6a0');const a=u<2.4;A.visible=a;B.visible=!a;
+  if(a){md.scale.setScalar(pop(k_(u,.1,.5)));md.rotation.y=Math.sin(t*1.5)*.6;r.mood('happy');r.idle(t);r.armR.rotation.z=1.3;const kp=k_(u,1.3,.4);px.scale.setScalar(pop(kp));pt.rotation.z=.15+.1*kp;
+   const p=proj(md.position);pill(p[0],p[1]+150,'1901',k_(u,.5,.4),34);txt(p[0],p[1]+4,'نوبل',28,'#2b2b2b',k_(u,.2,.4));const q=proj(pt.position);txt(q[0],q[1]-8,'براءة',22,'#2b2b2b');txt(q[0],q[1]+22,'اختراع',22,'#2b2b2b')}
+  else{const v=u-2.4;gb.rotation.y=t*.5;icons.forEach((ic,i)=>{const an=i/6*6.283+t*.4,k=pop(k_(v,.2+i*.15,.4));ic.position.set(Math.cos(an)*2,2.6+Math.sin(an*2)*.4,Math.sin(an)*2);ic.scale.setScalar(k);ic.lookAt(cam.position)})}},
+  cam(u,d){return u<2.4?mix(orbit(.1,12.5,3,2.3),orbit(.02,11.6,3,2.4),ease(u/2.4)):mix(orbit(.2,10,3.4,2.6),orbit(.5,11,3.6,2.6),ease((u-2.4)/2))}}});
+// 18: زيزو لابس مريلة رصاص والأشعة بترتد عنها
+scene(18,g=>{room(g,'#dfe7e2','#c9d6d0');const mc=makeMachine(g);mc.g.scale.setScalar(.8);mc.g.position.set(0,.2,.4);const z=makeChar({apron:true});z.g.scale.setScalar(1.15);g.add(z.g);
+ return {update(u,d,t){z.mood('happy');z.idle(t);mc.update(t,1,1.4,(X,Y,Z,uu,i)=>{if(Y<2.0){const b=(2.0-Y);return [X*(1+b*1.6),2.0+b*.9,Z+.6+b*1.2]}});
+  lbl(V3(-.25,1.35,.7),-150,40,'رصاص','#c4532c',k_(u,1.4,.6))},cam(u,d){return mix(orbit(.35,10.5,3.2,2.5),orbit(.2,9.4,3,2.4),ease(u/d))}}});
+
+// ── الرسم عند الثانية t ────────────────────────────────
+function chunks(n){const k=Math.ceil(n/6),sz=Math.ceil(n/k),o=[];for(let a=0;a<n;a+=sz)o.push([a,Math.min(n,a+sz)]);return o}
+window.renderAt=t=>{let i=0;while(i<LN.length-1&&L(i+1)<=t)i++;const sc=SCN[i],u=t-L(i),d=Math.max(.5,L(i+1)-L(i));
+ SCN.forEach((s,j)=>s.g.visible=j===i);ovH='';S.background.copy(BG);hemi.intensity=.9;key.intensity=1.6;
+ const c=sc.cam(u,d,t);const sw=Math.sin(t*.9)*.04;camAt([c[0][0]+sw,c[0][1]+Math.cos(t*1.1)*.03,c[0][2]],c[1]);
+ sc.update(u,d,t);R.render(S,cam);OV.innerHTML=ovH;
+ // الترجمة: كلمة بكلمة، 6 كلمات بالكتير في المرة
+ const l=LN[i],w=l.text.split(' '),K=KEYS[i]||{},tot=w.join('').length;let acc=0,now=-1;for(let j=0;j<w.length;j++){if(t>=l.start+(l.end-l.start)*(acc/tot)-.05)now=j;acc+=w[j].length}if(t>l.end+.15)now=w.length;
+ const ch=chunks(w.length);let ci=0;ch.forEach((q,j)=>{if(Math.max(now,0)>=q[0])ci=j});
+ CAP.innerHTML=w.slice(ch[ci][0],ch[ci][1]).map((x,j)=>{j+=ch[ci][0];return '<span class="'+(K[x]||'')+(j===now?' now':j>now?' fut':'')+'">'+x+'</span>'}).join(' ');
+ CAP.style.opacity=(.4+.6*Math.min(1,Math.max(0,(t-l.start+.1)/.2))).toFixed(2);};
+window.READY=true;
+</script></body></html>
